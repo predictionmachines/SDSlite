@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FetchClimate1", "FetchClimate1", "{540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCDFInterop", "NetCDFInterop\NetCDFInterop.csproj", "{7264963B-9B4F-4257-B79E-FE48E032A190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScientificDataSet", "ScientificDataSet\ScientificDataSet.csproj", "{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdsutil", "sdsutil\sdsutil.csproj", "{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLiteTests", "SDSLiteTests\SDSLiteTests.csproj", "{C6919B51-ED1A-455E-89E0-F295ECFC722B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Common", "FetchClimate1\ClimateService.Common\ClimateService.Common.csproj", "{87558098-AEAB-46A0-8BEF-D838630AC90E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Client", "FetchClimate1\ClimateServiceClient\ClimateService.Client.csproj", "{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7264963B-9B4F-4257-B79E-FE48E032A190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7264963B-9B4F-4257-B79E-FE48E032A190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7264963B-9B4F-4257-B79E-FE48E032A190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7264963B-9B4F-4257-B79E-FE48E032A190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6919B51-ED1A-455E-89E0-F295ECFC722B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6919B51-ED1A-455E-89E0-F295ECFC722B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6919B51-ED1A-455E-89E0-F295ECFC722B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6919B51-ED1A-455E-89E0-F295ECFC722B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87558098-AEAB-46A0-8BEF-D838630AC90E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87558098-AEAB-46A0-8BEF-D838630AC90E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87558098-AEAB-46A0-8BEF-D838630AC90E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87558098-AEAB-46A0-8BEF-D838630AC90E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{87558098-AEAB-46A0-8BEF-D838630AC90E} = {540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}
+		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D} = {540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}
+	EndGlobalSection
+EndGlobal
