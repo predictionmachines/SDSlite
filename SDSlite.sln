@@ -17,6 +17,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Common", "Fe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Client", "FetchClimate1\ClimateServiceClient\ClimateService.Client.csproj", "{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLite", "SDSLite\SDSLite.csproj", "{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +54,10 @@ Global
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

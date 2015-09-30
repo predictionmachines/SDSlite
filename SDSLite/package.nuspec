@@ -1,0 +1,34 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SDSLite</id>
+    <version>0.25</version>
+    <title>Scientific DataSet Lite</title>
+    <authors>Microsoft Research,Computational Science</authors>
+    <owners>Microsoft Research,Computational Science</owners>
+    <description>
+      This is a cross platform library for manipulating netCDF, CSV and TSV files.
+    </description>
+    <releaseNotes>
+    </releaseNotes>
+    <summary>
+      This is a cross platform library for manipulating netCDF, CSV and TSV files.
+    </summary>
+    <language>en-US</language>
+    <projectUrl>http://research.microsoft.com/en-us/projects/sds</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://cscience/angara/license</licenseUrl>
+    <copyright>Copyright (C) 2015 Microsoft Research</copyright>
+    <dependencies></dependencies>
+    <references></references>
+    <tags></tags>
+  </metadata>
+  <files>
+    <file src="DynamicInterop.dll" target="lib\net45" />
+    <file src="DynamicInterop.xml" target="lib\net45" />
+    <file src="NetCDFInterop.dll" target="lib\net45" />
+    <file src="ScientificDataSet.dll" target="lib\net45" />
+    <file src="ScientificDataSet.xml" target="lib\net45" />
+  </files>
+</package>
