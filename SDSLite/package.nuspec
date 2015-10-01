@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
-<package >
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>SDSLite</id>
-    <version>0.25</version>
+    <version>1.4</version>
     <title>Scientific DataSet Lite</title>
     <authors>Microsoft Research,Computational Science</authors>
     <owners>Microsoft Research,Computational Science</owners>
@@ -18,17 +18,17 @@
     <projectUrl>http://research.microsoft.com/en-us/projects/sds</projectUrl>
     <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>http://cscience/angara/license</licenseUrl>
+    <licenseUrl>http://research.microsoft.com/en-us/downloads/ccf905f6-34c6-4845-892e-a5715a508fa3/SDS%20release%20codeplex%20MSR-LA.docx</licenseUrl>
     <copyright>Copyright (C) 2015 Microsoft Research</copyright>
-    <dependencies></dependencies>
+    <dependencies>
+      <dependency id="DynamicInterop" version="0.7.4" />
+    </dependencies>
     <references></references>
     <tags></tags>
   </metadata>
   <files>
-    <file src="DynamicInterop.dll" target="lib\net45" />
-    <file src="DynamicInterop.xml" target="lib\net45" />
-    <file src="NetCDFInterop.dll" target="lib\net45" />
-    <file src="ScientificDataSet.dll" target="lib\net45" />
-    <file src="ScientificDataSet.xml" target="lib\net45" />
+    <file src="bin\Debug\NetCDFInterop.dll" target="lib\net45" />
+    <file src="bin\Debug\ScientificDataSet.dll" target="lib\net45" />
+    <file src="bin\Debug\ScientificDataSet.xml" target="lib\net45" />
   </files>
 </package>
