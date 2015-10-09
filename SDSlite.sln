@@ -21,6 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLite", "SDSLite\SDSLite.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
 	ProjectSection(SolutionItems) = preProject
+		Licence.txt = Licence.txt
 		README.md = README.md
 	EndProjectSection
 EndProject

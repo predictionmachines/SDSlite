@@ -46,3 +46,7 @@ See the installation instructions at [http://www.mono-project.com/docs/getting-s
 ### MacOS
 
 For MacOS, Mono is also available - but unfortunately only in 32bit mode as a package. See here: [http://www.mono-project.com/docs/compiling-mono/mac/](http://www.mono-project.com/docs/compiling-mono/mac/).
+
+### LICENCE
+
+You can find license details in Licence.txt file provided with this project or online at [https://github.com/predictionmachines/SDSlite/Licence.txt](https://github.com/predictionmachines/SDSlite/Licence.txt).
