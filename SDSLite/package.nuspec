@@ -27,8 +27,8 @@
     <tags></tags>
   </metadata>
   <files>
-    <file src="bin\Debug\NetCDFInterop.dll" target="lib\net45" />
-    <file src="bin\Debug\ScientificDataSet.dll" target="lib\net45" />
-    <file src="bin\Debug\ScientificDataSet.xml" target="lib\net45" />
+    <file src="$OutDir$NetCDFInterop.dll" target="lib\net45" />
+    <file src="$OutDir$ScientificDataSet.dll" target="lib\net45" />
+    <file src="$OutDir$ScientificDataSet.xml" target="lib\net45" />
   </files>
 </package>
