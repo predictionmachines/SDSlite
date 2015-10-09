@@ -49,4 +49,4 @@ For MacOS, Mono is also available - but unfortunately only in 32bit mode as a pa
 
 ### LICENCE
 
-You can find license details in Licence.txt file provided with this project or online at [https://github.com/predictionmachines/SDSlite/Licence.txt](https://github.com/predictionmachines/SDSlite/Licence.txt).
+You can find license details in Licence.txt file provided with this project or online at [https://github.com/predictionmachines/SDSlite/blob/master/Licence.txt](https://github.com/predictionmachines/SDSlite/blob/master/Licence.txt).
