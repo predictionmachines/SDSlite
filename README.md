@@ -3,7 +3,7 @@ Scientific DataSet Lite
 =======================
 
 This is a cross platform library for manipulating netCDF, CSV and TSV files.
-This is a subset of **Scientific DataSet** [http://research.microsoft.com/en-us/projects/sds/](http://research.microsoft.com/en-us/projects/sds/) and [https://sds.codeplex.com/](https://sds.codeplex.com/).
+This is a subset of **Scientific DataSet** [https://www.microsoft.com/en-us/research/project/scientific-dataset/](https://www.microsoft.com/en-us/research/project/scientific-dataset/) and [https://sds.codeplex.com/](https://sds.codeplex.com/).
 
 External Libraries
 ------------------
