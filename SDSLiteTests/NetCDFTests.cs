@@ -169,5 +169,72 @@ namespace SDSLiteTests
             Empty_AddAttribute("Русский");
         }
 
+        private void CheckGroupCreating(string groupName)
+        {
+            Tuple<Type, string, Array>[] variableInfo =
+            {
+                new Tuple<Type, string, Array>(typeof(float), "testVar1", new float[] { 42.0f, 73.0f, 1.0f, 0.0f }),
+                new Tuple<Type, string, Array>(typeof(int), "testVar2", new int[] { 4, 8, 15, 16 }),
+                new Tuple<Type, string, Array>(typeof(string), "testVar3", new string[] { "str", "rts", "23", "---"})
+            };
+
+            string dimensionName = "testDim";
+            string tmpFileName = System.IO.Path.GetTempFileName() + ".nc";
+
+            // fill the dataset given group
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=create&groupName=" + groupName))
+            {
+                foreach(var info in variableInfo)
+                {
+                    ds.AddVariable(info.Item1, info.Item2, info.Item3, dimensionName);
+                }
+
+                ds.Commit();
+            }
+
+            // check that group has filled variables
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=" + groupName))
+            {
+                foreach(var info in variableInfo)
+                {
+                    Assert.True(ds.Variables.Contains(info.Item2));
+                    var vals = ds.Variables[info.Item2].GetData();
+                    for(int i = 0; i < vals.Length; i++)
+                    {
+                        Assert.Equals(info.Item3.GetValue(i), vals.GetValue(i));
+                    }
+                }
+            }
+
+            if(!string.IsNullOrEmpty(groupName))
+            {
+                // check that the root group hasn't variables if it was not the given group
+                using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly"))
+                {
+                    foreach (var info in variableInfo)
+                    {
+                        Assert.False(ds.Variables.Contains(info.Item2));
+                    }
+                }
+            }
+
+            System.IO.File.Delete(tmpFileName);
+        }
+
+        [Test]
+        public void RootGroupTest()
+        {
+            CheckGroupCreating("");
+        }
+        [Test]
+        public void SimpleGroupTest()
+        {
+            CheckGroupCreating("testGroup");
+        }
+        [Test]
+        public void NestedGroupTest()
+        {
+            CheckGroupCreating("parent/child");
+        }
     }
 }
