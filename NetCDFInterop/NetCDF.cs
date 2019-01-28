@@ -298,6 +298,8 @@ namespace NetCDFInterop
         public static int nc_enddef(int ncid) { lock (namebuf) { return NetCDFDynamic.f_nc_enddef.Invoke(ncid); } }
         public static int nc_redef(int ncid) { lock (namebuf) { return NetCDFDynamic.f_nc_redef.Invoke(ncid); } }
         public static int nc_inq(int ncid, out int ndims, out int nvars, out int ngatts, out int unlimdimid) { lock (namebuf) { return NetCDFDynamic.f_nc_inq.Invoke(ncid, out ndims, out nvars, out ngatts, out unlimdimid); } }
+        public static int nc_def_grp(int ncid, string name, out int groupId) { return NetCDFDynamic.f_nc_def_grp.Invoke(ncid, name, out groupId); }
+        public static int nc_inq_grp_ncid(int ncid, string name, out int groupId) { return NetCDFDynamic.f_nc_inq_grp_ncid.Invoke(ncid, name, out groupId); }
         public static int nc_def_var(int ncid, string name, NcType xtype, int[] dimids, out int varidp) { lock (namebuf) { return NetCDFDynamic.f_nc_def_var.Invoke(ncid, name, xtype, dimids.Length, dimids, out varidp); } }
         public static int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp) { lock (namebuf) { return NetCDFDynamic.f_nc_def_dim.Invoke(ncid, name, len, out dimidp); } }
         public static int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level) { lock (namebuf) { return NetCDFDynamic.f_nc_def_var_deflate.Invoke(ncid, varid, shuffle, deflate, deflate_level); } }
@@ -587,6 +589,8 @@ namespace NetCDFInterop
             f_nc_def_dim = native.GetFunction<nc_def_dim>();
             f_nc_def_var_deflate = native.GetFunction<nc_def_var_deflate>();
             f_nc_def_var_chunking = native.GetFunction<nc_def_var_chunking>();
+            f_nc_def_grp = native.GetFunction<nc_def_grp>();
+            f_nc_inq_grp_ncid = native.GetFunction<nc_inq_grp_ncid>();
             f_nc_inq_var = native.GetFunction<nc_inq_var>();
             f_nc_inq_varids = native.GetFunction<nc_inq_varids>();
             f_nc_inq_vartype = native.GetFunction<nc_inq_vartype>();
@@ -691,6 +695,8 @@ namespace NetCDFInterop
         public static nc_def_dim f_nc_def_dim { get; private set; }
         public static nc_def_var_deflate f_nc_def_var_deflate { get; private set; }
         public static nc_def_var_chunking f_nc_def_var_chunking { get; private set; }
+        public static nc_def_grp f_nc_def_grp { get; private set; }
+        public static nc_inq_grp_ncid f_nc_inq_grp_ncid { get; private set; }
         public static nc_inq_var f_nc_inq_var { get; private set; }
         public static nc_inq_varids f_nc_inq_varids { get; private set; }
         public static nc_inq_vartype f_nc_inq_vartype { get; private set; }
@@ -794,6 +800,8 @@ namespace NetCDFInterop
         public delegate int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp);
         public delegate int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
         public delegate int nc_def_var_chunking(int ncid, int varid, int contiguous, IntPtr[] chunksizes);
+        public delegate int nc_def_grp(int ncid, string name, out int new_ncid);
+        public delegate int nc_inq_grp_ncid(int ncid, string name, out int groupId);
         public delegate int nc_inq_var(int ncid, int varid, StringBuilder name, out NcType type, out int ndims, int[] dimids, out int natts);
         public delegate int nc_inq_varids(int ncid, out int nvars, int[] varids);
         public delegate int nc_inq_vartype(int ncid, int varid, out NcType xtypep);

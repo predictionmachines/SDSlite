@@ -80,6 +80,12 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     ///     See <see cref="DataSet.Clone(String)"/>.
     /// </item>
     /// <item>
+    ///     <term>groupName=name_of_group</term>
+    ///     <description>
+    ///     Specifies a group for reading/writing. The name can include subgroups.
+    ///     </description>
+    /// </item>
+    /// <item>
     ///     <term>deflate=off|store|fastest|fast|normal|good|best</term>
     ///     <description>
     ///     Defines the data compression level. Affects only new variables,
@@ -175,7 +181,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
         internal new const int GlobalMetadataVariableID = DataSet.GlobalMetadataVariableID;
 
-        private int ncid = -1;
+        private int ncid = -1;      // ncid of an open group
+        private int fileid = -1;    // ncid of an open file
         private bool initializing = true; // means that we're inializing schema from the file
         private bool rollbackEnabled = false;
         private bool trimTrailingZero;
@@ -229,7 +236,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             Debug.WriteLineIf(TraceNetCDFDataSet.TraceInfo, "Deflate mode: " + deflate);
 
             ResourceOpenMode openMode = this.uri.GetOpenModeOrDefault(ResourceOpenMode.OpenOrCreate);
-            InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            InitializeFromFile(((NetCDFUri)this.uri).FileName, ((NetCDFUri)this.uri).GroupName, openMode);
         }
 
         /// <summary>
@@ -258,10 +265,10 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             deflate = ((NetCDFUri)this.uri).Deflate;
             trimTrailingZero = ((NetCDFUri)this.uri).TrimTrailingZero;
 
-            InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            InitializeFromFile(((NetCDFUri)this.uri).FileName, ((NetCDFUri)this.uri).GroupName, openMode);
         }
 
-        private void InitializeFromFile(string fileName, ResourceOpenMode openMode)
+        private void InitializeFromFile(string fileName, string groupPath, ResourceOpenMode openMode)
         {
             bool autoCommit = IsAutocommitEnabled;
             IsAutocommitEnabled = false;
@@ -301,9 +308,9 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     }
 
                     if (openMode == ResourceOpenMode.ReadOnly)
-                        res = NetCDF.nc_open_chunked(fileName, CreateMode.NC_NOWRITE /*| NetCDF.CreateMode.NC_SHARE*/, out ncid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
+                        res = NetCDF.nc_open_chunked(fileName, CreateMode.NC_NOWRITE /*| NetCDF.CreateMode.NC_SHARE*/, out fileid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
                     else
-                        res = NetCDF.nc_open_chunked(fileName, CreateMode.NC_WRITE /*| NetCDF.CreateMode.NC_SHARE*/, out ncid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
+                        res = NetCDF.nc_open_chunked(fileName, CreateMode.NC_WRITE /*| NetCDF.CreateMode.NC_SHARE*/, out fileid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
                 }
                 else
                 {
@@ -312,13 +319,44 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                     if (!Path.IsPathRooted(fileName))
                         fileName = Path.Combine(Environment.CurrentDirectory, fileName);
-                    res = NetCDF.nc_create_chunked(fileName, CreateMode.NC_NETCDF4 | CreateMode.NC_CLOBBER /*| NetCDF.CreateMode.NC_SHARE*/, out ncid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
-
-                    Variable globalMetaVar = new NetCDFGlobalMetadataVariable(this);
-                    AddVariableToCollection(globalMetaVar);
+                    res = NetCDF.nc_create_chunked(fileName, CreateMode.NC_NETCDF4 | CreateMode.NC_CLOBBER /*| NetCDF.CreateMode.NC_SHARE*/, out fileid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
                 }
 
                 HandleResult(res);
+
+                // Opening or creating a group
+                ncid = fileid;
+                if (!string.IsNullOrEmpty(groupPath))
+                {
+                    var pathParts = groupPath.TrimEnd('/').Split('/');
+                    int partNumber = 0;
+                    int hlpNcid;
+
+                    while (partNumber < pathParts.Length && NetCDF.nc_inq_grp_ncid(ncid, pathParts[partNumber], out hlpNcid) == (int)ResultCode.NC_NOERR)
+                    {
+                        ncid = hlpNcid;
+                        partNumber++;
+                    }
+
+                    if (partNumber < pathParts.Length)
+                    {
+                        if (openMode == ResourceOpenMode.ReadOnly)
+                        {
+                            throw new ArgumentException($"Group \"{groupPath}\" is not found!");
+                        }
+                        else
+                        {
+                            exists = false;
+                        }
+
+                        for (; partNumber < pathParts.Length; partNumber++)
+                        {
+                            res = NetCDF.nc_def_grp(ncid, pathParts[partNumber], out hlpNcid);
+                            HandleResult(res);
+                            ncid = hlpNcid;
+                        }
+                    }
+                }
 
                 if (exists)
                 {
@@ -479,6 +517,11 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                             SchemaVersion.Proposed);
                     }
                 } // eo if exists
+                else
+                {
+                    Variable globalMetaVar = new NetCDFGlobalMetadataVariable(this);
+                    AddVariableToCollection(globalMetaVar);
+                }
 
                 Commit();
 
@@ -724,11 +767,11 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         /// </summary>
         protected override void Dispose(bool disposing)
         {
-            if (ncid >= 0)
+            if (fileid >= 0)
             {
                 try
                 {
-                    int res = NetCDF.nc_close(ncid);
+                    int res = NetCDF.nc_close(fileid);
                     if (disposing)
                         HandleResult(res);
                     if (tempFileName != null)
