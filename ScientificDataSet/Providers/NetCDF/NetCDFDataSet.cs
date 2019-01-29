@@ -326,9 +326,9 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                 // Opening or creating a group
                 ncid = fileid;
-                if (!string.IsNullOrEmpty(groupPath))
+                if (!string.IsNullOrEmpty(groupPath) && !groupPath.Trim().Equals("/"))
                 {
-                    var pathParts = groupPath.TrimEnd('/').Split('/');
+                    var pathParts = groupPath.Trim('/').Split('/');
                     int partNumber = 0;
                     int hlpNcid;
 
@@ -342,6 +342,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     {
                         if (openMode == ResourceOpenMode.ReadOnly)
                         {
+                            NetCDF.nc_close(fileid);
                             throw new ArgumentException($"Group \"{groupPath}\" is not found!");
                         }
                         else
