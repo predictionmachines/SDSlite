@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>SDSLite</id>
-    <version>1.4</version>
+    <version>1.5</version>
     <title>Scientific DataSet Lite</title>
     <authors>Microsoft Research,Computational Science</authors>
     <owners>Microsoft Research,Computational Science</owners>
@@ -19,16 +19,17 @@
     <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://github.com/predictionmachines/SDSlite/blob/master/Licence.txt</licenseUrl>
-    <copyright>Copyright (C) 2015 Microsoft Research</copyright>
+    <copyright>Copyright (C) 2020 Microsoft Research</copyright>
     <dependencies>
-      <dependency id="DynamicInterop" version="0.7.4" />
+      <dependency id="DynamicInterop" version="0.9.1" />
     </dependencies>
     <references></references>
     <tags></tags>
   </metadata>
   <files>
-    <file src="$OutDir$NetCDFInterop.dll" target="lib\net45" />
-    <file src="$OutDir$ScientificDataSet.dll" target="lib\net45" />
-    <file src="$OutDir$ScientificDataSet.xml" target="lib\net45" />
+    <file src="$OutDir$bin\Release\netcoreapp3.1\SDSLite.dll"  target="lib\netcoreapp3.1" />
+    <file src="$OutDir$bin\Release\netcoreapp3.1\NetCDFInterop.dll"  target="lib\netcoreapp3.1" />
+    <file src="$OutDir$bin\Release\netcoreapp3.1\ScientificDataSet.dll" target="lib\netcoreapp3.1" />
+    <file src="$OutDir$bin\Release\netcoreapp3.1\ScientificDataSet.xml" target="lib\netcoreapp3.1" />
   </files>
 </package>
