@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Microsoft.Research.Science.Data;
 using System.Linq;
 
-namespace SDSLiteTests
+namespace ScientificDataSet.Tests
 {
     public class NetCDFTests
     {

@@ -1,4 +1,4 @@
-[![NuGet](https://img.shields.io/nuget/v/SDSlite.svg?style=flat)](https://www.nuget.org/packages/SDSlite/)
+[![NuGet](https://img.shields.io/nuget/v/SDSCore.svg?style=flat)](https://www.nuget.org/packages/SDSCore/)
 Scientific DataSet Lite
 =======================
 

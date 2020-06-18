@@ -3,6 +3,14 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <UseWPF>true</UseWPF>
+        <PackageId>SDSCore</PackageId>
+        <Description>.NET Core 3.1 port of SDSLite library</Description>
+        <RepositoryUrl>https://github.com/Dzoukr/SDSCore</RepositoryUrl>
+        <PackageLicenseUrl>https://github.com/Dzoukr/SDSCore/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageTags>netcdf;sdslite;csv</PackageTags>
+        <Authors>Roman Provazník</Authors>
+        <Version>1.0.0-alpha001</Version>
+        <PackageReleaseNotes>Initial port of SDSLite</PackageReleaseNotes>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
