@@ -552,7 +552,7 @@ namespace NetCDFInterop
                             .Reverse() // last version first
                             .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
                             .Select(d => Path.Combine(d, "bin"))
-                            .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
+                            .FirstOrDefault(d => File.Exists(Path.Combine(d, name))) ?? AppContext.BaseDirectory;
                         if (null != ncdir)
                         {
                             // if found we need to add the file location to PATH environmental variable to load dependent DLLs.

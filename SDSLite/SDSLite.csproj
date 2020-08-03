@@ -6,9 +6,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <Name>SDSLite</Name>
     <ProjectGuid>{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <OutputType>Library</OutputType>
     <BuildPackage>true</BuildPackage>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
