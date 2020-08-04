@@ -4,6 +4,6 @@ using System;
 using System.Reflection;
 
 
-[assembly: AssemblyVersionAttribute("1.4.0.0")]
-[assembly: AssemblyFileVersionAttribute("1.4.0.0")]
+[assembly: AssemblyVersionAttribute("1.6.5.0")]
+[assembly: AssemblyFileVersionAttribute("1.6.5.0")]
 [assembly: AssemblyCopyrightAttribute("(c) Microsoft Corporation. All rights reserved")]
