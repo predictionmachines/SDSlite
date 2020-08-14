@@ -16,7 +16,10 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@0
-
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile netcdf.exe'
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
