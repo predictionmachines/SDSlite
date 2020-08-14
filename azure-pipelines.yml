@@ -19,11 +19,12 @@ steps:
 - task: PowerShell@2
   displayName: Download NetCDF
   inputs:
+    workingDirectory: ${Build.BinariesDirectory}
     targetType: 'inline'
     script: |
       Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile netcdf.exe
-      ls env:
       7z x netcdf.exe bin/*
+      Write-Output "##vso[task.prependpath]$env:BUILD_BINARIESDIRECTORY\bin"
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
