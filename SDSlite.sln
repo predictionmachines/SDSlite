@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FetchClimate1", "FetchClimate1", "{540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}"
 EndProject
@@ -21,6 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLite", "SDSLite\SDSLite.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
 	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
 		Licence.txt = Licence.txt
 		README.md = README.md
 	EndProjectSection
@@ -73,5 +74,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{87558098-AEAB-46A0-8BEF-D838630AC90E} = {540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D} = {540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D2DD130A-C9B4-444E-B1BB-5A37CA4AC782}
 	EndGlobalSection
 EndGlobal

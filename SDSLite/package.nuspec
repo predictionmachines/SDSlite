@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>SDSLite</id>
-    <version>1.4.1</version>
+    <version>1.4.3</version>
     <title>Scientific DataSet Lite</title>
     <authors>Microsoft Research,Computational Science</authors>
     <owners>Microsoft Research,Computational Science</owners>
@@ -21,7 +21,7 @@
     <licenseUrl>https://github.com/predictionmachines/SDSlite/blob/master/Licence.txt</licenseUrl>
     <copyright>Copyright (C) 2015 Microsoft Research</copyright>
     <dependencies>
-      <dependency id="DynamicInterop" version="0.7.4" />
+      <dependency id="DynamicInterop" version="0.9.1" />
     </dependencies>
     <references></references>
     <tags></tags>

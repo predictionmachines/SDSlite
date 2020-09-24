@@ -548,7 +548,8 @@ namespace NetCDFInterop
                     if (null == path)
                     {
                         // alternatively try standard install paths.
-                        var ncdir = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86))
+                        var ncdir = Directory.GetDirectories(Environment.GetFolderPath(
+                            Environment.Is64BitProcess ? Environment.SpecialFolder.ProgramFiles : Environment.SpecialFolder.ProgramFilesX86))
                             .Reverse() // last version first
                             .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
                             .Select(d => Path.Combine(d, "bin"))
