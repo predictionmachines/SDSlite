@@ -169,5 +169,166 @@ namespace SDSLiteTests
             Empty_AddAttribute("Русский");
         }
 
+        private void CheckGroupCreating(string groupName, string parentGroupName = null)
+        {
+            Tuple<Type, string, Array>[] variableInfo =
+            {
+                new Tuple<Type, string, Array>(typeof(float), "testVar1", new float[] { 42.0f, 73.0f, 1.0f, 0.0f }),
+                new Tuple<Type, string, Array>(typeof(int), "testVar2", new int[] { 4, 8, 15, 16 }),
+                new Tuple<Type, string, Array>(typeof(string), "testVar3", new string[] { "str", "rts", "23", "---"})
+            };
+
+            string dimensionName = "testDim1";
+            string tmpFileName = System.IO.Path.GetTempFileName() + ".nc";
+
+            // create a test dataset group and create variables and dimensions, that this group must contain
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=create&groupName=" + groupName))
+            {
+                foreach(var info in variableInfo)
+                {
+                    ds.AddVariable(info.Item1, info.Item2, info.Item3, dimensionName);
+                }
+
+                ds.Commit();
+            }
+
+            // check that group contains variables and dimensions
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=" + groupName))
+            {
+                foreach(var info in variableInfo)
+                {
+                    Assert.True(ds.Variables.Contains(info.Item2));
+                    var vals = ds.Variables[info.Item2].GetData();
+                    for(int i = 0; i < vals.Length; i++)
+                    {
+                        Assert.Equals(info.Item3.GetValue(i), vals.GetValue(i));
+                    }
+                }
+
+                Assert.True(ds.Dimensions.Contains(dimensionName));
+            }
+
+            // if the given group is not the root group
+            if (!string.IsNullOrEmpty(groupName) && !groupName.Equals("/"))
+            {
+                // check that the root group doesn't contain variables and dimensions from the non-root group
+                using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly"))
+                {
+                    foreach (var info in variableInfo)
+                    {
+                        Assert.False(ds.Variables.Contains(info.Item2));
+                    }
+
+                    Assert.False(ds.Dimensions.Contains(dimensionName));
+                }
+            }
+
+            // if the parent group is given
+            if(!string.IsNullOrEmpty(parentGroupName))
+            { 
+                // check that parent group doesn't contain variables and dimensions from the child group
+                using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=" + parentGroupName))
+                {
+                    foreach(var info in variableInfo)
+                    {
+                        Assert.False(ds.Variables.Contains(info.Item2));
+                    }
+
+                    Assert.False(ds.Dimensions.Contains(dimensionName));
+                }
+            }
+
+            System.IO.File.Delete(tmpFileName);
+        }
+
+        [Test]
+        public void RootGroupTest1()
+        {
+            CheckGroupCreating("");
+        }
+        [Test]
+        public void RootGroupTest2()
+        {
+            CheckGroupCreating("/");
+        }
+        [Test]
+        public void SimpleGroupTest()
+        {
+            CheckGroupCreating("testGroup");
+        }
+        [Test]
+        public void CheckParentGroupTest()
+        {
+            CheckGroupCreating("testGroup", "/");
+        }
+        [Test]
+        public void NestedGroupTest1()
+        {
+            CheckGroupCreating("parent/child", "parent");
+        }
+        [Test]
+        public void NestedGroupTest2()
+        {
+            CheckGroupCreating("parent/child/subchild", "parent/child");
+        }
+        [Test]
+        public void GroupNotFoundTest()
+        {
+            string tmpFileName = System.IO.Path.GetTempFileName() + ".nc";
+            string rightTestGroup = "testGrp";
+            string wrongTestGroup = "testGrp/childGrp";
+
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=create&groupName=" + rightTestGroup))
+            {
+            }
+
+            try
+            {
+                Assert.Throws<DataSetCreateException>(() =>
+                {
+                    using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=" + wrongTestGroup))
+                    {
+                    }
+                });
+            }
+            finally
+            {
+                System.IO.File.Delete(tmpFileName);
+            }
+        }
+        [Test]
+        public void DifferentWaysToDefineGroupTest()
+        {
+            string tmpFileName = System.IO.Path.GetTempFileName() + ".nc";
+            string groupName = "group/subgroup";
+            string testVarName = "var";
+            string dimensionName = "dimension";
+
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=create&groupName=" + groupName))
+            {
+                ds.AddVariable(typeof(int), testVarName, new int[] { 42 }, dimensionName);
+                ds.Commit();
+            }
+
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=/" + groupName))
+            {
+                Assert.True(ds.Variables.Contains(testVarName));
+                Assert.True(ds.Dimensions.Contains(dimensionName));
+            }
+
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=" + groupName + "/"))
+            {
+                Assert.True(ds.Variables.Contains(testVarName));
+                Assert.True(ds.Dimensions.Contains(dimensionName));
+            }
+
+            using (var ds = DataSet.Open(tmpFileName + "?openMode=readOnly&groupName=/" + groupName + "/"))
+            {
+                Assert.True(ds.Variables.Contains(testVarName));
+                Assert.True(ds.Dimensions.Contains(dimensionName));
+            }
+
+            System.IO.File.Delete(tmpFileName);
+        }
     }
 }

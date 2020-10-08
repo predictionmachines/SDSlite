@@ -116,6 +116,12 @@ namespace Microsoft.Research.Science.Data
     public sealed class FileNamePropertyAttribute : Attribute { }
 
     /// <summary>
+    /// Indicates that the target property contains group name.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class GroupNamePropertyAttribute : Attribute { }
+
+    /// <summary>
     /// Indicates that the target property contains directory name.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

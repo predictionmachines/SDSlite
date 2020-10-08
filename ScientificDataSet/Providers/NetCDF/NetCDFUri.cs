@@ -100,6 +100,24 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
+        /// Specifies the group to use.
+        /// </summary>
+        [GroupNameProperty]
+        [Description("Specifies the group to use.")]
+        public string GroupName
+        {
+            get
+            {
+                if(GetParameterOccurences("groupName") == 0)
+                {
+                    return "";
+                }
+
+                return this["groupName"];
+            }
+        }
+
+        /// <summary>
         /// Indicates whether the rollback is enabled or not.
         /// </summary>
         /// <remarks>
