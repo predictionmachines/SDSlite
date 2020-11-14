@@ -1,5 +1,4 @@
-﻿// Copyright © 2010 Microsoft Corporation, All Rights Reserved.
-// This code released under the terms of the Microsoft Research License Agreement (MSR-LA, http://sds.codeplex.com/License)
+﻿// Copyright © Microsoft Corporation, All Rights Reserved.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
