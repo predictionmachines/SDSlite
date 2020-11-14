@@ -14,7 +14,7 @@ SDSLite requires a platform dependent library available from [http://www.unidata
 ### Windows
 
 For Windows go to [http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html](http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html) and download the version of netCDF4 (without DAP) corresponding to your machine, either 32 or 64 bit. These are
-currently: [http://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.3.3.1-NC4-32.exe](http://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.3.3.1-NC4-32.exe) or [http://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.3.3.1-NC4-64.exe](http://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.3.3.1-NC4-64.exe)
+currently: https://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.7.4-NC4-32.exe or https://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.7.4-NC4-64.exe
 When you install this library select the option to add its location to your system PATH, so that SDSLite can find it.
 
 ### Linux
