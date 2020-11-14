@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Common\Version.cs">
+      <Link>Version.cs</Link>
+    </Compile>
     <Compile Include="CreateMode.cs" />
     <Compile Include="NcConst.cs" />
     <Compile Include="NcType.cs" />
