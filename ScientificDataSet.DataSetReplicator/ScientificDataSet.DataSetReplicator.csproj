@@ -1,11 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net471</TargetFramework>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <DocumentationFile>ScientificDataSet.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCDFInterop\NetCDFInterop.csproj" />
+    <ProjectReference Include="..\ScientificDataSet\ScientificDataSet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
 
 </Project>
