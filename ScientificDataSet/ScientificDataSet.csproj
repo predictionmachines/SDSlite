@@ -6,12 +6,16 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>SDSLite</PackageId>
+    <Description>A cross platform library for manipulating netCDF, CSV and TSV files.</Description>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft Research, Computational Science group</Authors>
+    <PackageProjectUrl>http://research.microsoft.com/en-us/projects/sds</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="../Common/Version.cs" />
-  </ItemGroup>
-
+  
+  <Import Project="../Common/Version.proj" />
+  
   <ItemGroup>
     <ProjectReference Include="..\NetCDFInterop\NetCDFInterop.csproj" />
   </ItemGroup>

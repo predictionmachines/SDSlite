@@ -2,15 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="../Common/Version.cs" />
-  </ItemGroup>
-
+  
+  <Import Project="../Common/Version.proj" />
+  
   <ItemGroup>
     <ProjectReference Include="..\ScientificDataSet\ScientificDataSet.csproj" />
   </ItemGroup>
