@@ -2,11 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Windows;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using Microsoft.Research.Science.Data.Imperative;
 
 namespace Microsoft.Research.Science.Data.Utilities
 {
@@ -167,7 +162,7 @@ namespace Microsoft.Research.Science.Data.Utilities
                 if (isValid)
                 {
                     double[] triplet = func(row);
-                    if(!Double.IsNaN(triplet[0]) &&
+                    if (!Double.IsNaN(triplet[0]) &&
                        !Double.IsNaN(triplet[1]) &&
                        !Double.IsNaN(triplet[2]))
                         yield return triplet;
@@ -175,6 +170,17 @@ namespace Microsoft.Research.Science.Data.Utilities
             }
             cachedDataVar = null; // no need to keep the copy in memory
             yield break;
+        }
+    }
+
+    public struct Point
+    {
+        double X; 
+        double Y;
+        public Point(double x, double y)
+        {
+            X = x;
+            Y = y;
         }
     }
 
@@ -198,7 +204,7 @@ namespace Microsoft.Research.Science.Data.Utilities
         {
             if (source == null) throw new ArgumentNullException("source");
             if (source.Rank != dims.Length) throw new ArgumentException("Array's length != variable's rank");
-            
+
             this.dims = new int[source.Rank];
             for (int i = 0; i < this.dims.Length; i++)
                 this.dims[i] = dims[i];
