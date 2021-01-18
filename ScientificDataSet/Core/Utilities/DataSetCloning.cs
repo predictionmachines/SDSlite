@@ -15,6 +15,12 @@ namespace Microsoft.Research.Science.Data.Utilities
     /// </summary>
     public static class DataSetCloning
     {
+        /// <summary>
+        /// Allows to show progress update.
+        /// </summary>
+        /// <param name="percent"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public delegate bool ProgressUpdater(double percent, string message);
 
 

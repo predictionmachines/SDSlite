@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net50</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
   
   <Import Project="../Common/Version.proj" />
@@ -11,5 +10,8 @@
     <ProjectReference Include="..\ScientificDataSet\ScientificDataSet.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
 
 </Project>

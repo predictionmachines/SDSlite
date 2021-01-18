@@ -5,33 +5,27 @@ VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FetchClimate1", "FetchClimate1", "{540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCDFInterop", "NetCDFInterop\NetCDFInterop.csproj", "{7264963B-9B4F-4257-B79E-FE48E032A190}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCDFInterop", "NetCDFInterop\NetCDFInterop.csproj", "{7264963B-9B4F-4257-B79E-FE48E032A190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScientificDataSet", "ScientificDataSet\ScientificDataSet.csproj", "{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScientificDataSet", "ScientificDataSet\ScientificDataSet.csproj", "{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sdsutil", "sdsutil\sdsutil.csproj", "{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sdsutil", "sdsutil\sdsutil.csproj", "{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLiteTests", "SDSLiteTests\SDSLiteTests.csproj", "{C6919B51-ED1A-455E-89E0-F295ECFC722B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDSLiteTests", "SDSLiteTests\SDSLiteTests.csproj", "{C6919B51-ED1A-455E-89E0-F295ECFC722B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Common", "FetchClimate1\ClimateService.Common\ClimateService.Common.csproj", "{87558098-AEAB-46A0-8BEF-D838630AC90E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Client", "FetchClimate1\ClimateServiceClient\ClimateService.Client.csproj", "{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLite", "SDSLite\SDSLite.csproj", "{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
 	ProjectSection(SolutionItems) = preProject
-		azure-pipelines.yml = azure-pipelines.yml
+		.github\workflows\build-test.yml = .github\workflows\build-test.yml
 		Licence.txt = Licence.txt
 		README.md = README.md
+		Common\Version.proj = Common\Version.proj
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{031C2DF0-22DB-4D59-B69B-B5EA0824C752}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScientificDataSet.DataSetReplicator", "ScientificDataSet.DataSetReplicator\ScientificDataSet.DataSetReplicator.csproj", "{CC740DCD-9607-45C6-812C-DE797DF4A50B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,10 +57,10 @@ Global
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B02F58BB-072E-4DC7-AAAB-674C14E01E9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71A8A1FB-1E6F-43BE-B531-3E377CFA90C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC740DCD-9607-45C6-812C-DE797DF4A50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC740DCD-9607-45C6-812C-DE797DF4A50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC740DCD-9607-45C6-812C-DE797DF4A50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC740DCD-9607-45C6-812C-DE797DF4A50B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

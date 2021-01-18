@@ -47,7 +47,6 @@
     <Compile Include="PrioritySemaphore.cs" />
     <Compile Include="RestApiNamings.cs" />
     <Compile Include="RestApiUtilities.cs" />
-    <Compile Include="..\..\Common\Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ScientificDataSet\ScientificDataSet.csproj">
