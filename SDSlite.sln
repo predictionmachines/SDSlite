@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FetchClimate1", "FetchClimate1", "{540EC0ED-4A07-4AC9-A68E-E06BDD4FF89A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCDFInterop", "NetCDFInterop\NetCDFInterop.csproj", "{7264963B-9B4F-4257-B79E-FE48E032A190}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScientificDataSet", "ScientificDataSet\ScientificDataSet.csproj", "{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sdsutil", "sdsutil\sdsutil.csproj", "{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}"
@@ -33,10 +31,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7264963B-9B4F-4257-B79E-FE48E032A190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7264963B-9B4F-4257-B79E-FE48E032A190}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7264963B-9B4F-4257-B79E-FE48E032A190}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7264963B-9B4F-4257-B79E-FE48E032A190}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24D8613C-E1E9-4D7B-ABAA-051EED4E5DBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
