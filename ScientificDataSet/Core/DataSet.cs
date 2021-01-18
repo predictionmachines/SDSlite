@@ -292,6 +292,7 @@ namespace Microsoft.Research.Science.Data
         /// <summary>
         /// Shares a copy of the dataset from a given <paramref name="uri"/>.
         /// </summary>
+        /// <remarks>
 		/// In this SDSlite implementation the method returns a memory copy of existing dataset.
         /// </remarks>
         /// <seealso cref="Open(string)"/>

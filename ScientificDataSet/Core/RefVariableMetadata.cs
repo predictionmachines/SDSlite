@@ -11,7 +11,7 @@ namespace Microsoft.Research.Science.Data
 	/// some additional capabilities.
 	/// </summary>
 	/// <remarks>
-	/// <para>The <paramref name="hiddenEntries"/> and <paramref name="readonlyEntries"/> parameters 
+	/// <para>The <see cref="hiddenEntries"/> and <see cref="readonlyEntries"/> parameters 
 	/// allow to make some metadata entries indpendent from the metadata of the underlying variable.
 	/// These parameters can be null and this will be considered as an empty collection.</para>
 	/// <para>Two entries are always independent from the underlying metadata. These are

@@ -76,7 +76,6 @@
     <Compile Include="RestProcessingClient.cs" />
     <Compile Include="ServiceLocationConfSection.cs" />
     <Compile Include="WcfProcessingClient.cs" />
-    <Compile Include="..\..\Common\Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
