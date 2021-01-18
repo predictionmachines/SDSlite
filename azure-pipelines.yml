@@ -15,7 +15,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@0
 - task: PowerShell@2
   displayName: Download NetCDF
   inputs:
@@ -25,16 +24,14 @@ steps:
       Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile netcdf.exe
       7z x netcdf.exe bin/*
       Write-Output "##vso[task.prependpath]$env:BUILD_BINARIESDIRECTORY\bin"
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
 
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
+    restoreNugetPackages: true
+    
 - task: VSTest@2
   inputs:
     platform: '$(buildPlatform)'
