@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScientificDataSet", "Scient
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sdsutil", "sdsutil\sdsutil.csproj", "{0EAC3EBD-DC4D-4854-8C70-E096C49F8D47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSLiteTests", "SDSLiteTests\SDSLiteTests.csproj", "{C6919B51-ED1A-455E-89E0-F295ECFC722B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDSLiteTests", "SDSLiteTests\SDSLiteTests.csproj", "{C6919B51-ED1A-455E-89E0-F295ECFC722B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Common", "FetchClimate1\ClimateService.Common\ClimateService.Common.csproj", "{87558098-AEAB-46A0-8BEF-D838630AC90E}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateService.Client", "Fe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
 	ProjectSection(SolutionItems) = preProject
-		azure-pipelines.yml = azure-pipelines.yml
+		.github\workflows\build-test.yml = .github\workflows\build-test.yml
 		Licence.txt = Licence.txt
 		README.md = README.md
 		Common\Version.proj = Common\Version.proj
