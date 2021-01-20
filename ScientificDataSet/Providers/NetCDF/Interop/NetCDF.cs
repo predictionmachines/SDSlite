@@ -536,36 +536,55 @@ namespace NetCDFInterop
         static DynamicInterop.UnmanagedDll native;
         private static string GetPath()
         {
+            string path;
             var platform = DynamicInterop.PlatformUtility.GetPlatform();
             switch (platform)
             {
                 case PlatformID.Win32NT:
                     var name = "netcdf.dll";
                     // try find the file in current directory and then in directories from PATH environmental variable.
-                    var path = Enumerable.Repeat(Environment.CurrentDirectory, 1)
+                    path = Enumerable.Repeat(Environment.CurrentDirectory, 1)
                         .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
                         .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
                     if (null == path)
                     {
                         // alternatively try standard install paths.
-                        var ncdir = Directory.GetDirectories(Environment.GetFolderPath(
-                            Environment.Is64BitProcess ? Environment.SpecialFolder.ProgramFiles : Environment.SpecialFolder.ProgramFilesX86))
-                            .Reverse() // last version first
-                            .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
-                            .Select(d => Path.Combine(d, "bin"))
-                            .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
-                        if (null != ncdir)
+                        var programFiles = Environment.GetFolderPath(
+                            Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem 
+                            ? Environment.SpecialFolder.ProgramFiles 
+                            : Environment.SpecialFolder.ProgramFilesX86);
+                        if (string.Empty == programFiles)
                         {
-                            // if found we need to add the file location to PATH environmental variable to load dependent DLLs.
-                            path = ncdir;
-                            Environment.SetEnvironmentVariable("PATH",
-                                Environment.GetEnvironmentVariable("PATH") + ";" + ncdir);
+                            // In windows containers `GetFolderPath` returns empty string
+                            programFiles = Environment.GetEnvironmentVariable(
+                            Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem
+                            ? "ProgramFiles" : "ProgramFiles(x86)");
+                        }
+                        if (!string.IsNullOrWhiteSpace(programFiles))
+                        {
+                            var ncdir = Directory.GetDirectories(programFiles)
+                                .Reverse() // last version first
+                                .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
+                                .Select(d => Path.Combine(d, "bin"))
+                                .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
+                            if (null != ncdir)
+                            {
+                                // if found we need to add the file location to PATH environmental variable to load dependent DLLs.
+                                path = ncdir;
+                                Environment.SetEnvironmentVariable("PATH",
+                                    Environment.GetEnvironmentVariable("PATH") + ";" + ncdir);
+                            }
                         }
                     }
-                    if (null == path) throw new FileNotFoundException(name + " not found in current directory nor on system path nor in ProgramFilesX86");
+                    if (null == path) throw new FileNotFoundException(name + " not found in current directory nor on system path nor in Program Files directories.");
                     return Path.Combine(path, name);
                 case PlatformID.Unix:
-                    return "/usr/lib/libnetcdf.so.7";
+                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
+                    if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
+                    {
+                        return path;
+                    }
+                    return "libnetcdf.so";
                 default:
                     throw new NotSupportedException(String.Format("Platform not supported: {0}", platform));
             }
