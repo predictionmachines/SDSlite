@@ -124,7 +124,7 @@ namespace NetCDFInterop
                 case NcType.NC_UBYTE:
                     return typeof(Byte);
                 case NcType.NC_CHAR:
-                    return typeof(SByte);
+                    return typeof(Byte);
                 case NcType.NC_SHORT:
                     return typeof(short);
                 case NcType.NC_USHORT:
@@ -432,6 +432,7 @@ namespace NetCDFInterop
         //public static int nc_get_var_long(int ncid, int varid, long[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_long.Invoke(ncid, varid, data); } }
         //public static int nc_get_var_float(int ncid, int varid, float[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_float.Invoke(ncid, varid, data); } }
         //public static int nc_get_var_double(int ncid, int varid, double[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_double.Invoke(ncid, varid, data); } }
+        public static int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_text.Invoke(ncid, varid, start, count, dp); } }
         public static int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_double.Invoke(ncid, varid, start, count, dp); } }
         public static int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_float.Invoke(ncid, varid, start, count, dp); } }
         public static int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_short.Invoke(ncid, varid, start, count, dp); } }
@@ -463,7 +464,7 @@ namespace NetCDFInterop
                 return r;
             }
         }
-        //public static int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_vara_text.Invoke(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_vara_text.Invoke(ncid, varid, start, count, data); } }
         public static int nc_get_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_schar.Invoke(ncid, varid, start, count, data); } }
         public static int nc_get_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_short.Invoke(ncid, varid, start, count, data); } }
         public static int nc_get_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_ushort.Invoke(ncid, varid, start, count, data); } }
@@ -659,6 +660,7 @@ namespace NetCDFInterop
             f_nc_get_var_long = native.GetFunction<nc_get_var_long>();
             f_nc_get_var_float = native.GetFunction<nc_get_var_float>();
             f_nc_get_var_double = native.GetFunction<nc_get_var_double>();
+            f_nc_put_vara_text = native.GetFunction<nc_put_vara_text>();
             f_nc_put_vara_double = native.GetFunction<nc_put_vara_double>();
             f_nc_put_vara_float = native.GetFunction<nc_put_vara_float>();
             f_nc_put_vara_short = native.GetFunction<nc_put_vara_short>();
@@ -763,6 +765,7 @@ namespace NetCDFInterop
         public static nc_get_var_long f_nc_get_var_long { get; private set; }
         public static nc_get_var_float f_nc_get_var_float { get; private set; }
         public static nc_get_var_double f_nc_get_var_double { get; private set; }
+        public static nc_put_vara_text f_nc_put_vara_text { get; private set; }
         public static nc_put_vara_double f_nc_put_vara_double { get; private set; }
         public static nc_put_vara_float f_nc_put_vara_float { get; private set; }
         public static nc_put_vara_short f_nc_put_vara_short { get; private set; }
@@ -866,6 +869,7 @@ namespace NetCDFInterop
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_long(int ncid, int varid, long[] data);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_float(int ncid, int varid, float[] data);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_double(int ncid, int varid, double[] data);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp);

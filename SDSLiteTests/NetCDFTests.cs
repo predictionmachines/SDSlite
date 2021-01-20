@@ -62,11 +62,21 @@ namespace SDSLiteTests
         {
             Empty_AddVariable(new string[] { "string1", "", null, new String(Enumerable.Repeat('x',4096).ToArray()),"line1\r\nline2", "English Русский" });
         }
-        //[Test]
-        //public void Empty_AddVariable_string()
-        //{
-        //    Empty_AddVariable<string>(new string[] { "a", "", "b"});
-        //}
+        [Test]
+        public void Empty_AddVariable_sbyte()
+        {
+            Empty_AddVariable<sbyte>(new sbyte[] { (sbyte)1, (sbyte)0, SByte.MinValue, SByte.MaxValue });
+        }
+        [Test]
+        public void Empty_AddVariable_byte()
+        {
+            Empty_AddVariable<byte>(new byte[] { (byte)1, (byte)0, Byte.MaxValue });
+        }
+        [Test]
+        public void Empty_AddVariable_bool()
+        {
+            Empty_AddVariable<bool>(new bool[] { true, false, false, true });
+        }
         public void Empty_AddAttribute<T>(T data)
         {
             var fn = System.IO.Path.GetTempFileName();

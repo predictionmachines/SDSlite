@@ -25,6 +25,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
         private bool isPresentedAttrActualShape = false;
 
+        private bool isNcChar = false;
+
         #endregion
 
         #region Constructors
@@ -36,6 +38,13 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             this.varid = varid;
 
             int res;
+            // SByte can map to NC_BYTE or NC_CHAR
+            if (typeof(DataType) == typeof(byte))
+            {
+                res = NetCDF.nc_inq_vartype(dataSet.NcId, varid, out var nativeType);
+                NetCDFDataSet.HandleResult(res);
+                isNcChar = NcType.NC_CHAR == nativeType;
+            }
             UpdateDimIds();
 
             // Reading attributes
@@ -791,7 +800,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 case TypeCode.Byte:
                     byte[] bdata = new byte[n];
                     if (n == 0) return Array.CreateInstance(typeof(byte), Rank == 0 ? new int[1] : new int[Rank]);
-                    res = NetCDF.nc_get_vara_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    if (isNcChar)
+                    {
+                        res = NetCDF.nc_get_vara_text(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    }
+                    else
+                    {
+                        res = NetCDF.nc_get_vara_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    }
                     NetCDFDataSet.HandleResult(res);
                     return ToMultidimArray(bdata, shape);
 
@@ -925,7 +941,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 case TypeCode.Byte:
                     byte[] bdata = new byte[n];
                     if (n == 0) return Array.CreateInstance(typeof(byte), Rank == 0 ? new int[1] : new int[Rank]);
-                    res = NetCDF.nc_get_vars_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), ConvertToIntPtr(stride), bdata);
+                    if (isNcChar)
+                    {
+                        res = NetCDF.nc_get_vars_text(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), ConvertToIntPtr(stride), bdata);
+                    }
+                    else
+                    {
+                        res = NetCDF.nc_get_vars_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), ConvertToIntPtr(stride), bdata);
+                    }
                     NetCDFDataSet.HandleResult(res);
                     return ToMultidimArray(bdata, shape);
 
@@ -1030,7 +1053,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                 case TypeCode.Byte:
                     byte[] bdata = FromMultidimArray<byte>(a);
-                    res = NetCDF.nc_put_vara_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    if (isNcChar)
+                    {
+                        res = NetCDF.nc_put_vara_text(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    }
+                    else
+                    {
+                        res = NetCDF.nc_put_vara_ubyte(NcId, varid, ConvertToIntPtr(origin), ConvertToIntPtr(shape), bdata);
+                    }
                     NetCDFDataSet.HandleResult(res);
                     return;
 
