@@ -47,4 +47,4 @@ jobs:
     - name: Download NetCDF
       run: sudo apt-get install libnetcdf-dev
     - name: Test
-      run: dotnet test --no-build --verbosity normal SDSLiteTests
+      run: dotnet test --verbosity normal SDSLiteTests
