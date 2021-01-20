@@ -536,13 +536,14 @@ namespace NetCDFInterop
         static DynamicInterop.UnmanagedDll native;
         private static string GetPath()
         {
+            string path;
             var platform = DynamicInterop.PlatformUtility.GetPlatform();
             switch (platform)
             {
                 case PlatformID.Win32NT:
                     var name = "netcdf.dll";
                     // try find the file in current directory and then in directories from PATH environmental variable.
-                    var path = Enumerable.Repeat(Environment.CurrentDirectory, 1)
+                    path = Enumerable.Repeat(Environment.CurrentDirectory, 1)
                         .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
                         .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
                     if (null == path)
@@ -578,7 +579,12 @@ namespace NetCDFInterop
                     if (null == path) throw new FileNotFoundException(name + " not found in current directory nor on system path nor in Program Files directories.");
                     return Path.Combine(path, name);
                 case PlatformID.Unix:
-                    return "/usr/lib/libnetcdf.so.7";
+                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
+                    if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
+                    {
+                        return path;
+                    }
+                    return "libnetcdf.so";
                 default:
                     throw new NotSupportedException(String.Format("Platform not supported: {0}", platform));
             }
