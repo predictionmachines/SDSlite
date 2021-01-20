@@ -43,8 +43,8 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore ScientificDataSet
     - name: Download NetCDF
       run: sudo apt-get install libnetcdf-dev
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal SDSLiteTests
