@@ -65,6 +65,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore ScientificDataSet
     - name: Download NetCDF
+      env:
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
       run: brew install netcdf
     - name: Test
       run: dotnet test --verbosity normal SDSLiteTests
