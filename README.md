@@ -1,6 +1,5 @@
 [![NuGet](https://img.shields.io/nuget/v/SDSlite.svg?style=flat)](https://www.nuget.org/packages/SDSlite/)
-[![Build Status](https://vassilyl.visualstudio.com/SDSlite/_apis/build/status/predictionmachines.SDSlite.win?branchName=master)](https://vassilyl.visualstudio.com/SDSlite/_build/latest?definitionId=2&branchName=master)
-Scientific DataSet Lite
+![build-test](https://github.com/predictionmachines/SDSlite/workflows/build-test/badge.svg)Scientific DataSet Lite
 =======================
 
 This is a cross platform library for manipulating netCDF, CSV and TSV files.
