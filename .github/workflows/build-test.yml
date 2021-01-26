@@ -30,6 +30,7 @@ jobs:
         Add-Content -Path $env:GITHUB_PATH -Value (Join-Path (Get-Location) "bin")  -Encoding UTF8
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
   build-test-linux:
 
     runs-on: ubuntu-latest
@@ -46,5 +47,24 @@ jobs:
       run: dotnet build --no-restore ScientificDataSet
     - name: Download NetCDF
       run: sudo apt-get install libnetcdf-dev
+    - name: Test
+      run: dotnet test --verbosity normal SDSLiteTests
+
+  build-test-macos:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore ScientificDataSet
+    - name: Download NetCDF
+      run: brew install netcdf
     - name: Test
       run: dotnet test --verbosity normal SDSLiteTests
