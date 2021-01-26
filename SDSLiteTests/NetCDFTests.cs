@@ -95,16 +95,24 @@ namespace SDSLiteTests
                 {
                     Assert.IsTrue(ds.Metadata.ContainsKey(vname));
                     var v = ds.Metadata[vname];
-                    Assert.IsNotNull(v);
-                    Assert.AreEqual(typeof(T), v.GetType());
-                    if (typeof(T).IsArray) {
-                        var darr = data as Array;
-                        var varr = v as Array;
-                        for (int i = 0; i < darr.Length; i++)
-                            Assert.AreEqual(darr.GetValue(i), varr.GetValue(i), String.Format("index={0}", i));
+                    if (data == null)
+                    {
+                        Assert.IsNull(v);
                     }
                     else
-                        Assert.AreEqual(data, v);
+                    {
+                        Assert.IsNotNull(v);
+                        Assert.AreEqual(typeof(T), v.GetType());
+                        if (typeof(T).IsArray)
+                        {
+                            var darr = data as Array;
+                            var varr = v as Array;
+                            for (int i = 0; i < darr.Length; i++)
+                                Assert.AreEqual(darr.GetValue(i), varr.GetValue(i), String.Format("index={0}", i));
+                        }
+                        else
+                            Assert.AreEqual(data, v);
+                    }
                 }
 
             }
@@ -121,7 +129,7 @@ namespace SDSLiteTests
         [Test]
         public void Empty_AddAttribute_double0()
         {
-            Empty_AddAttribute(Math.PI);
+            Empty_AddAttribute(new double[0]);
         }
         [Test]
         public void Empty_AddAttribute_double1()
@@ -157,6 +165,11 @@ namespace SDSLiteTests
         public void Empty_AddAttribute_string_empty()
         {
             Empty_AddAttribute("");
+        }
+        [Test]
+        public void Empty_AddAttribute_string_null()
+        {
+            Empty_AddAttribute<string>(null);
         }
         [Test]
         public void Empty_AddAttribute_string0()

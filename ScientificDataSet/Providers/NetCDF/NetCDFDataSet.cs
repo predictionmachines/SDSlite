@@ -460,7 +460,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     {
                         // Each variable has an entry named coordinates#Name, # - integer index
                         var.Metadata.ForEach(
-                            delegate(KeyValuePair<string, object> entry)
+                            delegate (KeyValuePair<string, object> entry)
                             {
                                 if (!entry.Key.StartsWith("coordinates") || !entry.Key.EndsWith("Name"))
                                     return;
@@ -854,51 +854,44 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     NetCDFDataSet.HandleResult(res);
                     break;
                 case NcType.NC_CHAR:
-                case NcType.NC_STRING:
-                    int length = len;
+                    string strvalue = NcGetAttText(ncid, varid, aname, len, out res);
+                    NetCDFDataSet.HandleResult(res);
+                    if (atm != null && atm.Contains(aname))
+                    {
+                        if (atm[aname] == typeof(DateTime[]))
+                            value = StringToDateTimes(strvalue);
+                        else if (atm[aname] == typeof(DateTime))
+                            value = StringToDateTimes(strvalue)[0];
+                        else
+                            value = strvalue;
 
-                    bool customType = (atm != null && atm.Contains(aname));
-                    if (customType && atm[aname] == null)
+                    }
+                    else
+                    {
+                        value = trimTrailingZero ? strvalue.TrimEnd('\0') : strvalue;
+                    }
+                    break;
+                case NcType.NC_STRING:
+                    string[] strings = new string[len];
+                    res = NetCDF.nc_get_att_string(NcId, varid, aname, strings);
+                    NetCDFDataSet.HandleResult(res);
+                    if (atm != null && atm.Contains(aname) && atm[aname] == null)
                     {
                         value = null;
                     }
-                    else if (customType && atm[aname] == typeof(string[]))
-                    {
-                        // Type is string[]
-                        if (length == 0)
-                        {
-                            value = new string[0];
-                        }
-                        else
-                        {
-                            string[] strings = new string[length];
-                            res = NetCDF.nc_get_att_string(NcId, varid, aname, strings);
-                            NetCDFDataSet.HandleResult(res);
-                            value = strings;
-                        }
-                    }
                     else // not string[]
                     {
-                        string strvalue = NcGetAttText(ncid, varid, aname, len, out res);
-                        NetCDFDataSet.HandleResult(res);
-                        if (customType)
+                        if (trimTrailingZero)
                         {
-                            if (atm[aname] == typeof(DateTime[]))
-                                value = StringToDateTimes(strvalue);
-                            else if (atm[aname] == typeof(DateTime))
-                                value = StringToDateTimes(strvalue)[0];
-                            else
-                                value = strvalue;
+                            // Trimming '\0' that could be appended by C code
+                            for (int i = 0; i < len; i++)
+                            {
+                                strings[i] = strings[i].TrimEnd('\0');
+                            }
                         }
-                        else
-                        {
-                            if (trimTrailingZero)
-                                // Trimming '\0' that could be appended by C code
-                                value = strvalue.TrimEnd('\0');
-                            else
-                                value = strvalue;
-                        }
+                        value = strings;
                     }
+
                     break;
                 case NcType.NC_SHORT:
                     short[] svalue = new short[len];
@@ -989,21 +982,6 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             return res;
         }
 
-        internal static string ArrayToSingleString(string[] strings)
-        {
-            if (strings.Length == 0) return "";
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < strings.Length; i++)
-            {
-                sb.Append(strings[i].Replace("|", "||"));
-                if (i < strings.Length - 1)
-                    sb.Append('|');
-            }
-            sb.Append('|');
-            return sb.ToString();
-        }
-
         internal static string DateTimesToString(DateTime[] dates)
         {
             StringBuilder sb = new StringBuilder();
@@ -1014,32 +992,6 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     sb.Append('|');
             }
             return sb.ToString();
-        }
-
-        internal static string[] StringToArray(string s)
-        {
-            List<string> result = new List<string>();
-            StringBuilder sb = new StringBuilder();
-            for (int idx = 0; idx < s.Length; idx++)
-            {
-                if (s[idx] == '|')
-                {
-                    if (idx < s.Length - 1 && s[idx + 1] == '|')
-                    {
-                        sb.Append('|');
-                        idx++;
-                    }
-                    else
-                    {
-                        result.Add(sb.ToString());
-                        sb = new StringBuilder();
-                    }
-                }
-                else
-                    sb.Append(s[idx]);
-            }
-            result.Add(sb.ToString());
-            return result.ToArray();
         }
 
         internal static DateTime[] StringToDateTimes(string s)
@@ -1064,22 +1016,18 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             int res;
             if (value == null)
             {
-                atm[name] = null;
-                res = NcPutAttText(NcId, varid, name, null);
+                if (atm != null)
+                    atm[name] = null;
+                res = NetCDF.nc_put_att_string(NcId, varid, name, new string[] { null });
                 HandleResult(res);
             }
-            else if (value is string)
+            else if (value is string strValue)
             {
-                res = NcPutAttText(NcId, varid, name, (string)value);
+                res = NcPutAttText(NcId, varid, name, strValue);
                 HandleResult(res);
             }
-            else if (value is string[])
+            else if (value is string[] strArr)
             {
-                if (atm == null)
-                    throw new InvalidOperationException("Cannot write array of strings without AttributeTypeMap");
-                atm[name] = typeof(string[]);
-
-                string[] strArr = (string[])value;
                 res = NetCDF.nc_put_att_string(NcId, varid, name, strArr);
                 HandleResult(res);
             }
