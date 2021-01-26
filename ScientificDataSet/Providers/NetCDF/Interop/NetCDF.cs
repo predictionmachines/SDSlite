@@ -580,6 +580,7 @@ namespace NetCDFInterop
                     if (null == path) throw new FileNotFoundException(name + " not found in current directory nor on system path nor in Program Files directories.");
                     return Path.Combine(path, name);
                 case PlatformID.Unix:
+                case PlatformID.MacOSX:
                     path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
                     if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
                     {
