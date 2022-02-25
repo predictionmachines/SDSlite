@@ -24,7 +24,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     /// </para>
     /// <para>
     /// The provider supports variables of any non-negative rank.
-    /// </para>	
+    /// </para>
     /// <para>
     /// The provider is associated with the provider name "nc" and extensions ".nc".
     /// </para>
@@ -44,7 +44,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     ///  <item>
     ///		<term>openMode=createNew|create|open|openOrCreate|readOnly</term>
     ///		<description>
-    ///		The flag "openMode" specifies how the data set should open a file, 
+    ///		The flag "openMode" specifies how the data set should open a file,
     /// data base or whatever resource it uses to store the data.
     /// Possible values for the flag are:
     /// <list type="table">
@@ -106,13 +106,13 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     ///		<term>include</term>
     ///		<description>Allows including variables as references from another <see cref="DataSet"/>, defined as a URI,
     ///		into this <see cref="DataSet"/>.
-    ///		Example: <c>msds:memory?include=msds%3Acsv%3Ffile%example.csv%23lat%2Clon</c> 
+    ///		Example: <c>msds:memory?include=msds%3Acsv%3Ffile%example.csv%23lat%2Clon</c>
     ///		(escaped version of <c>"msds:memory?include=escape[msds:csv?file=example.csv#lat,lon]"</c>)
     ///		includes variables <c>lat</c> and <c>lon</c> from <c>msds:csv?file=example.csv</c>. If variables names are not specified,
     ///		all variables are included.</description>
     /// </item>
     /// </list>
-    /// </para>	
+    /// </para>
     /// <para>
     /// The <see cref="NetCDFDataSet"/> provider supports URIs containing a path
     /// and appended through '?' parameters: <c>c:\data\air0.nc?openMode=open&amp;enableRollback=false</c>.
@@ -132,17 +132,17 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     /// To enable it, <see cref="NetCDFDataSet"/> implements the <see cref="IChunkSizesAdjustable"/> interface.
     /// </para>
     /// <para>
-    /// Names. If a variable name is not complied with NetCDF naming rules, 
+    /// Names. If a variable name is not complied with NetCDF naming rules,
     /// its simplified version is used at the NetCDF layer, but through the <see cref="DataSet"/> it is still visible
     /// unmodified.
     /// </para>
     /// <para>
-    /// <see cref="DateTime"/> support. 
-    /// Since the unmanaged NetCDF4 doesn't support a date/time type, it is internally stored 
-    /// as a double variable with special attribute 
+    /// <see cref="DateTime"/> support.
+    /// Since the unmanaged NetCDF4 doesn't support a date/time type, it is internally stored
+    /// as a double variable with special attribute
     /// <c>Units = "100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001"</c>.
     /// NetCDF variables with this attribute are loaded as <see cref="DateTime"/> variables.
-    /// In the current release, any other units descriptions are not considered as a date/time and 
+    /// In the current release, any other units descriptions are not considered as a date/time and
     /// hence the variable's final type of data is <see cref="Double"/>.
     /// </para>
     /// <example>
@@ -201,8 +201,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         /// <param name="uri">DataSet URI (see remarks for <see cref="NetCDFDataSet"/>).</param>
         /// <remarks>
         /// <para>
-        /// If the file specified by <paramref name="fileName"/> exists, the NetCDF will be 
-        /// initialized with that file. Otherwise, the new file will be created and 
+        /// If the file specified by <paramref name="fileName"/> exists, the NetCDF will be
+        /// initialized with that file. Otherwise, the new file will be created and
         /// the resulting NetCDFDataSet will be empty.
         /// </para>
         /// <para>
@@ -235,7 +235,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         /// Initializes new instance of the NetCDFDataSet class.
         /// </summary>
         /// <param name="uri">DataSet URI (see remarks for <see cref="NetCDFDataSet"/>).</param>
-        /// <param name="openMode">The open mode (see 
+        /// <param name="openMode">The open mode (see
         /// <seealso cref="Microsoft.Research.Science.Data.ResourceOpenMode"/>).</param>
         /// <remarks>
         /// <para>
@@ -256,7 +256,6 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             rollbackEnabled = ((NetCDFUri)this.uri).EnableRollback;
             deflate = ((NetCDFUri)this.uri).Deflate;
             trimTrailingZero = ((NetCDFUri)this.uri).TrimTrailingZero;
-
             InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
         }
 
@@ -269,7 +268,16 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 initializing = true;
                 int res;
 
-                bool exists = File.Exists(fileName);
+                bool exists = true;
+                bool isUrl = false;
+
+                if (((NetCDFUri)this.uri).FileName.StartsWith("http")) {
+                    openMode = ResourceOpenMode.ReadOnly;
+                    isUrl = true;
+                } else {
+                    exists = File.Exists(fileName);
+                }
+
                 if (openMode == ResourceOpenMode.Create && exists)
                 {
                     File.Delete(fileName);
@@ -293,7 +301,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     if (openMode == ResourceOpenMode.CreateNew)
                         throw new IOException("The open mode is createNew but the file already exists");
 
-                    if (((File.GetAttributes(fileName) & FileAttributes.ReadOnly) != 0) && openMode != ResourceOpenMode.ReadOnly)
+                    if (!isUrl && ((File.GetAttributes(fileName) & FileAttributes.ReadOnly) != 0) && openMode != ResourceOpenMode.ReadOnly)
                     {
                         openMode = ResourceOpenMode.ReadOnly;
                         Trace.WriteLineIf(TraceNetCDFDataSet.TraceWarning, "NetCDFDataSet: Opening file in read only mode");
@@ -505,7 +513,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="enableRollback">
@@ -522,7 +530,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="enableRollback">
@@ -567,7 +575,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Overriden Methods
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="DataType"></typeparam>
         /// <param name="varName"></param>
@@ -581,7 +589,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnTransactionOpened()
         {
@@ -614,7 +622,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
@@ -626,7 +634,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             return true;
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="changes"></param>
         protected override void OnPrecommit(DataSet.Changes changes)
@@ -657,7 +665,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             }
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnCommit()
         {
@@ -673,7 +681,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             tempFileName = null;
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnRollback()
         {
@@ -719,7 +727,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Utils
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void Dispose(bool disposing)
         {
