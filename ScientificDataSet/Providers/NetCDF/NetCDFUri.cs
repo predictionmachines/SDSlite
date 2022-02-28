@@ -22,6 +22,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         {
             if (GetParameterOccurences("file") > 1)
                 throw new ArgumentException("The given uri must define single file path");
+            if (GetParameterOccurences("url") > 1)
+                throw new ArgumentException("The given uri must define single DAP url");
         }
         /// <summary>
         /// Instantiates an instance of the class with default parameters.
@@ -96,6 +98,22 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 return this["file"];
             }
             set { this["file"] = value; }
+        }
+
+        /// <summary>
+        /// Specifies the file to open or create.
+        /// </summary>
+        [FileNameProperty]
+        [Description("Specifies the file to open or create.")]
+        public string Url
+        {
+            get
+            {
+                if (GetParameterOccurences("url") == 0)
+                    return "";
+                return this["url"];
+            }
+            set { this["url"] = value; }
         }
 
         /// <summary>
