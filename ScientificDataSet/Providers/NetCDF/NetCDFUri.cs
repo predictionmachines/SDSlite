@@ -24,6 +24,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 throw new ArgumentException("The given uri must define single file path");
             if (GetParameterOccurences("url") > 1)
                 throw new ArgumentException("The given uri must define single DAP url");
+            if (GetParameterOccurences("file") > 0 && GetParameterOccurences("url") > 0)
+                throw new ArgumentException("File and url cannot be specified at the same time");
         }
         /// <summary>
         /// Instantiates an instance of the class with default parameters.
