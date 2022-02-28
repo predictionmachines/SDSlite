@@ -24,7 +24,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     /// </para>
     /// <para>
     /// The provider supports variables of any non-negative rank.
-    /// </para>	
+    /// </para>
     /// <para>
     /// The provider is associated with the provider name "nc" and extensions ".nc".
     /// </para>
@@ -44,7 +44,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     ///  <item>
     ///		<term>openMode=createNew|create|open|openOrCreate|readOnly</term>
     ///		<description>
-    ///		The flag "openMode" specifies how the data set should open a file, 
+    ///		The flag "openMode" specifies how the data set should open a file,
     /// data base or whatever resource it uses to store the data.
     /// Possible values for the flag are:
     /// <list type="table">
@@ -106,13 +106,13 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     ///		<term>include</term>
     ///		<description>Allows including variables as references from another <see cref="DataSet"/>, defined as a URI,
     ///		into this <see cref="DataSet"/>.
-    ///		Example: <c>msds:memory?include=msds%3Acsv%3Ffile%example.csv%23lat%2Clon</c> 
+    ///		Example: <c>msds:memory?include=msds%3Acsv%3Ffile%example.csv%23lat%2Clon</c>
     ///		(escaped version of <c>"msds:memory?include=escape[msds:csv?file=example.csv#lat,lon]"</c>)
     ///		includes variables <c>lat</c> and <c>lon</c> from <c>msds:csv?file=example.csv</c>. If variables names are not specified,
     ///		all variables are included.</description>
     /// </item>
     /// </list>
-    /// </para>	
+    /// </para>
     /// <para>
     /// The <see cref="NetCDFDataSet"/> provider supports URIs containing a path
     /// and appended through '?' parameters: <c>c:\data\air0.nc?openMode=open&amp;enableRollback=false</c>.
@@ -132,17 +132,17 @@ namespace Microsoft.Research.Science.Data.NetCDF4
     /// To enable it, <see cref="NetCDFDataSet"/> implements the <see cref="IChunkSizesAdjustable"/> interface.
     /// </para>
     /// <para>
-    /// Names. If a variable name is not complied with NetCDF naming rules, 
+    /// Names. If a variable name is not complied with NetCDF naming rules,
     /// its simplified version is used at the NetCDF layer, but through the <see cref="DataSet"/> it is still visible
     /// unmodified.
     /// </para>
     /// <para>
-    /// <see cref="DateTime"/> support. 
-    /// Since the unmanaged NetCDF4 doesn't support a date/time type, it is internally stored 
-    /// as a double variable with special attribute 
+    /// <see cref="DateTime"/> support.
+    /// Since the unmanaged NetCDF4 doesn't support a date/time type, it is internally stored
+    /// as a double variable with special attribute
     /// <c>Units = "100-nanosecond intervals that have elapsed since 12:00:00 midnight, January 1, 0001"</c>.
     /// NetCDF variables with this attribute are loaded as <see cref="DateTime"/> variables.
-    /// In the current release, any other units descriptions are not considered as a date/time and 
+    /// In the current release, any other units descriptions are not considered as a date/time and
     /// hence the variable's final type of data is <see cref="Double"/>.
     /// </para>
     /// <example>
@@ -201,8 +201,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         /// <param name="uri">DataSet URI (see remarks for <see cref="NetCDFDataSet"/>).</param>
         /// <remarks>
         /// <para>
-        /// If the file specified by <paramref name="fileName"/> exists, the NetCDF will be 
-        /// initialized with that file. Otherwise, the new file will be created and 
+        /// If the file specified by <paramref name="fileName"/> exists, the NetCDF will be
+        /// initialized with that file. Otherwise, the new file will be created and
         /// the resulting NetCDFDataSet will be empty.
         /// </para>
         /// <para>
@@ -227,15 +227,19 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
             Debug.WriteLineIf(TraceNetCDFDataSet.TraceInfo, "Deflate mode: " + deflate);
 
-            ResourceOpenMode openMode = this.uri.GetOpenModeOrDefault(ResourceOpenMode.OpenOrCreate);
-            InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            if (((NetCDFUri)this.uri).Url.Length > 0) {
+                InitializeFromUrl(((NetCDFUri)this.uri).Url);
+            } else {
+                ResourceOpenMode openMode = this.uri.GetOpenModeOrDefault(ResourceOpenMode.OpenOrCreate);
+                InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            }
         }
 
         /// <summary>
         /// Initializes new instance of the NetCDFDataSet class.
         /// </summary>
         /// <param name="uri">DataSet URI (see remarks for <see cref="NetCDFDataSet"/>).</param>
-        /// <param name="openMode">The open mode (see 
+        /// <param name="openMode">The open mode (see
         /// <seealso cref="Microsoft.Research.Science.Data.ResourceOpenMode"/>).</param>
         /// <remarks>
         /// <para>
@@ -257,7 +261,205 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             deflate = ((NetCDFUri)this.uri).Deflate;
             trimTrailingZero = ((NetCDFUri)this.uri).TrimTrailingZero;
 
-            InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            if (((NetCDFUri)this.uri).Url.Length > 0) {
+                InitializeFromUrl(((NetCDFUri)this.uri).Url);
+            } else {
+                InitializeFromFile(((NetCDFUri)this.uri).FileName, openMode);
+            }
+        }
+
+        private void LoadMetadata(string fileName)
+        {
+            int res;
+            //********************************************************
+            // Loading schema
+            int ndims, nvars, ngatts, unlimdimid;
+            res = NetCDF.nc_inq(ncid, out ndims, out nvars, out ngatts, out unlimdimid);
+            HandleResult(res);
+
+            Debug.WriteLineIf(NetCDFDataSet.TraceNetCDFDataSet.TraceInfo, String.Format("NetCDF dataset {0} opened: {1} dimensions, {2} variables, {3} global attributes.",
+                fileName, ndims, nvars, ngatts));
+
+            /********************************************************
+            // Reading Global Attributes
+            int nattrs;
+            res = NetCDF.nc_inq_varnatts(ncid, NetCDF.NC_GLOBAL, out nattrs);
+            AttributeTypeMap atm = new AttributeTypeMap(ncid, NetCDF.NC_GLOBAL);
+            NetCDFDataSet.HandleResult(res);
+            MetadataDictionary globalMetadata = Metadata;
+            for (int i = 0; i < nattrs; i++)
+            {
+                // Name
+                StringBuilder attName = new StringBuilder(512);
+                res = NetCDF.nc_inq_attname(ncid, NetCDF.NC_GLOBAL, i, attName);
+                NetCDFDataSet.HandleResult(res);
+                string aname = attName.ToString();
+
+                // Skip out internal attribute
+                if (aname == AttributeTypeMap.AttributeName)
+                    continue;
+
+                // Type
+                object value = ReadNetCdfAttribute(NetCDF.NC_GLOBAL, aname, atm);
+                globalMetadata[aname] = value;
+            } /**/
+
+            //********************************************************
+            // Loading variables
+            int[] varIds = new int[nvars];
+            res = NetCDF.nc_inq_varids(ncid, out nvars, varIds);
+            HandleResult(res);
+
+            for (int i = 0; i < nvars; i++)
+            {
+                Variable var = ReadNetCdfVariable(varIds[i]);
+                AddVariableToCollection(var);
+            }
+
+            Variable globalMetaVar = new NetCDFGlobalMetadataVariable(this);
+            AddVariableToCollection(globalMetaVar);
+
+            //********************************************************
+            // Loading coordinate systems
+            // CS stored in two places: as global attributes and as variable's attributes
+            // for backward compatibility. We're going to use the global attributes,
+            // as it works even when there is no any variable containing the coordinate system.
+            for (int i = 0; ; i++)
+            {
+                string attName = "coordinates" + (i + 1).ToString();
+
+                // Inquire information about cs attribute
+                NcType type;
+                IntPtr len;
+                res = NetCDF.nc_inq_att(ncid, NcConst.NC_GLOBAL, attName, out type, out len);
+                if (res == (int)ResultCode.NC_ENOTATT) // that's all: no more cs
+                    break;
+                if (res != (int)ResultCode.NC_NOERR) // an error has occurred
+                    HandleResult(res);
+
+                if (type != NcType.NC_CHAR)
+                    throw new Exception("Coordinate system defining attribute is not a string");
+
+                // Getting the value of the attribute
+                string attValue = NcGetAttText(ncid, NcConst.NC_GLOBAL, attName, (int)len, out res);
+                HandleResult(res);
+
+                string[] items = attValue.Split(' ');
+                string csName = items[0]; // csname axis1 axis2 ...
+
+                // Creating the coordinate system instance
+                Variable[] axes = new Variable[items.Length - 1];
+                bool csFound = true;
+                for (int j = 1; j < items.Length; j++) // axes names
+                {
+                    int aid;
+                    Variable a;
+                    if (int.TryParse(items[j], out aid))
+                    {
+                        csFound = Variables.TryGetByID(aid, out a);
+                        if (!csFound) break;
+                        a = Variables.GetByID(aid);
+                    }
+                    else
+                    {
+                        csFound = ContainsRecent(Variables, items[j]);
+                        if (!csFound) break;
+                        a = Variables[items[j], SchemaVersion.Recent];
+                    }
+                    axes[j - 1] = a;
+                }
+                if (!csFound) break;
+                CoordinateSystem cs = CreateCoordinateSystem(csName, axes);
+            }
+
+            // Loading coordinate systems for variable's metadata (backward compatibility)
+            foreach (Variable var in Variables)
+            {
+                if (var.Metadata.ContainsKey("coordinates", SchemaVersion.Recent) &&
+                    !var.Metadata.ContainsKey("coordinatesName", SchemaVersion.Recent))
+                {
+                    string[] axes = var.Metadata["coordinates", SchemaVersion.Recent].ToString().Split(' ');
+                    List<Variable> axesList = new List<Variable>();
+                    bool axisNotFound = false;
+                    foreach (var axis in axes)
+                    {
+                        try
+                        {
+                            Variable a = Variables[axis, SchemaVersion.Recent];
+                            axesList.Add(a);
+                        }
+                        catch
+                        {
+                            Trace.WriteLineIf(TraceNetCDFDataSet.TraceError, "Coordinate named " + axis + " is not found in nc file");
+                            axisNotFound = true;
+                            break;
+                        }
+                    }
+                    if (!axisNotFound)
+                    {
+                        // This is a standart NC file without SDS coordinate systems metadata!
+                        //string csName = "_cs_" + var.Name + "_" + (Guid.NewGuid()).ToString();
+                        //CreateCoordinateSystem(csName, axesList.ToArray());
+                        break;
+                    }
+                }
+            }
+
+            // Adding coordinate systems to variables
+            foreach (Variable var in Variables)
+            {
+                // Each variable has an entry named coordinates#Name, # - integer index
+                var.Metadata.ForEach(
+                    delegate (KeyValuePair<string, object> entry)
+                    {
+                        if (!entry.Key.StartsWith("coordinates") || !entry.Key.EndsWith("Name"))
+                            return;
+
+                        try
+                        {
+                            CoordinateSystem cs = CoordinateSystems[(string)entry.Value, SchemaVersion.Recent];
+                            var.AddCoordinateSystem(cs);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLineIf(TraceNetCDFDataSet.TraceError, "Coordinate system with name " + entry.Value + " not found");
+                        }
+                    },
+                    SchemaVersion.Proposed);
+            }
+        } // eo if exists
+
+        private void InitializeFromUrl(string url)
+        {
+            try
+            {
+                initializing = true;
+                int res;
+
+                if (NetCDFDataSet.TraceNetCDFDataSet.TraceInfo)
+                {
+                    IntPtr cacheSize, nelems;
+                    float preemption;
+                    if (NetCDF.nc_get_chunk_cache(out cacheSize, out nelems, out preemption) == (int)ResultCode.NC_NOERR)
+                    {
+                        string s = String.Format("NetCDF chunk cache size: {0}, nelems: {1}, preemption: {2}", cacheSize, nelems, preemption);
+                        Trace.WriteLineIf(NetCDFDataSet.TraceNetCDFDataSet.TraceInfo, s);
+                    }
+                }
+
+                res = NetCDF.nc_open_chunked(url, CreateMode.NC_NOWRITE /*| NetCDF.CreateMode.NC_SHARE*/, out ncid, new IntPtr(defaultCacheSize), new IntPtr(defaultCacheNElems), defaultCachePreemption);
+                HandleResult(res);
+
+                LoadMetadata(url);
+                Commit();
+
+                SetCompleteReadOnly();
+                initializing = false;
+            }
+            finally
+            {
+                IsAutocommitEnabled = false;
+            }
         }
 
         private void InitializeFromFile(string fileName, ResourceOpenMode openMode)
@@ -270,6 +472,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 int res;
 
                 bool exists = File.Exists(fileName);
+
                 if (openMode == ResourceOpenMode.Create && exists)
                 {
                     File.Delete(fileName);
@@ -293,7 +496,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     if (openMode == ResourceOpenMode.CreateNew)
                         throw new IOException("The open mode is createNew but the file already exists");
 
-                    if (((File.GetAttributes(fileName) & FileAttributes.ReadOnly) != 0) && openMode != ResourceOpenMode.ReadOnly)
+                    if ((File.GetAttributes(fileName) & FileAttributes.ReadOnly) != 0 && openMode != ResourceOpenMode.ReadOnly)
                     {
                         openMode = ResourceOpenMode.ReadOnly;
                         Trace.WriteLineIf(TraceNetCDFDataSet.TraceWarning, "NetCDFDataSet: Opening file in read only mode");
@@ -319,165 +522,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                 HandleResult(res);
 
-                if (exists)
-                {
-                    //********************************************************
-                    // Loading schema
-                    int ndims, nvars, ngatts, unlimdimid;
-                    res = NetCDF.nc_inq(ncid, out ndims, out nvars, out ngatts, out unlimdimid);
-                    HandleResult(res);
-
-                    Debug.WriteLineIf(NetCDFDataSet.TraceNetCDFDataSet.TraceInfo, String.Format("NetCDF dataset {0} opened: {1} dimensions, {2} variables, {3} global attributes.",
-                        fileName, ndims, nvars, ngatts));
-
-                    /********************************************************
-                    // Reading Global Attributes
-                    int nattrs;
-                    res = NetCDF.nc_inq_varnatts(ncid, NetCDF.NC_GLOBAL, out nattrs);
-                    AttributeTypeMap atm = new AttributeTypeMap(ncid, NetCDF.NC_GLOBAL);
-                    NetCDFDataSet.HandleResult(res);
-                    MetadataDictionary globalMetadata = Metadata;
-                    for (int i = 0; i < nattrs; i++)
-                    {
-                        // Name
-                        StringBuilder attName = new StringBuilder(512);
-                        res = NetCDF.nc_inq_attname(ncid, NetCDF.NC_GLOBAL, i, attName);
-                        NetCDFDataSet.HandleResult(res);
-                        string aname = attName.ToString();
-
-                        // Skip out internal attribute
-                        if (aname == AttributeTypeMap.AttributeName)
-                            continue;
-
-                        // Type
-                        object value = ReadNetCdfAttribute(NetCDF.NC_GLOBAL, aname, atm);
-                        globalMetadata[aname] = value;
-                    } /**/
-
-                    //********************************************************
-                    // Loading variables
-                    int[] varIds = new int[nvars];
-                    res = NetCDF.nc_inq_varids(ncid, out nvars, varIds);
-                    HandleResult(res);
-
-                    for (int i = 0; i < nvars; i++)
-                    {
-                        Variable var = ReadNetCdfVariable(varIds[i]);
-                        AddVariableToCollection(var);
-                    }
-
-                    Variable globalMetaVar = new NetCDFGlobalMetadataVariable(this);
-                    AddVariableToCollection(globalMetaVar);
-
-                    //********************************************************
-                    // Loading coordinate systems
-                    // CS stored in two places: as global attributes and as variable's attributes
-                    // for backward compatibility. We're going to use the global attributes,
-                    // as it works even when there is no any variable containing the coordinate system.
-                    for (int i = 0; ; i++)
-                    {
-                        string attName = "coordinates" + (i + 1).ToString();
-
-                        // Inquire information about cs attribute
-                        NcType type;
-                        IntPtr len;
-                        res = NetCDF.nc_inq_att(ncid, NcConst.NC_GLOBAL, attName, out type, out len);
-                        if (res == (int)ResultCode.NC_ENOTATT) // that's all: no more cs
-                            break;
-                        if (res != (int)ResultCode.NC_NOERR) // an error has occurred
-                            HandleResult(res);
-
-                        if (type != NcType.NC_CHAR)
-                            throw new Exception("Coordinate system defining attribute is not a string");
-
-                        // Getting the value of the attribute
-                        string attValue = NcGetAttText(ncid, NcConst.NC_GLOBAL, attName, (int)len, out res);
-                        HandleResult(res);
-
-                        string[] items = attValue.Split(' ');
-                        string csName = items[0]; // csname axis1 axis2 ...
-
-                        // Creating the coordinate system instance
-                        Variable[] axes = new Variable[items.Length - 1];
-                        bool csFound = true;
-                        for (int j = 1; j < items.Length; j++) // axes names
-                        {
-                            int aid;
-                            Variable a;
-                            if (int.TryParse(items[j], out aid))
-                            {
-                                csFound = Variables.TryGetByID(aid, out a);
-                                if (!csFound) break;
-                                a = Variables.GetByID(aid);
-                            }
-                            else
-                            {
-                                csFound = ContainsRecent(Variables, items[j]);
-                                if (!csFound) break;
-                                a = Variables[items[j], SchemaVersion.Recent];
-                            }
-                            axes[j - 1] = a;
-                        }
-                        if (!csFound) break;
-                        CoordinateSystem cs = CreateCoordinateSystem(csName, axes);
-                    }
-
-                    // Loading coordinate systems for variable's metadata (backward compatibility)
-                    foreach (Variable var in Variables)
-                    {
-                        if (var.Metadata.ContainsKey("coordinates", SchemaVersion.Recent) &&
-                            !var.Metadata.ContainsKey("coordinatesName", SchemaVersion.Recent))
-                        {
-                            string[] axes = var.Metadata["coordinates", SchemaVersion.Recent].ToString().Split(' ');
-                            List<Variable> axesList = new List<Variable>();
-                            bool axisNotFound = false;
-                            foreach (var axis in axes)
-                            {
-                                try
-                                {
-                                    Variable a = Variables[axis, SchemaVersion.Recent];
-                                    axesList.Add(a);
-                                }
-                                catch
-                                {
-                                    Trace.WriteLineIf(TraceNetCDFDataSet.TraceError, "Coordinate named " + axis + " is not found in nc file");
-                                    axisNotFound = true;
-                                    break;
-                                }
-                            }
-                            if (!axisNotFound)
-                            {
-                                // This is a standart NC file without SDS coordinate systems metadata!
-                                //string csName = "_cs_" + var.Name + "_" + (Guid.NewGuid()).ToString();
-                                //CreateCoordinateSystem(csName, axesList.ToArray());
-                                break;
-                            }
-                        }
-                    }
-
-                    // Adding coordinate systems to variables
-                    foreach (Variable var in Variables)
-                    {
-                        // Each variable has an entry named coordinates#Name, # - integer index
-                        var.Metadata.ForEach(
-                            delegate (KeyValuePair<string, object> entry)
-                            {
-                                if (!entry.Key.StartsWith("coordinates") || !entry.Key.EndsWith("Name"))
-                                    return;
-
-                                try
-                                {
-                                    CoordinateSystem cs = CoordinateSystems[(string)entry.Value, SchemaVersion.Recent];
-                                    var.AddCoordinateSystem(cs);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Trace.WriteLineIf(TraceNetCDFDataSet.TraceError, "Coordinate system with name " + entry.Value + " not found");
-                                }
-                            },
-                            SchemaVersion.Proposed);
-                    }
-                } // eo if exists
+                if (exists) LoadMetadata(fileName);
 
                 Commit();
 
@@ -505,7 +550,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="enableRollback">
@@ -522,7 +567,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="enableRollback">
@@ -567,7 +612,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Overriden Methods
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="DataType"></typeparam>
         /// <param name="varName"></param>
@@ -581,7 +626,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnTransactionOpened()
         {
@@ -614,7 +659,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="changes"></param>
         /// <returns></returns>
@@ -626,7 +671,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             return true;
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="changes"></param>
         protected override void OnPrecommit(DataSet.Changes changes)
@@ -657,7 +702,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             }
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnCommit()
         {
@@ -673,7 +718,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             tempFileName = null;
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void OnRollback()
         {
@@ -719,7 +764,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Utils
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected override void Dispose(bool disposing)
         {
