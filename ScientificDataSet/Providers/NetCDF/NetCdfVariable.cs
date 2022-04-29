@@ -124,13 +124,18 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
             /* Getting exsting dims and creating new */
             int[] dimids = new int[dims.Length];
+            int[] dimlen = new int[dims.Length];
             for (int i = 0; i < dims.Length; i++)
             {
                 int id;
                 res = NetCDF.nc_inq_dimid(dataSet.NcId, dims[i], out id);
                 if (res == (int)ResultCode.NC_NOERR)
                 {
+                    IntPtr lenp;
+                    res = NetCDF.nc_inq_dimlen(dataSet.NcId, id, out lenp);
+                    NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = lenp.ToInt32();
                 }
                 else if (res == (int)ResultCode.NC_EBADDIM)
                 {
@@ -138,6 +143,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     res = NetCDF.nc_def_dim(dataSet.NcId, dims[i], new IntPtr(NcConst.NC_UNLIMITED), out id);
                     NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = NcConst.NC_UNLIMITED;
                 }
                 else
                 {
@@ -197,7 +203,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                     for (int i = 0; i < dims.Length; i++)
                     {
-                        chunksizes[i] = new IntPtr(chunk);
+                        if (dimlen[i] < chunk)
+                        {
+                            chunksizes[i] = new IntPtr(dimlen[i]);
+                        }
+                        else
+                        {
+                            chunksizes[i] = new IntPtr(chunk);
+                        }
                     }
                 }
 
@@ -339,7 +352,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Transactions
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="proposedChanges"></param>
         internal protected override void OnPrecommit(Variable.Changes proposedChanges)
@@ -381,7 +394,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
              * Common netCDF model supports for only one such attribute,
              * so all others CS except first are not compatible with that model.
              * Their attribute names are "coordinates2","coordinates3" etc.
-             * Names of coordinate systems are provided with corresponed 
+             * Names of coordinate systems are provided with corresponed
              * attributes "coordinatesName","coordinates2Name",...
              */
             if (proposedChanges.CoordinateSystems != null)
@@ -642,7 +655,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         #region Data Access
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         protected override int[] ReadShape()
@@ -698,7 +711,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             return result;
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="origin"></param>
         /// <param name="shape"></param>
@@ -973,7 +986,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             }
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="origin"></param>
         /// <param name="a"></param>

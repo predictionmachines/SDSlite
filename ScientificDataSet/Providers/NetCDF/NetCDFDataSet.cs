@@ -806,7 +806,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 Invoke(null, new object[] { this, name, dims });
             return v;
         }
-
+        
         internal object ReadNetCdfAttribute(int varid, string aname, AttributeTypeMap atm)
         {
             NcType type;
@@ -1149,6 +1149,27 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         internal int[] ChunkSizes { get { return chunkSizes; } }
 
         #endregion
+
+        /// <summary>
+        /// Create a new Dimension of length N (N = 0 unlimited)
+        /// </summary>
+        public void CreateDimension(string dim, int len)
+        {
+            int res;
+            int id;
+            res = NetCDF.nc_inq_dimid(this.NcId, dim, out id);
+            if (res == (int)ResultCode.NC_EBADDIM)
+            {
+                StartChanges();
+                res = NetCDF.nc_def_dim(this.NcId, dim, new IntPtr(len), out id);
+                Commit();
+                HandleResult(res);
+            }
+            else
+            {
+                HandleResult(res);
+            }
+        }
     }
 
     internal class AttributeTypeMap
