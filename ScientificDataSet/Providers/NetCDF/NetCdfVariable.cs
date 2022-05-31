@@ -115,7 +115,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             UpdateDimIds();
         }
 
-        internal static NetCdfVariable<DataType> Create(NetCDFDataSet dataSet, string name, string[] dims)
+        internal static NetCdfVariable<DataType> Create(NetCDFDataSet dataSet, string name, string[] dims, bool isChar)
         {
             if (dims == null) // scalar variable
                 dims = new string[0];
@@ -152,7 +152,11 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             if (nc_name != name)
                 Debug.WriteLineIf(NetCDFDataSet.TraceNetCDFDataSet.TraceVerbose, "NetCDF: name has illegal chars; internal variable name is " + nc_name);
 
-            res = NetCDF.nc_def_var(dataSet.NcId, nc_name, NetCDF.GetNcType(typeof(DataType)), dimids, out varid);
+            if (typeof(DataType) == typeof(byte) && isChar) {
+                res = NetCDF.nc_def_var(dataSet.NcId, nc_name, NcType.NC_CHAR, dimids, out varid);
+            } else {
+                res = NetCDF.nc_def_var(dataSet.NcId, nc_name, NetCDF.GetNcType(typeof(DataType)), dimids, out varid);
+            }
             for (int count = 1; res == (int)ResultCode.NC_ENAMEINUSE; )
             {
                 // Keep trying to create variable with different names

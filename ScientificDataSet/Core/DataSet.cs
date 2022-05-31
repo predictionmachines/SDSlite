@@ -1317,7 +1317,7 @@ namespace Microsoft.Research.Science.Data
             return var;
         }
 
-        private static bool HasDuplicates(string[] dims)
+        protected static bool HasDuplicates(string[] dims)
         {
             if (dims.Length == 0 || dims.Length == 1) return false;
 
