@@ -3,19 +3,22 @@ using NUnit.Framework;
 
 using Microsoft.Research.Science.Data;
 using System.Linq;
+using System.IO;
+using Microsoft.Research.Science.Data.NetCDF4;
 
 namespace SDSLiteTests
 {
     public class NetCDFTests
     {
-        public void Empty_AddVariable<T>(T[] data)
+        public long Empty_AddVariable<T>(T[] data, DeflateLevel deflate = DeflateLevel.Normal)
         {
-            var fn = System.IO.Path.GetTempFileName();
+            var fn = Path.GetTempFileName();
             try
             {
-                var dsuri = new Microsoft.Research.Science.Data.NetCDF4.NetCDFUri();
+                var dsuri = new NetCDFUri();
                 dsuri.FileName = fn;
                 dsuri.OpenMode = ResourceOpenMode.Create;
+                dsuri.Deflate = deflate;
                 var vname = "a";
                 using (var ds = DataSet.Open(dsuri))
                 {
@@ -35,11 +38,11 @@ namespace SDSLiteTests
                     for (int i = 0; i < data.Length; i++)
                         Assert.AreEqual(data[i], d[i], String.Format("index={0}", i));
                 }
-
+                return new FileInfo(fn).Length;
             }
             finally
             {
-                System.IO.File.Delete(fn);
+                File.Delete(fn);
             }
         }
         [Test]
@@ -192,5 +195,14 @@ namespace SDSLiteTests
             Empty_AddAttribute("Русский");
         }
 
+
+        [Test]
+        public void Deflate_reduces_file_size()
+        {
+            var data = Enumerable.Repeat(Math.PI, 2048).ToArray();
+            var len_uncompressed = Empty_AddVariable(data, DeflateLevel.Store);
+            var len_compressed = Empty_AddVariable(data, DeflateLevel.Best);
+            Assert.IsTrue(len_compressed < len_uncompressed);
+        }
     }
 }
