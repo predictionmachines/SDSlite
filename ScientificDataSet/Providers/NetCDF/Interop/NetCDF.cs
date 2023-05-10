@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace NetCDFInterop
 {
@@ -267,103 +265,103 @@ namespace NetCDFInterop
             }
             return Tuple.Create(buf, off);
         }
-        public static int nc_open(string path, CreateMode mode, out int ncidp) { lock (namebuf) { return NetCDFDynamic.f_nc_open.Invoke(path, mode, out ncidp); } }
+        public static int nc_open(string path, CreateMode mode, out int ncidp) { lock (namebuf) { return NetCDFNative.nc_open(path, mode, out ncidp); } }
         public static int nc_open_chunked(string path, CreateMode mode, out int ncidp, IntPtr size, IntPtr nelems, float preemption)
         {
             lock (namebuf)
             {
-                var r = NetCDFDynamic.f_nc_set_chunk_cache.Invoke(size, nelems, preemption);
+                var r = NetCDFNative.nc_set_chunk_cache(size, nelems, preemption);
                 if (0 == r)
-                    return NetCDFDynamic.f_nc_open.Invoke(path, mode, out ncidp);
+                    return NetCDFNative.nc_open(path, mode, out ncidp);
                 else
                 { ncidp = 0; return r; }
             }
         }
-        public static int nc_create(string path, CreateMode mode, out int ncidp) { lock (namebuf) { return NetCDFDynamic.f_nc_create.Invoke(path, mode, out ncidp); } }
+        public static int nc_create(string path, CreateMode mode, out int ncidp) { lock (namebuf) { return NetCDFNative.nc_create(path, mode, out ncidp); } }
         public static int nc_create_chunked(string path, CreateMode mode, out int ncidp, IntPtr size, IntPtr nelems, float preemption)
         {
             lock (namebuf)
             {
-                var r = NetCDFDynamic.f_nc_set_chunk_cache.Invoke(size, nelems, preemption);
+                var r = NetCDFNative.nc_set_chunk_cache(size, nelems, preemption);
                 if (0 == r)
-                    return NetCDFDynamic.f_nc_create.Invoke(path, mode, out ncidp);
+                    return NetCDFNative.nc_create(path, mode, out ncidp);
                 else
                 { ncidp = 0; return r; }
             }
         }
-        public static int nc_close(int ncidp) { lock (namebuf) { return NetCDFDynamic.f_nc_close.Invoke(ncidp); } }
-        public static int nc_set_chunk_cache(IntPtr size, IntPtr nelems, float preemption) { lock (namebuf) { return NetCDFDynamic.f_nc_set_chunk_cache.Invoke(size, nelems, preemption); } }
-        public static int nc_get_chunk_cache(out IntPtr size, out IntPtr nelems, out float preemption) { lock (namebuf) { return NetCDFDynamic.f_nc_get_chunk_cache.Invoke(out size, out nelems, out preemption); } }
-        public static int nc_sync(int ncid) { lock (namebuf) { return NetCDFDynamic.f_nc_sync.Invoke(ncid); } }
-        public static int nc_enddef(int ncid) { lock (namebuf) { return NetCDFDynamic.f_nc_enddef.Invoke(ncid); } }
-        public static int nc_redef(int ncid) { lock (namebuf) { return NetCDFDynamic.f_nc_redef.Invoke(ncid); } }
-        public static int nc_inq(int ncid, out int ndims, out int nvars, out int ngatts, out int unlimdimid) { lock (namebuf) { return NetCDFDynamic.f_nc_inq.Invoke(ncid, out ndims, out nvars, out ngatts, out unlimdimid); } }
-        public static int nc_def_var(int ncid, string name, NcType xtype, int[] dimids, out int varidp) { lock (namebuf) { return NetCDFDynamic.f_nc_def_var.Invoke(ncid, name, xtype, dimids.Length, dimids, out varidp); } }
-        public static int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp) { lock (namebuf) { return NetCDFDynamic.f_nc_def_dim.Invoke(ncid, name, len, out dimidp); } }
-        public static int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level) { lock (namebuf) { return NetCDFDynamic.f_nc_def_var_deflate.Invoke(ncid, varid, shuffle, deflate, deflate_level); } }
-        public static int nc_def_var_chunking(int ncid, int varid, int contiguous, IntPtr[] chunksizes) { lock (namebuf) { return NetCDFDynamic.f_nc_def_var_chunking.Invoke(ncid, varid, contiguous, chunksizes); } }
+        public static int nc_close(int ncidp) { lock (namebuf) { return NetCDFNative.nc_close(ncidp); } }
+        public static int nc_set_chunk_cache(IntPtr size, IntPtr nelems, float preemption) { lock (namebuf) { return NetCDFNative.nc_set_chunk_cache(size, nelems, preemption); } }
+        public static int nc_get_chunk_cache(out IntPtr size, out IntPtr nelems, out float preemption) { lock (namebuf) { return NetCDFNative.nc_get_chunk_cache(out size, out nelems, out preemption); } }
+        public static int nc_sync(int ncid) { lock (namebuf) { return NetCDFNative.nc_sync(ncid); } }
+        public static int nc_enddef(int ncid) { lock (namebuf) { return NetCDFNative.nc_enddef(ncid); } }
+        public static int nc_redef(int ncid) { lock (namebuf) { return NetCDFNative.nc_redef(ncid); } }
+        public static int nc_inq(int ncid, out int ndims, out int nvars, out int ngatts, out int unlimdimid) { lock (namebuf) { return NetCDFNative.nc_inq(ncid, out ndims, out nvars, out ngatts, out unlimdimid); } }
+        public static int nc_def_var(int ncid, string name, NcType xtype, int[] dimids, out int varidp) { lock (namebuf) { return NetCDFNative.nc_def_var(ncid, name, xtype, dimids.Length, dimids, out varidp); } }
+        public static int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp) { lock (namebuf) { return NetCDFNative.nc_def_dim(ncid, name, len, out dimidp); } }
+        public static int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level) { lock (namebuf) { return NetCDFNative.nc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level); } }
+        public static int nc_def_var_chunking(int ncid, int varid, int contiguous, IntPtr[] chunksizes) { lock (namebuf) { return NetCDFNative.nc_def_var_chunking(ncid, varid, contiguous, chunksizes); } }
         public static int nc_inq_var(int ncid, int varid, out string name, out NcType type, out int ndims, int[] dimids, out int natts)
         {
             lock (namebuf)
             {
-                var r = NetCDFDynamic.f_nc_inq_var.Invoke(ncid, varid, namebuf, out type, out ndims, dimids, out natts);
+                var r = NetCDFNative.nc_inq_var(ncid, varid, namebuf, out type, out ndims, dimids, out natts);
                 name = namebuf.ToString();
                 return r;
             }
         }
-        public static int nc_inq_varids(int ncid, out int nvars, int[] varids) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_varids.Invoke(ncid, out nvars, varids); } }
-        public static int nc_inq_vartype(int ncid, int varid, out NcType xtypep) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_vartype.Invoke(ncid, varid, out xtypep); } }
-        public static int nc_inq_varnatts(int ncid, int varid, out int nattsp) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_varnatts.Invoke(ncid, varid, out nattsp); } }
-        //public static int nc_inq_varid(int ncid, string name, out int varidp) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_varid.Invoke(ncid, name, out varidp); } }
-        //public static int nc_inq_ndims(int ncid, out int ndims) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_ndims.Invoke(ncid, out ndims); } }
-        //public static int nc_inq_nvars(int ncid, out int nvars) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_nvars.Invoke(ncid, out nvars); } }
-        //public static int nc_inq_varname(int ncid, int varid, out string name) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_varname.Invoke(ncid, varid, out name); } }
-        public static int nc_inq_varndims(int ncid, int varid, out int ndims) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_varndims.Invoke(ncid, varid, out ndims); } }
-        public static int nc_inq_vardimid(int ncid, int varid, int[] dimids) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_vardimid.Invoke(ncid, varid, dimids); } }
-        //public static int nc_inq_natts(int ncid, out int ngatts) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_natts.Invoke(ncid, out ngatts); } }
-        //public static int nc_inq_unlimdim(int ncid, out int unlimdimid) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_unlimdim.Invoke(ncid, out unlimdimid); } }
-        //public static int nc_inq_format(int ncid, out int format) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_format.Invoke(ncid, out format); } }
+        public static int nc_inq_varids(int ncid, out int nvars, int[] varids) { lock (namebuf) { return NetCDFNative.nc_inq_varids(ncid, out nvars, varids); } }
+        public static int nc_inq_vartype(int ncid, int varid, out NcType xtypep) { lock (namebuf) { return NetCDFNative.nc_inq_vartype(ncid, varid, out xtypep); } }
+        public static int nc_inq_varnatts(int ncid, int varid, out int nattsp) { lock (namebuf) { return NetCDFNative.nc_inq_varnatts(ncid, varid, out nattsp); } }
+        //public static int nc_inq_varid(int ncid, string name, out int varidp) { lock(namebuf) { return NetCDFDynamic.nc_inq_varid(ncid, name, out varidp); } }
+        //public static int nc_inq_ndims(int ncid, out int ndims) { lock(namebuf) { return NetCDFDynamic.nc_inq_ndims(ncid, out ndims); } }
+        //public static int nc_inq_nvars(int ncid, out int nvars) { lock(namebuf) { return NetCDFDynamic.nc_inq_nvars(ncid, out nvars); } }
+        //public static int nc_inq_varname(int ncid, int varid, out string name) { lock(namebuf) { return NetCDFDynamic.nc_inq_varname(ncid, varid, out name); } }
+        public static int nc_inq_varndims(int ncid, int varid, out int ndims) { lock (namebuf) { return NetCDFNative.nc_inq_varndims(ncid, varid, out ndims); } }
+        public static int nc_inq_vardimid(int ncid, int varid, int[] dimids) { lock (namebuf) { return NetCDFNative.nc_inq_vardimid(ncid, varid, dimids); } }
+        //public static int nc_inq_natts(int ncid, out int ngatts) { lock(namebuf) { return NetCDFDynamic.nc_inq_natts(ncid, out ngatts); } }
+        //public static int nc_inq_unlimdim(int ncid, out int unlimdimid) { lock(namebuf) { return NetCDFDynamic.nc_inq_unlimdim(ncid, out unlimdimid); } }
+        //public static int nc_inq_format(int ncid, out int format) { lock(namebuf) { return NetCDFDynamic.nc_inq_format(ncid, out format); } }
         public static int nc_inq_attname(int ncid, int varid, int attnum, out string name)
         {
             lock (namebuf)
             {
-                var r = NetCDFDynamic.f_nc_inq_attname.Invoke(ncid, varid, attnum, namebuf);
+                var r = NetCDFNative.nc_inq_attname(ncid, varid, attnum, namebuf);
                 name = namebuf.ToString();
                 return r;
             }
         }
-        public static int nc_inq_atttype(int ncid, int varid, string name, out NcType type) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_atttype.Invoke(ncid, varid, name, out type); } }
-        public static int nc_inq_att(int ncid, int varid, string name, out NcType type, out IntPtr length) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_att.Invoke(ncid, varid, name, out type, out length); } }
+        public static int nc_inq_atttype(int ncid, int varid, string name, out NcType type) { lock (namebuf) { return NetCDFNative.nc_inq_atttype(ncid, varid, name, out type); } }
+        public static int nc_inq_att(int ncid, int varid, string name, out NcType type, out IntPtr length) { lock (namebuf) { return NetCDFNative.nc_inq_att(ncid, varid, name, out type, out length); } }
         public static int nc_get_att_text(int ncid, int varid, string name, out string value, int maxLength)
         {
             lock (namebuf)
             {
                 var b = new byte[maxLength + 2]; // in case netcdf adds terminating zero
-                var r = NetCDFDynamic.f_nc_get_att_text.Invoke(ncid, varid, name, b, maxLength);
+                var r = NetCDFNative.nc_get_att_text(ncid, varid, name, b, maxLength);
                 var chars = new char[utfDecoder.GetCharCount(b, 0, maxLength)];
                 utfDecoder.GetChars(b, 0, maxLength, chars, 0);
                 value = new string(chars);
                 return r;
             }
         }
-        public static int nc_get_att_schar(int ncid, int varid, string name, SByte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_schar.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_uchar(int ncid, int varid, string name, Byte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_uchar.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_short(int ncid, int varid, string name, Int16[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_short.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_ushort(int ncid, int varid, string name, UInt16[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_ushort.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_int(int ncid, int varid, string name, Int32[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_int.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_uint(int ncid, int varid, string name, UInt32[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_uint.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_longlong(int ncid, int varid, string name, Int64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_longlong.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_ulonglong(int ncid, int varid, string name, UInt64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_ulonglong.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_float(int ncid, int varid, string name, float[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_float.Invoke(ncid, varid, name, data); } }
-        public static int nc_get_att_double(int ncid, int varid, string name, double[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_att_double.Invoke(ncid, varid, name, data); } }
-        public static int nc_del_att(int ncid, int varid, string name) { lock (namebuf) { return NetCDFDynamic.f_nc_del_att.Invoke(ncid, varid, name); } }
+        public static int nc_get_att_schar(int ncid, int varid, string name, SByte[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_schar(ncid, varid, name, data); } }
+        public static int nc_get_att_uchar(int ncid, int varid, string name, Byte[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_uchar(ncid, varid, name, data); } }
+        public static int nc_get_att_short(int ncid, int varid, string name, Int16[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_short(ncid, varid, name, data); } }
+        public static int nc_get_att_ushort(int ncid, int varid, string name, UInt16[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_ushort(ncid, varid, name, data); } }
+        public static int nc_get_att_int(int ncid, int varid, string name, Int32[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_int(ncid, varid, name, data); } }
+        public static int nc_get_att_uint(int ncid, int varid, string name, UInt32[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_uint(ncid, varid, name, data); } }
+        public static int nc_get_att_longlong(int ncid, int varid, string name, Int64[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_longlong(ncid, varid, name, data); } }
+        public static int nc_get_att_ulonglong(int ncid, int varid, string name, UInt64[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_ulonglong(ncid, varid, name, data); } }
+        public static int nc_get_att_float(int ncid, int varid, string name, float[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_float(ncid, varid, name, data); } }
+        public static int nc_get_att_double(int ncid, int varid, string name, double[] data) { lock (namebuf) { return NetCDFNative.nc_get_att_double(ncid, varid, name, data); } }
+        public static int nc_del_att(int ncid, int varid, string name) { lock (namebuf) { return NetCDFNative.nc_del_att(ncid, varid, name); } }
         public static int nc_put_att_text(int ncid, int varid, string name, string tp)
         {
             var buf_offset = WriteStrings(new string[] { tp });
             lock (namebuf)
             {
                 var buf = buf_offset.Item1;
-                var r = NetCDFDynamic.f_nc_put_att_text.Invoke(ncid, varid, name, new IntPtr(buf.Length - 1), buf);
+                var r = NetCDFNative.nc_put_att_text(ncid, varid, name, new IntPtr(buf.Length - 1), buf);
                 return r;
             }
         }
@@ -383,66 +381,66 @@ namespace NetCDFInterop
                         if (uint.MaxValue == offset) bb[i] = IntPtr.Zero;
                         else bb[i] = new IntPtr(buf + offset);
                     }
-                    r = NetCDFDynamic.f_nc_put_att_string.Invoke(ncid, varid, name, new IntPtr(bb.Length), bb);
+                    r = NetCDFNative.nc_put_att_string(ncid, varid, name, new IntPtr(bb.Length), bb);
                 }
                 return r;
             }
         }
-        public static int nc_put_att_double(int ncid, int varid, string name, double[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_double.Invoke(ncid, varid, name, NcType.NC_DOUBLE, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_int(int ncid, int varid, string name, int[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_int.Invoke(ncid, varid, name, NcType.NC_INT, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_short(int ncid, int varid, string name, short[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_short.Invoke(ncid, varid, name, NcType.NC_SHORT, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_longlong(int ncid, int varid, string name, Int64[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_longlong.Invoke(ncid, varid, name, NcType.NC_INT64, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_ushort(int ncid, int varid, string name, UInt16[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_ushort.Invoke(ncid, varid, name, NcType.NC_USHORT, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_uint(int ncid, int varid, string name, UInt32[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_uint.Invoke(ncid, varid, name, NcType.NC_UINT, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_float(int ncid, int varid, string name, float[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_float.Invoke(ncid, varid, name, NcType.NC_FLOAT, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_ulonglong(int ncid, int varid, string name, UInt64[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_ulonglong.Invoke(ncid, varid, name, NcType.NC_UINT64, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_schar(int ncid, int varid, string name, SByte[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_schar.Invoke(ncid, varid, name, NcType.NC_BYTE, new IntPtr(tp.Length), tp); } }
-        public static int nc_put_att_ubyte(int ncid, int varid, string name, Byte[] tp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_att_ubyte.Invoke(ncid, varid, name, NcType.NC_UBYTE, new IntPtr(tp.Length), tp); } }
-        //public static int nc_inq_dim(int ncid, int dimid, out string name, out IntPtr length) { lock(namebuf) { return NetCDFDynamic.f_nc_inq_dim.Invoke(ncid, dimid, out name, out length); } }
+        public static int nc_put_att_double(int ncid, int varid, string name, double[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_double(ncid, varid, name, NcType.NC_DOUBLE, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_int(int ncid, int varid, string name, int[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_int(ncid, varid, name, NcType.NC_INT, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_short(int ncid, int varid, string name, short[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_short(ncid, varid, name, NcType.NC_SHORT, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_longlong(int ncid, int varid, string name, Int64[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_longlong(ncid, varid, name, NcType.NC_INT64, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_ushort(int ncid, int varid, string name, UInt16[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_ushort(ncid, varid, name, NcType.NC_USHORT, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_uint(int ncid, int varid, string name, UInt32[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_uint(ncid, varid, name, NcType.NC_UINT, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_float(int ncid, int varid, string name, float[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_float(ncid, varid, name, NcType.NC_FLOAT, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_ulonglong(int ncid, int varid, string name, UInt64[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_ulonglong(ncid, varid, name, NcType.NC_UINT64, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_schar(int ncid, int varid, string name, SByte[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_schar(ncid, varid, name, NcType.NC_BYTE, new IntPtr(tp.Length), tp); } }
+        public static int nc_put_att_ubyte(int ncid, int varid, string name, Byte[] tp) { lock (namebuf) { return NetCDFNative.nc_put_att_ubyte(ncid, varid, name, NcType.NC_UBYTE, new IntPtr(tp.Length), tp); } }
+        //public static int nc_inq_dim(int ncid, int dimid, out string name, out IntPtr length) { lock(namebuf) { return NetCDFDynamic.nc_inq_dim(ncid, dimid, out name, out length); } }
         public static int nc_inq_dimname(int ncid, int dimid, out string name)
         {
             lock (namebuf)
             {
-                var r = NetCDFDynamic.f_nc_inq_dimname.Invoke(ncid, dimid, namebuf);
+                var r = NetCDFNative.nc_inq_dimname(ncid, dimid, namebuf);
                 name = namebuf.ToString();
                 return r;
             }
         }
-        public static int nc_inq_dimid(int ncid, string name, out int dimid) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_dimid.Invoke(ncid, name, out dimid); } }
-        public static int nc_inq_dimlen(int ncid, int dimid, out IntPtr length) { lock (namebuf) { return NetCDFDynamic.f_nc_inq_dimlen.Invoke(ncid, dimid, out length); } }
+        public static int nc_inq_dimid(int ncid, string name, out int dimid) { lock (namebuf) { return NetCDFNative.nc_inq_dimid(ncid, name, out dimid); } }
+        public static int nc_inq_dimlen(int ncid, int dimid, out IntPtr length) { lock (namebuf) { return NetCDFNative.nc_inq_dimlen(ncid, dimid, out length); } }
         public static int nc_get_att_string(int ncid, int varid, string name, string[] ip)
         {
             lock (namebuf)
             {
                 var len = ip.Length;
                 var parr = new IntPtr[len];
-                var r = NetCDFDynamic.f_nc_get_att_string.Invoke(ncid, varid, name, parr);
+                var r = NetCDFNative.nc_get_att_string(ncid, varid, name, parr);
                 if (0 == r)
                 {
                     for (int i = 0; i < len; i++) ip[i] = ReadString(parr[i]);
-                    r = NetCDFDynamic.f_nc_free_string(new IntPtr(len), parr);
+                    r = NetCDFNative.nc_free_string(new IntPtr(len), parr);
                 }
                 return r;
             }
         }
-        //public static int nc_get_var_text(int ncid, int varid, Byte[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_text.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_schar(int ncid, int varid, SByte[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_schar.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_short(int ncid, int varid, short[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_short.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_int(int ncid, int varid, int[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_int.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_long(int ncid, int varid, long[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_long.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_float(int ncid, int varid, float[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_float.Invoke(ncid, varid, data); } }
-        //public static int nc_get_var_double(int ncid, int varid, double[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_var_double.Invoke(ncid, varid, data); } }
-        public static int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_text.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_double.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_float.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_short.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_ushort.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] ip) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_int.Invoke(ncid, varid, start, count, ip); } }
-        public static int nc_put_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_uint.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_longlong.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_ulonglong.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_ubyte.Invoke(ncid, varid, start, count, dp); } }
-        public static int nc_put_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] dp) { lock (namebuf) { return NetCDFDynamic.f_nc_put_vara_schar.Invoke(ncid, varid, start, count, dp); } }
+        //public static int nc_get_var_text(int ncid, int varid, Byte[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_text(ncid, varid, data); } }
+        //public static int nc_get_var_schar(int ncid, int varid, SByte[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_schar(ncid, varid, data); } }
+        //public static int nc_get_var_short(int ncid, int varid, short[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_short(ncid, varid, data); } }
+        //public static int nc_get_var_int(int ncid, int varid, int[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_int(ncid, varid, data); } }
+        //public static int nc_get_var_long(int ncid, int varid, long[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_long(ncid, varid, data); } }
+        //public static int nc_get_var_float(int ncid, int varid, float[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_float(ncid, varid, data); } }
+        //public static int nc_get_var_double(int ncid, int varid, double[] data) { lock(namebuf) { return NetCDFDynamic.nc_get_var_double(ncid, varid, data); } }
+        public static int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_text(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_double(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_float(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_short(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_ushort(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] ip) { lock (namebuf) { return NetCDFNative.nc_put_vara_int(ncid, varid, start, count, ip); } }
+        public static int nc_put_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_uint(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_longlong(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_ulonglong(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_ubyte(ncid, varid, start, count, dp); } }
+        public static int nc_put_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] dp) { lock (namebuf) { return NetCDFNative.nc_put_vara_schar(ncid, varid, start, count, dp); } }
         unsafe public static int nc_put_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, string[] dp)
         {
             int r;
@@ -459,33 +457,33 @@ namespace NetCDFInterop
                         if (uint.MaxValue == offset) bb[i] = IntPtr.Zero;
                         else bb[i] = new IntPtr(buf + offset);
                     }
-                    r = NetCDFDynamic.f_nc_put_vara_string.Invoke(ncid, varid, start, count, bb);
+                    r = NetCDFNative.nc_put_vara_string(ncid, varid, start, count, bb);
                 }
                 return r;
             }
         }
-        public static int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock(namebuf) { return NetCDFDynamic.f_nc_get_vara_text.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_schar.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_short.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_ushort.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_ubyte.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_longlong.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_ulonglong.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_int.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_uint.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_float.Invoke(ncid, varid, start, count, data); } }
-        public static int nc_get_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vara_double.Invoke(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_text(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_schar(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_short(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_ushort(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_ubyte(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_longlong(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_ulonglong(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_int(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_uint(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_float(ncid, varid, start, count, data); } }
+        public static int nc_get_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] data) { lock (namebuf) { return NetCDFNative.nc_get_vara_double(ncid, varid, start, count, data); } }
         public static int nc_get_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, string[] data)
         {
             lock (namebuf)
             {
                 var len = data.Length;
                 var parr = new IntPtr[len];
-                var r = NetCDFDynamic.f_nc_get_vara_string.Invoke(ncid, varid, start, count, parr);
+                var r = NetCDFNative.nc_get_vara_string(ncid, varid, start, count, parr);
                 if (0 == r)
                 {
                     for (int i = 0; i < len; i++) data[i] = ReadString(parr[i]);
-                    r = NetCDFDynamic.f_nc_free_string(new IntPtr(len), parr);
+                    r = NetCDFNative.nc_free_string(new IntPtr(len), parr);
                 }
                 return r;
             }
@@ -496,428 +494,206 @@ namespace NetCDFInterop
             {
                 var len = data.Length;
                 var parr = new IntPtr[len];
-                var r = NetCDFDynamic.f_nc_get_var_string.Invoke(ncid, varid, parr);
+                var r = NetCDFNative.nc_get_var_string(ncid, varid, parr);
                 if (0 == r)
                 {
                     for (int i = 0; i < len; i++) data[i] = ReadString(parr[i]);
-                    r = NetCDFDynamic.f_nc_free_string(new IntPtr(len), parr);
+                    r = NetCDFNative.nc_free_string(new IntPtr(len), parr);
                 }
                 return r;
             }
         }
-        public static int nc_get_vars_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_text.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, SByte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_schar.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, short[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_short.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt16[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_ushort.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_ubyte.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Int64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_longlong.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt64[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_ulonglong.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, int[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_int.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt32[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_uint.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, float[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_float.Invoke(ncid, varid, start, count, stride, data); } }
-        public static int nc_get_vars_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, double[] data) { lock (namebuf) { return NetCDFDynamic.f_nc_get_vars_double.Invoke(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_text(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, SByte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_schar(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, short[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_short(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt16[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_ushort(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_ubyte(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Int64[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_longlong(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt64[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_ulonglong(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, int[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_int(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt32[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_uint(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, float[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_float(ncid, varid, start, count, stride, data); } }
+        public static int nc_get_vars_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, double[] data) { lock (namebuf) { return NetCDFNative.nc_get_vars_double(ncid, varid, start, count, stride, data); } }
         public static int nc_get_vars_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, string[] data)
         {
             lock (namebuf)
             {
                 var len = data.Length;
                 var parr = new IntPtr[len];
-                var r = NetCDFDynamic.f_nc_get_vars_string.Invoke(ncid, varid, start, count, stride, parr);
+                var r = NetCDFNative.nc_get_vars_string(ncid, varid, start, count, stride, parr);
                 if (0 == r)
                 {
                     for (int i = 0; i < len; i++) data[i] = ReadString(parr[i]);
-                    r = NetCDFDynamic.f_nc_free_string(new IntPtr(len), parr);
+                    r = NetCDFNative.nc_free_string(new IntPtr(len), parr);
                 }
                 return r;
             }
         }
     }
-    static class NetCDFDynamic
+    static class NetCDFNative
     {
-        static DynamicInterop.UnmanagedDll native;
-        private static string GetPath()
+        static NetCDFNative()
         {
-            string path;
-            var platform = DynamicInterop.PlatformUtility.GetPlatform();
-            switch (platform)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                case PlatformID.Win32NT:
-                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH")
-                        ?? Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "netcdf.dll");
-                    if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
+                string path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
+                if (path == null)
+                {
+                    path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "netcdf.dll");
+                }
+                else
+                {
+                    if (File.Exists(path))
                     {
-                        Environment.SetEnvironmentVariable("PATH",
-                            Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(path));
-                        return path;
+                        path = Path.GetDirectoryName(path);
                     }
-                    var name = "netcdf.dll";
-                    // try find the file in current directory, alongside the executing assembly
-                    // and then in directories from PATH environmental variable.
-                    path = new string[] { Environment.CurrentDirectory }
-                        .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
-                        .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
-                    if (null == path)
+                }
+                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                {
+                    Environment.SetEnvironmentVariable("PATH",
+                        Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(path));
+                }
+                var name = "netcdf.dll";
+                // try find the file in current directory, alongside the executing assembly
+                // and then in directories from PATH environmental variable.
+                path = new string[] { Environment.CurrentDirectory }
+                    .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
+                    .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
+                if (null == path)
+                {
+                    // alternatively try standard install paths.
+                    var programFiles = Environment.GetFolderPath(
+                        Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem
+                        ? Environment.SpecialFolder.ProgramFiles
+                        : Environment.SpecialFolder.ProgramFilesX86);
+                    if (string.Empty == programFiles)
                     {
-                        // alternatively try standard install paths.
-                        var programFiles = Environment.GetFolderPath(
-                            Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem 
-                            ? Environment.SpecialFolder.ProgramFiles 
-                            : Environment.SpecialFolder.ProgramFilesX86);
-                        if (string.Empty == programFiles)
+                        // In windows containers `GetFolderPath` returns empty string
+                        programFiles = Environment.GetEnvironmentVariable(
+                        Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem
+                        ? "ProgramFiles" : "ProgramFiles(x86)");
+                    }
+                    if (!string.IsNullOrWhiteSpace(programFiles))
+                    {
+                        var ncdir = Directory.GetDirectories(programFiles)
+                            .Reverse() // last version first
+                            .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
+                            .Select(d => Path.Combine(d, "bin"))
+                            .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
+                        if (null != ncdir)
                         {
-                            // In windows containers `GetFolderPath` returns empty string
-                            programFiles = Environment.GetEnvironmentVariable(
-                            Environment.Is64BitProcess || !Environment.Is64BitOperatingSystem
-                            ? "ProgramFiles" : "ProgramFiles(x86)");
-                        }
-                        if (!string.IsNullOrWhiteSpace(programFiles))
-                        {
-                            var ncdir = Directory.GetDirectories(programFiles)
-                                .Reverse() // last version first
-                                .Where(d => 0 < d.IndexOf("netcdf", StringComparison.InvariantCultureIgnoreCase))
-                                .Select(d => Path.Combine(d, "bin"))
-                                .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
-                            if (null != ncdir)
-                            {
-                                // if found we need to add the file location to PATH environmental variable to load dependent DLLs.
-                                path = ncdir;
-                                Environment.SetEnvironmentVariable("PATH",
-                                    Environment.GetEnvironmentVariable("PATH") + ";" + ncdir);
-                            }
+                            // if found we need to add the file location to PATH environmental variable to load dependent DLLs.
+                            path = ncdir;
+                            Environment.SetEnvironmentVariable("PATH",
+                                Environment.GetEnvironmentVariable("PATH") + ";" + ncdir);
                         }
                     }
-                    if (null == path) throw new FileNotFoundException(name + " not found in current directory nor on system path nor in Program Files directories.");
-                    return Path.Combine(path, name);
-                case PlatformID.MacOSX:
-                    return "libnetcdf.dylib";
-                case PlatformID.Unix:
-                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
-                    if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
-                    {
-                        return path;
-                    }
-                    return "libnetcdf.so";
-                default:
-                    throw new NotSupportedException(String.Format("Platform not supported: {0}", platform));
+                }
             }
         }
-        static NetCDFDynamic()
-        {
-            // locate netcdf library
-            var platform = DynamicInterop.PlatformUtility.GetPlatform();
-            native = new DynamicInterop.UnmanagedDll(GetPath());
-            f_nc_open = native.GetFunction<nc_open>();
-            f_nc_create = native.GetFunction<nc_create>();
-            f_nc_close = native.GetFunction<nc_close>();
-            f_nc_set_chunk_cache = native.GetFunction<nc_set_chunk_cache>();
-            f_nc_get_chunk_cache = native.GetFunction<nc_get_chunk_cache>();
-            f_nc_sync = native.GetFunction<nc_sync>();
-            f_nc_enddef = native.GetFunction<nc_enddef>();
-            f_nc_redef = native.GetFunction<nc_redef>();
-            f_nc_inq = native.GetFunction<nc_inq>();
-            f_nc_def_var = native.GetFunction<nc_def_var>();
-            f_nc_def_dim = native.GetFunction<nc_def_dim>();
-            f_nc_def_var_deflate = native.GetFunction<nc_def_var_deflate>();
-            f_nc_def_var_chunking = native.GetFunction<nc_def_var_chunking>();
-            f_nc_inq_var = native.GetFunction<nc_inq_var>();
-            f_nc_inq_varids = native.GetFunction<nc_inq_varids>();
-            f_nc_inq_vartype = native.GetFunction<nc_inq_vartype>();
-            f_nc_inq_varnatts = native.GetFunction<nc_inq_varnatts>();
-            f_nc_inq_varid = native.GetFunction<nc_inq_varid>();
-            f_nc_inq_ndims = native.GetFunction<nc_inq_ndims>();
-            f_nc_inq_nvars = native.GetFunction<nc_inq_nvars>();
-            f_nc_inq_varname = native.GetFunction<nc_inq_varname>();
-            f_nc_inq_varndims = native.GetFunction<nc_inq_varndims>();
-            f_nc_inq_vardimid = native.GetFunction<nc_inq_vardimid>();
-            f_nc_inq_natts = native.GetFunction<nc_inq_natts>();
-            f_nc_inq_unlimdim = native.GetFunction<nc_inq_unlimdim>();
-            f_nc_inq_format = native.GetFunction<nc_inq_format>();
-            f_nc_inq_attname = native.GetFunction<nc_inq_attname>();
-            f_nc_inq_atttype = native.GetFunction<nc_inq_atttype>();
-            f_nc_inq_att = native.GetFunction<nc_inq_att>();
-            f_nc_get_att_text = native.GetFunction<nc_get_att_text>();
-            f_nc_get_att_schar = native.GetFunction<nc_get_att_schar>();
-            f_nc_get_att_uchar = native.GetFunction<nc_get_att_uchar>();
-            f_nc_get_att_short = native.GetFunction<nc_get_att_short>();
-            f_nc_get_att_ushort = native.GetFunction<nc_get_att_ushort>();
-            f_nc_get_att_int = native.GetFunction<nc_get_att_int>();
-            f_nc_get_att_uint = native.GetFunction<nc_get_att_uint>();
-            f_nc_get_att_longlong = native.GetFunction<nc_get_att_longlong>();
-            f_nc_get_att_ulonglong = native.GetFunction<nc_get_att_ulonglong>();
-            f_nc_get_att_float = native.GetFunction<nc_get_att_float>();
-            f_nc_get_att_double = native.GetFunction<nc_get_att_double>();
-            f_nc_del_att = native.GetFunction<nc_del_att>();
-            f_nc_put_att_text = native.GetFunction<nc_put_att_text>();
-            f_nc_put_att_string = native.GetFunction<nc_put_att_string>();
-            f_nc_put_att_double = native.GetFunction<nc_put_att_double>();
-            f_nc_put_att_int = native.GetFunction<nc_put_att_int>();
-            f_nc_put_att_short = native.GetFunction<nc_put_att_short>();
-            f_nc_put_att_longlong = native.GetFunction<nc_put_att_longlong>();
-            f_nc_put_att_ushort = native.GetFunction<nc_put_att_ushort>();
-            f_nc_put_att_uint = native.GetFunction<nc_put_att_uint>();
-            f_nc_put_att_float = native.GetFunction<nc_put_att_float>();
-            f_nc_put_att_ulonglong = native.GetFunction<nc_put_att_ulonglong>();
-            f_nc_put_att_schar = native.GetFunction<nc_put_att_schar>();
-            f_nc_put_att_ubyte = native.GetFunction<nc_put_att_ubyte>();
-            f_nc_inq_dim = native.GetFunction<nc_inq_dim>();
-            f_nc_inq_dimname = native.GetFunction<nc_inq_dimname>();
-            f_nc_inq_dimid = native.GetFunction<nc_inq_dimid>();
-            f_nc_inq_dimlen = native.GetFunction<nc_inq_dimlen>();
-            f_nc_get_att_string = native.GetFunction<nc_get_att_string>();
-            f_nc_get_var_text = native.GetFunction<nc_get_var_text>();
-            f_nc_get_var_schar = native.GetFunction<nc_get_var_schar>();
-            f_nc_get_var_short = native.GetFunction<nc_get_var_short>();
-            f_nc_get_var_int = native.GetFunction<nc_get_var_int>();
-            f_nc_get_var_long = native.GetFunction<nc_get_var_long>();
-            f_nc_get_var_float = native.GetFunction<nc_get_var_float>();
-            f_nc_get_var_double = native.GetFunction<nc_get_var_double>();
-            f_nc_put_vara_text = native.GetFunction<nc_put_vara_text>();
-            f_nc_put_vara_double = native.GetFunction<nc_put_vara_double>();
-            f_nc_put_vara_float = native.GetFunction<nc_put_vara_float>();
-            f_nc_put_vara_short = native.GetFunction<nc_put_vara_short>();
-            f_nc_put_vara_ushort = native.GetFunction<nc_put_vara_ushort>();
-            f_nc_put_vara_int = native.GetFunction<nc_put_vara_int>();
-            f_nc_put_vara_uint = native.GetFunction<nc_put_vara_uint>();
-            f_nc_put_vara_longlong = native.GetFunction<nc_put_vara_longlong>();
-            f_nc_put_vara_ulonglong = native.GetFunction<nc_put_vara_ulonglong>();
-            f_nc_put_vara_ubyte = native.GetFunction<nc_put_vara_ubyte>();
-            f_nc_put_vara_schar = native.GetFunction<nc_put_vara_schar>();
-            f_nc_put_vara_string = native.GetFunction<nc_put_vara_string>();
-            f_nc_get_vara_text = native.GetFunction<nc_get_vara_text>();
-            f_nc_get_vara_schar = native.GetFunction<nc_get_vara_schar>();
-            f_nc_get_vara_short = native.GetFunction<nc_get_vara_short>();
-            f_nc_get_vara_ushort = native.GetFunction<nc_get_vara_ushort>();
-            f_nc_get_vara_ubyte = native.GetFunction<nc_get_vara_ubyte>();
-            f_nc_get_vara_longlong = native.GetFunction<nc_get_vara_longlong>();
-            f_nc_get_vara_ulonglong = native.GetFunction<nc_get_vara_ulonglong>();
-            f_nc_get_vara_int = native.GetFunction<nc_get_vara_int>();
-            f_nc_get_vara_uint = native.GetFunction<nc_get_vara_uint>();
-            f_nc_get_vara_float = native.GetFunction<nc_get_vara_float>();
-            f_nc_get_vara_double = native.GetFunction<nc_get_vara_double>();
-            f_nc_get_vara_string = native.GetFunction<nc_get_vara_string>();
-            f_nc_get_var_string = native.GetFunction<nc_get_var_string>();
-            f_nc_get_vars_text = native.GetFunction<nc_get_vars_text>();
-            f_nc_get_vars_schar = native.GetFunction<nc_get_vars_schar>();
-            f_nc_get_vars_short = native.GetFunction<nc_get_vars_short>();
-            f_nc_get_vars_ushort = native.GetFunction<nc_get_vars_ushort>();
-            f_nc_get_vars_ubyte = native.GetFunction<nc_get_vars_ubyte>();
-            f_nc_get_vars_longlong = native.GetFunction<nc_get_vars_longlong>();
-            f_nc_get_vars_ulonglong = native.GetFunction<nc_get_vars_ulonglong>();
-            f_nc_get_vars_int = native.GetFunction<nc_get_vars_int>();
-            f_nc_get_vars_uint = native.GetFunction<nc_get_vars_uint>();
-            f_nc_get_vars_float = native.GetFunction<nc_get_vars_float>();
-            f_nc_get_vars_double = native.GetFunction<nc_get_vars_double>();
-            f_nc_get_vars_string = native.GetFunction<nc_get_vars_string>();
-            f_nc_free_string = native.GetFunction<nc_free_string>();
-        }
-
-        public static nc_open f_nc_open { get; private set; }
-        public static nc_create f_nc_create { get; private set; }
-        public static nc_close f_nc_close { get; private set; }
-        public static nc_set_chunk_cache f_nc_set_chunk_cache { get; private set; }
-        public static nc_get_chunk_cache f_nc_get_chunk_cache { get; private set; }
-        public static nc_sync f_nc_sync { get; private set; }
-        public static nc_enddef f_nc_enddef { get; private set; }
-        public static nc_redef f_nc_redef { get; private set; }
-        public static nc_inq f_nc_inq { get; private set; }
-        public static nc_def_var f_nc_def_var { get; private set; }
-        public static nc_def_dim f_nc_def_dim { get; private set; }
-        public static nc_def_var_deflate f_nc_def_var_deflate { get; private set; }
-        public static nc_def_var_chunking f_nc_def_var_chunking { get; private set; }
-        public static nc_inq_var f_nc_inq_var { get; private set; }
-        public static nc_inq_varids f_nc_inq_varids { get; private set; }
-        public static nc_inq_vartype f_nc_inq_vartype { get; private set; }
-        public static nc_inq_varnatts f_nc_inq_varnatts { get; private set; }
-        public static nc_inq_varid f_nc_inq_varid { get; private set; }
-        public static nc_inq_ndims f_nc_inq_ndims { get; private set; }
-        public static nc_inq_nvars f_nc_inq_nvars { get; private set; }
-        public static nc_inq_varname f_nc_inq_varname { get; private set; }
-        public static nc_inq_varndims f_nc_inq_varndims { get; private set; }
-        public static nc_inq_vardimid f_nc_inq_vardimid { get; private set; }
-        public static nc_inq_natts f_nc_inq_natts { get; private set; }
-        public static nc_inq_unlimdim f_nc_inq_unlimdim { get; private set; }
-        public static nc_inq_format f_nc_inq_format { get; private set; }
-        public static nc_inq_attname f_nc_inq_attname { get; private set; }
-        public static nc_inq_atttype f_nc_inq_atttype { get; private set; }
-        public static nc_inq_att f_nc_inq_att { get; private set; }
-        public static nc_get_att_text f_nc_get_att_text { get; private set; }
-        public static nc_get_att_schar f_nc_get_att_schar { get; private set; }
-        public static nc_get_att_uchar f_nc_get_att_uchar { get; private set; }
-        public static nc_get_att_short f_nc_get_att_short { get; private set; }
-        public static nc_get_att_ushort f_nc_get_att_ushort { get; private set; }
-        public static nc_get_att_int f_nc_get_att_int { get; private set; }
-        public static nc_get_att_uint f_nc_get_att_uint { get; private set; }
-        public static nc_get_att_longlong f_nc_get_att_longlong { get; private set; }
-        public static nc_get_att_ulonglong f_nc_get_att_ulonglong { get; private set; }
-        public static nc_get_att_float f_nc_get_att_float { get; private set; }
-        public static nc_get_att_double f_nc_get_att_double { get; private set; }
-        public static nc_del_att f_nc_del_att { get; private set; }
-        public static nc_put_att_text f_nc_put_att_text { get; private set; }
-        public static nc_put_att_string f_nc_put_att_string { get; private set; }
-        public static nc_put_att_double f_nc_put_att_double { get; private set; }
-        public static nc_put_att_int f_nc_put_att_int { get; private set; }
-        public static nc_put_att_short f_nc_put_att_short { get; private set; }
-        public static nc_put_att_longlong f_nc_put_att_longlong { get; private set; }
-        public static nc_put_att_ushort f_nc_put_att_ushort { get; private set; }
-        public static nc_put_att_uint f_nc_put_att_uint { get; private set; }
-        public static nc_put_att_float f_nc_put_att_float { get; private set; }
-        public static nc_put_att_ulonglong f_nc_put_att_ulonglong { get; private set; }
-        public static nc_put_att_schar f_nc_put_att_schar { get; private set; }
-        public static nc_put_att_ubyte f_nc_put_att_ubyte { get; private set; }
-        public static nc_inq_dim f_nc_inq_dim { get; private set; }
-        public static nc_inq_dimname f_nc_inq_dimname { get; private set; }
-        public static nc_inq_dimid f_nc_inq_dimid { get; private set; }
-        public static nc_inq_dimlen f_nc_inq_dimlen { get; private set; }
-        public static nc_get_att_string f_nc_get_att_string { get; private set; }
-        public static nc_get_var_text f_nc_get_var_text { get; private set; }
-        public static nc_get_var_schar f_nc_get_var_schar { get; private set; }
-        public static nc_get_var_short f_nc_get_var_short { get; private set; }
-        public static nc_get_var_int f_nc_get_var_int { get; private set; }
-        public static nc_get_var_long f_nc_get_var_long { get; private set; }
-        public static nc_get_var_float f_nc_get_var_float { get; private set; }
-        public static nc_get_var_double f_nc_get_var_double { get; private set; }
-        public static nc_put_vara_text f_nc_put_vara_text { get; private set; }
-        public static nc_put_vara_double f_nc_put_vara_double { get; private set; }
-        public static nc_put_vara_float f_nc_put_vara_float { get; private set; }
-        public static nc_put_vara_short f_nc_put_vara_short { get; private set; }
-        public static nc_put_vara_ushort f_nc_put_vara_ushort { get; private set; }
-        public static nc_put_vara_int f_nc_put_vara_int { get; private set; }
-        public static nc_put_vara_uint f_nc_put_vara_uint { get; private set; }
-        public static nc_put_vara_longlong f_nc_put_vara_longlong { get; private set; }
-        public static nc_put_vara_ulonglong f_nc_put_vara_ulonglong { get; private set; }
-        public static nc_put_vara_ubyte f_nc_put_vara_ubyte { get; private set; }
-        public static nc_put_vara_schar f_nc_put_vara_schar { get; private set; }
-        public static nc_put_vara_string f_nc_put_vara_string { get; private set; }
-        public static nc_get_vara_text f_nc_get_vara_text { get; private set; }
-        public static nc_get_vara_schar f_nc_get_vara_schar { get; private set; }
-        public static nc_get_vara_short f_nc_get_vara_short { get; private set; }
-        public static nc_get_vara_ushort f_nc_get_vara_ushort { get; private set; }
-        public static nc_get_vara_ubyte f_nc_get_vara_ubyte { get; private set; }
-        public static nc_get_vara_longlong f_nc_get_vara_longlong { get; private set; }
-        public static nc_get_vara_ulonglong f_nc_get_vara_ulonglong { get; private set; }
-        public static nc_get_vara_int f_nc_get_vara_int { get; private set; }
-        public static nc_get_vara_uint f_nc_get_vara_uint { get; private set; }
-        public static nc_get_vara_float f_nc_get_vara_float { get; private set; }
-        public static nc_get_vara_double f_nc_get_vara_double { get; private set; }
-        public static nc_get_vara_string f_nc_get_vara_string { get; private set; }
-        public static nc_get_var_string f_nc_get_var_string { get; private set; }
-        public static nc_get_vars_text f_nc_get_vars_text { get; private set; }
-        public static nc_get_vars_schar f_nc_get_vars_schar { get; private set; }
-        public static nc_get_vars_short f_nc_get_vars_short { get; private set; }
-        public static nc_get_vars_ushort f_nc_get_vars_ushort { get; private set; }
-        public static nc_get_vars_ubyte f_nc_get_vars_ubyte { get; private set; }
-        public static nc_get_vars_longlong f_nc_get_vars_longlong { get; private set; }
-        public static nc_get_vars_ulonglong f_nc_get_vars_ulonglong { get; private set; }
-        public static nc_get_vars_int f_nc_get_vars_int { get; private set; }
-        public static nc_get_vars_uint f_nc_get_vars_uint { get; private set; }
-        public static nc_get_vars_float f_nc_get_vars_float { get; private set; }
-        public static nc_get_vars_double f_nc_get_vars_double { get; private set; }
-        public static nc_get_vars_string f_nc_get_vars_string { get; private set; }
-        public static nc_free_string f_nc_free_string { get; private set; }
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_open(string path, CreateMode mode, out int ncidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_create(string path, CreateMode mode, out int ncidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_close(int ncidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_set_chunk_cache(IntPtr size, IntPtr nelems, float preemption);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_chunk_cache(out IntPtr size, out IntPtr nelems, out float preemption);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_sync(int ncid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_enddef(int ncid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_redef(int ncid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq(int ncid, out int ndims, out int nvars, out int ngatts, out int unlimdimid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_def_var(int ncid, string name, NcType xtype, int ndims, int[] dimids, out int varidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_def_var_chunking(int ncid, int varid, int contiguous, IntPtr[] chunksizes);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_var(int ncid, int varid, StringBuilder name, out NcType type, out int ndims, int[] dimids, out int natts);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_varids(int ncid, out int nvars, int[] varids);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_vartype(int ncid, int varid, out NcType xtypep);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_varnatts(int ncid, int varid, out int nattsp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_varid(int ncid, string name, out int varidp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_ndims(int ncid, out int ndims);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_nvars(int ncid, out int nvars);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_varname(int ncid, int varid, StringBuilder name);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_varndims(int ncid, int varid, out int ndims);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_vardimid(int ncid, int varid, int[] dimids);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_natts(int ncid, out int ngatts);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_unlimdim(int ncid, out int unlimdimid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_format(int ncid, out int format);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_attname(int ncid, int varid, int attnum, StringBuilder name);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_atttype(int ncid, int varid, string name, out NcType type);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_att(int ncid, int varid, string name, out NcType type, out IntPtr length);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_text(int ncid, int varid, string name, byte[] value, int maxLength);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_schar(int ncid, int varid, string name, SByte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_uchar(int ncid, int varid, string name, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_short(int ncid, int varid, string name, Int16[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_ushort(int ncid, int varid, string name, UInt16[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_int(int ncid, int varid, string name, Int32[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_uint(int ncid, int varid, string name, UInt32[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_longlong(int ncid, int varid, string name, Int64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_ulonglong(int ncid, int varid, string name, UInt64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_float(int ncid, int varid, string name, float[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_double(int ncid, int varid, string name, double[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_del_att(int ncid, int varid, string name);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_text(int ncid, int varid, string name, IntPtr len, byte[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_string(int ncid, int varid, string name, IntPtr len, IntPtr[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_double(int ncid, int varid, string name, NcType type, IntPtr len, double[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_int(int ncid, int varid, string name, NcType type, IntPtr len, int[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_short(int ncid, int varid, string name, NcType type, IntPtr len, short[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_longlong(int ncid, int varid, string name, NcType type, IntPtr len, Int64[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_ushort(int ncid, int varid, string name, NcType type, IntPtr len, UInt16[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_uint(int ncid, int varid, string name, NcType type, IntPtr len, UInt32[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_float(int ncid, int varid, string name, NcType type, IntPtr len, float[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_ulonglong(int ncid, int varid, string name, NcType type, IntPtr len, UInt64[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_schar(int ncid, int varid, string name, NcType type, IntPtr len, SByte[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_att_ubyte(int ncid, int varid, string name, NcType type, IntPtr len, Byte[] tp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_dim(int ncid, int dimid, StringBuilder name, out IntPtr length);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_dimname(int ncid, int dimid, StringBuilder name);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_dimid(int ncid, string name, out int dimid);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_inq_dimlen(int ncid, int dimid, out IntPtr length);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_att_string(int ncid, int varid, string name, IntPtr[] ip);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_text(int ncid, int varid, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_schar(int ncid, int varid, SByte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_short(int ncid, int varid, short[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_int(int ncid, int varid, int[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_long(int ncid, int varid, long[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_float(int ncid, int varid, float[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_double(int ncid, int varid, double[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] ip);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] dp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_put_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] sp);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_var_string(int ncid, int varid, IntPtr[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, SByte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, short[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt16[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Int64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt64[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, int[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt32[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, float[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, double[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_get_vars_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, IntPtr[] data);
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate int nc_free_string(IntPtr len, IntPtr[] data);
+        [DllImport("netcdf")] public static extern int nc_open(string path, CreateMode mode, out int ncidp);
+        [DllImport("netcdf")] public static extern int nc_create(string path, CreateMode mode, out int ncidp);
+        [DllImport("netcdf")] public static extern int nc_close(int ncidp);
+        [DllImport("netcdf")] public static extern int nc_set_chunk_cache(IntPtr size, IntPtr nelems, float preemption);
+        [DllImport("netcdf")] public static extern int nc_get_chunk_cache(out IntPtr size, out IntPtr nelems, out float preemption);
+        [DllImport("netcdf")] public static extern int nc_sync(int ncid);
+        [DllImport("netcdf")] public static extern int nc_enddef(int ncid);
+        [DllImport("netcdf")] public static extern int nc_redef(int ncid);
+        [DllImport("netcdf")] public static extern int nc_inq(int ncid, out int ndims, out int nvars, out int ngatts, out int unlimdimid);
+        [DllImport("netcdf")] public static extern int nc_def_var(int ncid, string name, NcType xtype, int ndims, int[] dimids, out int varidp);
+        [DllImport("netcdf")] public static extern int nc_def_dim(int ncid, string name, IntPtr len, out int dimidp);
+        [DllImport("netcdf")] public static extern int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
+        [DllImport("netcdf")] public static extern int nc_def_var_chunking(int ncid, int varid, int contiguous, IntPtr[] chunksizes);
+        [DllImport("netcdf")] public static extern int nc_inq_var(int ncid, int varid, StringBuilder name, out NcType type, out int ndims, int[] dimids, out int natts);
+        [DllImport("netcdf")] public static extern int nc_inq_varids(int ncid, out int nvars, int[] varids);
+        [DllImport("netcdf")] public static extern int nc_inq_vartype(int ncid, int varid, out NcType xtypep);
+        [DllImport("netcdf")] public static extern int nc_inq_varnatts(int ncid, int varid, out int nattsp);
+        [DllImport("netcdf")] public static extern int nc_inq_varid(int ncid, string name, out int varidp);
+        [DllImport("netcdf")] public static extern int nc_inq_ndims(int ncid, out int ndims);
+        [DllImport("netcdf")] public static extern int nc_inq_nvars(int ncid, out int nvars);
+        [DllImport("netcdf")] public static extern int nc_inq_varname(int ncid, int varid, StringBuilder name);
+        [DllImport("netcdf")] public static extern int nc_inq_varndims(int ncid, int varid, out int ndims);
+        [DllImport("netcdf")] public static extern int nc_inq_vardimid(int ncid, int varid, int[] dimids);
+        [DllImport("netcdf")] public static extern int nc_inq_natts(int ncid, out int ngatts);
+        [DllImport("netcdf")] public static extern int nc_inq_unlimdim(int ncid, out int unlimdimid);
+        [DllImport("netcdf")] public static extern int nc_inq_format(int ncid, out int format);
+        [DllImport("netcdf")] public static extern int nc_inq_attname(int ncid, int varid, int attnum, StringBuilder name);
+        [DllImport("netcdf")] public static extern int nc_inq_atttype(int ncid, int varid, string name, out NcType type);
+        [DllImport("netcdf")] public static extern int nc_inq_att(int ncid, int varid, string name, out NcType type, out IntPtr length);
+        [DllImport("netcdf")] public static extern int nc_get_att_text(int ncid, int varid, string name, byte[] value, int maxLength);
+        [DllImport("netcdf")] public static extern int nc_get_att_schar(int ncid, int varid, string name, SByte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_uchar(int ncid, int varid, string name, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_short(int ncid, int varid, string name, Int16[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_ushort(int ncid, int varid, string name, UInt16[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_int(int ncid, int varid, string name, Int32[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_uint(int ncid, int varid, string name, UInt32[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_longlong(int ncid, int varid, string name, Int64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_ulonglong(int ncid, int varid, string name, UInt64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_float(int ncid, int varid, string name, float[] data);
+        [DllImport("netcdf")] public static extern int nc_get_att_double(int ncid, int varid, string name, double[] data);
+        [DllImport("netcdf")] public static extern int nc_del_att(int ncid, int varid, string name);
+        [DllImport("netcdf")] public static extern int nc_put_att_text(int ncid, int varid, string name, IntPtr len, byte[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_string(int ncid, int varid, string name, IntPtr len, IntPtr[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_double(int ncid, int varid, string name, NcType type, IntPtr len, double[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_int(int ncid, int varid, string name, NcType type, IntPtr len, int[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_short(int ncid, int varid, string name, NcType type, IntPtr len, short[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_longlong(int ncid, int varid, string name, NcType type, IntPtr len, Int64[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_ushort(int ncid, int varid, string name, NcType type, IntPtr len, UInt16[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_uint(int ncid, int varid, string name, NcType type, IntPtr len, UInt32[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_float(int ncid, int varid, string name, NcType type, IntPtr len, float[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_ulonglong(int ncid, int varid, string name, NcType type, IntPtr len, UInt64[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_schar(int ncid, int varid, string name, NcType type, IntPtr len, SByte[] tp);
+        [DllImport("netcdf")] public static extern int nc_put_att_ubyte(int ncid, int varid, string name, NcType type, IntPtr len, Byte[] tp);
+        [DllImport("netcdf")] public static extern int nc_inq_dim(int ncid, int dimid, StringBuilder name, out IntPtr length);
+        [DllImport("netcdf")] public static extern int nc_inq_dimname(int ncid, int dimid, StringBuilder name);
+        [DllImport("netcdf")] public static extern int nc_inq_dimid(int ncid, string name, out int dimid);
+        [DllImport("netcdf")] public static extern int nc_inq_dimlen(int ncid, int dimid, out IntPtr length);
+        [DllImport("netcdf")] public static extern int nc_get_att_string(int ncid, int varid, string name, IntPtr[] ip);
+        [DllImport("netcdf")] public static extern int nc_get_var_text(int ncid, int varid, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_schar(int ncid, int varid, SByte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_short(int ncid, int varid, short[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_int(int ncid, int varid, int[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_long(int ncid, int varid, long[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_float(int ncid, int varid, float[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_double(int ncid, int varid, double[] data);
+        [DllImport("netcdf")] public static extern int nc_put_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, byte[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] ip);
+        [DllImport("netcdf")] public static extern int nc_put_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] dp);
+        [DllImport("netcdf")] public static extern int nc_put_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] sp);
+        [DllImport("netcdf")] public static extern int nc_get_vara_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, SByte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, short[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt16[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, Int64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, int[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, UInt32[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, float[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, double[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vara_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] data);
+        [DllImport("netcdf")] public static extern int nc_get_var_string(int ncid, int varid, IntPtr[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_text(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_schar(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, SByte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_short(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, short[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_ushort(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt16[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_ubyte(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Byte[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_longlong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, Int64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_ulonglong(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt64[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_int(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, int[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_uint(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, UInt32[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_float(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, float[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, double[] data);
+        [DllImport("netcdf")] public static extern int nc_get_vars_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, IntPtr[] data);
+        [DllImport("netcdf")] public static extern int nc_free_string(IntPtr len, IntPtr[] data);
     }
 }
 

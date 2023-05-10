@@ -16,12 +16,4 @@
   
   <Import Project="../Common/Version.proj" />
   
-  <ItemGroup>
-    <Folder Include="Providers\NetCDF\Interop\" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="DynamicInterop" Version="0.9.1" />
-  </ItemGroup>
-
 </Project>
