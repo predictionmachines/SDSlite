@@ -1,19 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageId>SDSLite</PackageId>
-    <Description>A cross platform library for manipulating netCDF, CSV and TSV files.</Description>
-    <Company>Microsoft</Company>
-    <Authors>Microsoft Research, Computational Science group</Authors>
-    <PackageProjectUrl>http://research.microsoft.com/en-us/projects/sds</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
-  
-  <Import Project="../Common/Version.proj" />
-  
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageId>SDSLite</PackageId>
+		<Description>A cross platform .NET library for manipulating netCDF, CSV and TSV files.</Description>
+		<Company>Microsoft</Company>
+		<Authors>Microsoft Research, Computational Science group</Authors>
+		<PackageProjectUrl>http://research.microsoft.com/en-us/projects/sds</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/predictionmachines/SDSlite</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<Import Project="../Common/Version.proj" />
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
 </Project>
