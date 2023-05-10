@@ -50,6 +50,8 @@ jobs:
       run: sudo apt-get install libnetcdf-dev
     - name: Test
       run: dotnet test --verbosity normal SDSLiteTests
+      env:
+        LD_DEBUG: all
 
   build-test-macos:
 
