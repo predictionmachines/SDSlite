@@ -1,5 +1,7 @@
 [![NuGet](https://img.shields.io/nuget/v/SDSlite.svg?style=flat)](https://www.nuget.org/packages/SDSlite/)
-![build-test](https://github.com/predictionmachines/SDSlite/workflows/build-test/badge.svg)Scientific DataSet Lite
+![build-test](https://github.com/predictionmachines/SDSlite/workflows/build-test/badge.svg)
+
+Scientific DataSet Lite
 =======================
 
 This is a cross platform [.NET](https://dotnet.microsoft.com) library for manipulating netCDF, CSV and TSV files.
@@ -40,7 +42,7 @@ Sample
 
 C# example:
 
-```C#
+```csharp
 using Microsoft.Research.Science.Data;
 using Microsoft.Research.Science.Data.Imperative;
 
@@ -62,7 +64,7 @@ using (DataSet ds = DataSet.Open("msds:nc?file=sresa1b_ncar_ccsm3-example.nc&ope
 
 Output:
 
-```
+```text
 msds:nc?openMode=readOnly&file=c:\Users\***\sresa1b_ncar_ccsm3-example.nc
 [1]
 DSID: ca6c1f06-f743-4190-9b94-20cf0cbc18f7
