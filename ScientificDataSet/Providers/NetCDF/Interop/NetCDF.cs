@@ -537,14 +537,19 @@ namespace NetCDFInterop
         static DynamicInterop.UnmanagedDll native;
         private static string GetPath()
         {
-            string path;
+            string path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
+            if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
+            {
+                return path;
+            }
             var platform = DynamicInterop.PlatformUtility.GetPlatform();
             switch (platform)
             {
                 case PlatformID.Win32NT:
                     var name = "netcdf.dll";
-                    // try find the file in current directory and then in directories from PATH environmental variable.
-                    path = Enumerable.Repeat(Environment.CurrentDirectory, 1)
+                    // try find the file in current directory, alongside the executing assembly
+                    // and then in directories from PATH environmental variable.
+                    path = new string[] { Environment.CurrentDirectory, System.Reflection.Assembly.GetExecutingAssembly().Location}
                         .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
                         .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
                     if (null == path)
@@ -582,11 +587,6 @@ namespace NetCDFInterop
                 case PlatformID.MacOSX:
                     return "libnetcdf.dylib";
                 case PlatformID.Unix:
-                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
-                    if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
-                    {
-                        return path;
-                    }
                     return "libnetcdf.so";
                 default:
                     throw new NotSupportedException(String.Format("Platform not supported: {0}", platform));
