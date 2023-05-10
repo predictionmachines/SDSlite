@@ -542,7 +542,8 @@ namespace NetCDFInterop
             switch (platform)
             {
                 case PlatformID.Win32NT:
-                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
+                    path = Environment.GetEnvironmentVariable("LIBNETCDFPATH")
+                        ?? Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "netcdf.dll");
                     if (!string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path))
                     {
                         Environment.SetEnvironmentVariable("PATH",
@@ -552,7 +553,7 @@ namespace NetCDFInterop
                     var name = "netcdf.dll";
                     // try find the file in current directory, alongside the executing assembly
                     // and then in directories from PATH environmental variable.
-                    path = new string[] { Environment.CurrentDirectory, System.Reflection.Assembly.GetExecutingAssembly().Location}
+                    path = new string[] { Environment.CurrentDirectory }
                         .Concat(Environment.GetEnvironmentVariable("PATH").Split(';'))
                         .FirstOrDefault(d => File.Exists(Path.Combine(d, name)));
                     if (null == path)
