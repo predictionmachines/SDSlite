@@ -34,7 +34,7 @@ jobs:
 
   build-test-linux:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v2
@@ -50,8 +50,6 @@ jobs:
       run: sudo apt-get install libnetcdf-dev
     - name: Test
       run: dotnet test --verbosity normal SDSLiteTests
-      env:
-        LD_DEBUG: all
 
   build-test-macos:
 
