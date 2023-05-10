@@ -139,7 +139,8 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         Fast = 3,
         Normal = 5,
         Good = 7,
-        Best = 9
+        Best = 9,
+        BestWithShuffle = 10
     }
 }
 

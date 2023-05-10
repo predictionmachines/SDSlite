@@ -160,12 +160,12 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             }
             NetCDFDataSet.HandleResult(res);
 
-            // Non scalar variables can be compressed.
-            // It is regulated by the uri parameter "deflate".
-            if (dims.Length > 0)
+            // Scalar variables and strings cannot be compressed.
+            // For other variables compression is regulated by the uri parameter "deflate".
+            if (dataSet.Deflate != DeflateLevel.Off && dims.Length > 0 && typeof(DataType) != typeof(string))
             {
-                if (dataSet.Deflate == DeflateLevel.Off)
-                    res = NetCDF.nc_def_var_deflate(dataSet.NcId, varid, 0, 0, 0);
+                if (dataSet.Deflate == DeflateLevel.BestWithShuffle)
+                    res = NetCDF.nc_def_var_deflate(dataSet.NcId, varid, 1, 1, 9);
                 else
                     res = NetCDF.nc_def_var_deflate(dataSet.NcId, varid, 0, 1, (int)dataSet.Deflate);
                 NetCDFDataSet.HandleResult(res);
