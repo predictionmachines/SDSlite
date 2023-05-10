@@ -548,7 +548,7 @@ namespace NetCDFInterop
                         path = Path.GetDirectoryName(path);
                     }
                 }
-                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
                 {
                     Environment.SetEnvironmentVariable("PATH",
                         Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(path));
