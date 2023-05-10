@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master ]
 env:
-  URL_NETCDF_WIN: http://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.7.2-NC4-64.exe
+  URL_NETCDF_WIN: https://downloads.unidata.ucar.edu/netcdf-c/4.9.2/netCDF4.9.2-NC4-64.exe
 jobs:
   build-test-windows:
 
@@ -17,7 +17,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -25,22 +25,23 @@ jobs:
     - name: Download NetCDF
       shell: pwsh
       run: |
-        Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile netcdf.exe
-        7z x netcdf.exe bin/*
-        Add-Content -Path $env:GITHUB_PATH -Value (Join-Path (Get-Location) "bin")  -Encoding UTF8
+        Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile ${{ runner.temp }}\netcdf.exe
+        7z x ${{ runner.temp }}\netcdf.exe bin/* -o${{ runner.temp }} -y
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      env:
+        LIBNETCDFPATH: ${{ runner.temp }}\bin\netcdf.dll
 
   build-test-linux:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -59,7 +60,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build

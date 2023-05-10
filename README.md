@@ -12,15 +12,24 @@ SDSLite requires a platform dependent library available from [http://www.unidata
 
 ### Windows
 
-For Windows go to [http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html](http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html) and download the version of netCDF4 (without DAP) corresponding to your machine, either 32 or 64 bit. These are
-currently: https://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.7.4-NC4-32.exe or https://www.unidata.ucar.edu/downloads/netcdf/ftp/netCDF4.7.4-NC4-64.exe
-When you install this library select the option to add its location to your system PATH, so that SDSLite can find it.
+For Windows go to [http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html](http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html) and download the version of netCDF4 (without DAP) corresponding to your machine, either 32 or 64 bit.
+As of May 2023 these are: https://downloads.unidata.ucar.edu/netcdf-c/4.9.2/netCDF4.9.2-NC4-64.exe or https://downloads.unidata.ucar.edu/netcdf-c/4.9.2/netCDF4.9.2-NC4-64.exe.
+
+The Scientific DataSet library looks for `netcdf.dll` file in the following locations:
+- `LIBNETCDFPATH` environment variable if it contains full path of the `netcdf.dll` file;
+- Current directory;
+- In the same directory as the `ScientificDataSet.dll` assembly;
+- PATH environment variable;
+- Default installation directory of netCDF4.
 
 ### Linux
 
 For Linux install pre-built netCDF-C libraries. For example on Ubuntu:
 
 `sudo apt-get install libnetcdf-dev`
+
+If `LIBNETCDFPATH` environment variable contains full path of the `.so*` file, this will be used.
+Otherwise, standard Linux library search for `libnetcdf.so` will be used.
 
 ### MacOS
 
