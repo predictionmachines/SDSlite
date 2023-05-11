@@ -557,6 +557,7 @@ namespace NetCDFInterop
                 }
                 if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
                 {
+                    Console.WriteLine($" *** {path} ***");
                     Environment.SetEnvironmentVariable("PATH",
                         Environment.GetEnvironmentVariable("PATH") + ";" + path);
                 }

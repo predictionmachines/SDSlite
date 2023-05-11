@@ -27,6 +27,7 @@ jobs:
       run: |
         Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile ${{ runner.temp }}\netcdf.exe
         7z x ${{ runner.temp }}\netcdf.exe bin/*.dll -o${{ runner.temp }} -y
+        Get-ChildItem ${{ runner.temp }}\bin
     - name: Test
       run: dotnet test --no-build --verbosity normal
       env:
