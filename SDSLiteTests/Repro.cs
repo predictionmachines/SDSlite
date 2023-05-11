@@ -11,6 +11,7 @@ namespace SDSLiteTests
 {
     public class Repro_28
     {
+        // Repro issue #28
         [Test]
         public void CanReadNetcdfNcChar()
         {
@@ -43,5 +44,27 @@ namespace SDSLiteTests
         const string netcdf_content = @"
 Q0RGAQAAAAEAAAAKAAAAAgAAAARzaXplAAAACAAAAAVjb3VudAAAAAAAAAAAAAAAAAAAAAAAAAsA
 AAABAAAABHRlc3QAAAACAAAAAQAAAAAAAAAAAAAAAAAAAAIAAAAIAAAAZHZhbHVlICAg";
+    }
+
+    public class Repro_38
+    {
+        // Repro issue #38
+        [Test]
+        public void CsvAddVariableNoMissingValue()
+        {
+            var csvPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".csv");
+            try
+            {
+                using (var sdsout = DataSet.Open("out.csv", ResourceOpenMode.Create))
+                {
+                    sdsout.AddVariable<double>("a", "a");
+                }
+
+            }
+            finally
+            {
+                File.Delete(csvPath);
+            }
+        }
     }
 }
