@@ -536,13 +536,20 @@ namespace NetCDFInterop
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
+                // Find where netcdf.dll is and ensure its location is on PATH.
+                var name = "netcdf.dll";
+                // LIBNETCDFPATH takes precedence of other places
                 string path = Environment.GetEnvironmentVariable("LIBNETCDFPATH");
                 if (path == null)
                 {
-                    path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "netcdf.dll");
+                    // If not, check netcdf.dll alongside ScientificDataSet.dll
+                    path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                    if (!File.Exists(Path.Combine(path, name))) { path = null; }
                 }
                 else
                 {
+                    // LIBNETCDFPATH may refer to a file or a directory,
+                    // path must be a directory.
                     if (File.Exists(path))
                     {
                         path = Path.GetDirectoryName(path);
@@ -553,7 +560,6 @@ namespace NetCDFInterop
                     Environment.SetEnvironmentVariable("PATH",
                         Environment.GetEnvironmentVariable("PATH") + ";" + path);
                 }
-                var name = "netcdf.dll";
                 // try find the file in current directory, alongside the executing assembly
                 // and then in directories from PATH environmental variable.
                 path = new string[] { Environment.CurrentDirectory }
