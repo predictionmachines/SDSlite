@@ -551,7 +551,7 @@ namespace NetCDFInterop
                 if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
                 {
                     Environment.SetEnvironmentVariable("PATH",
-                        Environment.GetEnvironmentVariable("PATH") + ";" + Path.GetDirectoryName(path));
+                        Environment.GetEnvironmentVariable("PATH") + ";" + path);
                 }
                 var name = "netcdf.dll";
                 // try find the file in current directory, alongside the executing assembly
