@@ -1041,9 +1041,8 @@ namespace Microsoft.Research.Science.Data.CSV
             sw.Write(separator);
 
             // Missing Value
-            var missingValue = metadata[metadata.KeyForMissingValue, SchemaVersion.Recent];
-            if (missingValue != null)
-                sw.Write(SerializeToString(missingValue)); // TODO: serialization of supported type
+            if (metadata.ContainsKey(metadata.KeyForMissingValue, SchemaVersion.Recent))
+                sw.Write(SerializeToString(metadata[metadata.KeyForMissingValue, SchemaVersion.Recent])); // TODO: serialization of supported type
             sw.Write(separator);
 
             // Dimensions: might be empty for scalars
