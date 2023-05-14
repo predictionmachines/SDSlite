@@ -1,10 +1,8 @@
-﻿using System;
-using NUnit.Framework;
-
-using Microsoft.Research.Science.Data;
-using System.Linq;
-using System.IO;
+﻿using Microsoft.Research.Science.Data;
 using Microsoft.Research.Science.Data.NetCDF4;
+using NUnit.Framework;
+using System;
+using System.Linq;
 
 namespace SDSLiteTests
 {

@@ -4,7 +4,6 @@ using NUnit.Framework;
 using Microsoft.Research.Science.Data;
 using System.Linq;
 using System.IO;
-using Microsoft.Research.Science.Data.NetCDF4;
 
 namespace SDSLiteTests
 {
