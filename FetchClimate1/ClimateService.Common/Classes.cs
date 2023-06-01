@@ -220,21 +220,28 @@ namespace Microsoft.Research.Science.Data.Climate.Common
             this.lonmax = lonmax;
         }
 
-        public static bool operator ==(SpatialCell first, SpatialCell second)
+        public bool Equals(SpatialCell second)
         {
-            if (((object)first == null) || ((object)second) == null)
-                return false;
-            if (first.hash != second.hash) return false;
-            return (first.latmax == second.latmax) &&
-                (first.latmin == second.latmin) &&
-                (first.lonmax == second.lonmax) &&
-                (first.lonmin == second.lonmin);
+            if (second == null) return false;
+            return (latmax == second.latmax) &&
+                (latmin == second.latmin) &&
+                (lonmax == second.lonmax) &&
+                (lonmin == second.lonmin);
         }
 
-        public static bool operator !=(SpatialCell first, SpatialCell second)
+        override public bool Equals(object obj)
         {
-            return !(first == second);
+            if (obj is SpatialCell)
+                return Equals((SpatialCell)obj);
+            else return false;
         }
+
+        public static bool operator ==(SpatialCell first, SpatialCell second)
+        {
+            if (first is null) return second is null;
+            return first.Equals(second);
+        }
+        public static bool operator !=(SpatialCell first, SpatialCell second) => !(first == second);
 
         protected int hash = 0;
         protected bool isChecked = false;

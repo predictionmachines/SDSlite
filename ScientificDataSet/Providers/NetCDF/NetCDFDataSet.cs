@@ -201,7 +201,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         /// <param name="uri">DataSet URI (see remarks for <see cref="NetCDFDataSet"/>).</param>
         /// <remarks>
         /// <para>
-        /// If the file specified by <paramref name="fileName"/> exists, the NetCDF will be 
+        /// If the file specified by <paramref name="uri"/> exists, the NetCDF will be 
         /// initialized with that file. Otherwise, the new file will be created and 
         /// the resulting NetCDFDataSet will be empty.
         /// </para>
@@ -218,7 +218,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             if (DataSetUri.IsDataSetUri(uri))
                 this.uri = new NetCDFUri(uri);
             else
-                this.uri = NetCDFUri.FromFileName(uri);
+                this.uri = new NetCDFUri() { FileName = uri };
             DataSetUri.NormalizeUri(this.uri);
 
             rollbackEnabled = ((NetCDFUri)this.uri).EnableRollback;
@@ -250,7 +250,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             if (DataSetUri.IsDataSetUri(uri))
                 this.uri = new NetCDFUri(uri);
             else
-                this.uri = NetCDFUri.FromFileName(uri);
+                this.uri = new NetCDFUri() { FileName = uri };
             DataSetUri.NormalizeUri(this.uri);
 
             rollbackEnabled = ((NetCDFUri)this.uri).EnableRollback;

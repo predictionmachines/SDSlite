@@ -117,16 +117,9 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 SetParameterValue("enableRollback", value.ToString().ToLower());
             }
         }
-
-        internal static NetCDFUri FromFileName(string file)
-        {
-            string uri = DataSetUri.CreateFromPath(file,
-                Microsoft.Research.Science.Data.Factory.DataSetFactory.GetProviderNameByType(typeof(NetCDFDataSet)) ??
-                    ((DataSetProviderNameAttribute)typeof(NetCDFDataSet).GetCustomAttributes(typeof(DataSetProviderNameAttribute), false)[0]).Name,
-                "file");
-            return new NetCDFUri(uri);
-        }
     }
+
+#pragma warning disable 1591
     /// <summary>
     /// Represents data deflate level for NetCDF variables.
     /// </summary>

@@ -18,6 +18,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC31A69-438C-47C0-A833-73226ADBAA5E}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-test.yml = .github\workflows\build-test.yml
+		CHANGELOG.md = CHANGELOG.md
 		Licence.txt = Licence.txt
 		Common\Version.proj = Common\Version.proj
 	EndProjectSection

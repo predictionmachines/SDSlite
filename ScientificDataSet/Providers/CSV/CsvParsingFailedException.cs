@@ -12,10 +12,15 @@ namespace Microsoft.Research.Science.Data.CSV
 	[global::System.Serializable]
 	public class CsvParsingFailedException : ApplicationException
 	{
+		/// <inheritdoc />
 		public CsvParsingFailedException() { }
-		public CsvParsingFailedException(string message) : base(message) { }
-		public CsvParsingFailedException(string message, Exception inner) : base(message, inner) { }
-		protected CsvParsingFailedException(
+
+        /// <inheritdoc />
+        public CsvParsingFailedException(string message) : base(message) { }
+        /// <inheritdoc />
+        public CsvParsingFailedException(string message, Exception inner) : base(message, inner) { }
+        /// <inheritdoc />
+        protected CsvParsingFailedException(
 		  System.Runtime.Serialization.SerializationInfo info,
 		  System.Runtime.Serialization.StreamingContext context)
 			: base(info, context) { }

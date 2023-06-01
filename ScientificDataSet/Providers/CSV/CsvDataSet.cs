@@ -306,7 +306,7 @@ namespace Microsoft.Research.Science.Data.CSV
             if (DataSetUri.IsDataSetUri(uri))
                 this.uri = new CsvUri(uri);
             else
-                this.uri = CsvUri.FromFileName(uri);
+                this.uri = new CsvUri() { FileName=uri };
 
             DataSetUri.NormalizeUri(this.uri);
             CsvUri _uri = (CsvUri)this.uri;

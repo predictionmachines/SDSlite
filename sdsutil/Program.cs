@@ -230,8 +230,7 @@ namespace sdsutil
                         return;
                     }
                     // mds2 is ready to be cloned
-                    Microsoft.Research.Science.Data.Utilities.DataSetCloning.Clone(mds2, dstUri,
-                        Microsoft.Research.Science.Data.Utilities.DataSetCloning.DefaultUpdater).Dispose();
+                    Microsoft.Research.Science.Data.Utilities.DataSetCloning.Clone(mds2, dstUri).Dispose();
                 }
             }
         }
@@ -306,8 +305,7 @@ namespace sdsutil
                     WriteError(error);
                     return;
                 }
-                Microsoft.Research.Science.Data.Utilities.DataSetCloning.Clone(mds, dstUri,
-                    Microsoft.Research.Science.Data.Utilities.DataSetCloning.DefaultUpdater).Dispose();
+                Microsoft.Research.Science.Data.Utilities.DataSetCloning.Clone(mds, dstUri).Dispose();
             }
         }
 

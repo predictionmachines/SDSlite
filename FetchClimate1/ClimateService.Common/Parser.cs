@@ -170,7 +170,7 @@ namespace Microsoft.Research.Science.Data.Climate.Common
                 ClimateParameter pa = (ClimateParameter)(Enum.Parse(typeof(ClimateParameter), str, true));
                     return pa;
             }
-            catch (ArgumentException exc)
+            catch (ArgumentException)
             {                
                     throw new ArgumentException("Invalid climate parameter name. Check syntax.");
             }

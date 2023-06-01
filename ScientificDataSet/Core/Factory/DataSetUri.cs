@@ -621,7 +621,7 @@ namespace Microsoft.Research.Science.Data
         /// </code>
         /// </example>
         /// </remarks>
-        /// <seealso cref="GetOpenModeOrDefault"/>
+        /// <seealso cref="DataSetUri.GetOpenModeOrDefault"/>
         public ResourceOpenMode OpenMode
         {
             get
@@ -710,63 +710,6 @@ namespace Microsoft.Research.Science.Data
         {
             if (String.IsNullOrEmpty(uri)) return false;
             return uri.StartsWith(DataSetUri.DataSetUriScheme + ":");
-        }
-
-        /// <summary>
-        /// Transforms the given <paramref name="path"/> into a DataSet URI string.
-        /// </summary>
-        /// <param name="path">Path to a resource the DataSet should be created for.</param>
-        /// <param name="providerName">Name of the provider for the DataSetUri.</param>
-        /// <param name="resourceParamName">The parameter name that should be equal to <paramref name="path"/>
-        /// (usually, <c>"file"</c>).</param>
-        /// <returns>A DataSet URI string containing
-        /// a reference to the resource identified by <paramref name="path"/>.</returns>
-        /// <remarks>
-        /// <para>
-        /// The method has to convert a path with possible parameters appended through '?' into
-        /// a DataSet URI string.
-        /// For example, a path <c>c:\data\air0.csv</c> or even <c>c:\data\air0.csv?inferDims=true&amp;culture=ru-RU</c>
-        /// are to be converted into 
-        /// <c>msds:csv?file=c:\data\air0.csv</c> and <c>msds:csv?file=c:\data\air0.csv&amp;inferDims=true&amp;culture=ru-RU</c>,
-        /// if <paramref name="resourceParamName"/> is <c>"file"</c> (the usual name for the parameter
-        /// referring to a DataSet underlying resource file) and <paramref name="providerName"/>
-        /// is <c>"csv"</c>.
-        /// </para>
-        /// <para>All <paramref name="path"/>, <paramref name="providerName"/> and <paramref name="resourceParamName"/>
-        /// cannot be null or an empty string; otherwise an exception is thrown.</para>
-        /// </remarks>
-        /// <exception cref="ArgumentException">Null or empty string specified as any of the parameters</exception>
-        [Obsolete("Use DataSetUri.Create() instead.")]
-        public static string CreateFromPath(string path, string providerName, string resourceParamName)
-        {
-            if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("path mustn't be empty");
-            if (String.IsNullOrEmpty(resourceParamName))
-                throw new ArgumentException("resourceParamName mustn't be empty");
-            if (String.IsNullOrEmpty(providerName))
-                throw new ArgumentException("providerName mustn't be empty");
-
-            int qm = path.IndexOf('?');
-            string parameters = null;
-            if (qm >= 0 && qm < path.Length - 1)
-            {
-                parameters = path.Substring(qm + 1, path.Length - qm - 1);
-                path = path.Substring(0, qm);
-            }
-            else if (qm == path.Length - 1)
-            {
-                path = path.Substring(0, path.Length - 1);
-            }
-            CheckPath(path);
-
-            StringBuilder sb = new StringBuilder(DataSetUri.DataSetUriScheme);
-            sb.Append(':').Append(providerName).Append('?');
-            sb.Append(resourceParamName).Append('=').Append(path);
-            if (parameters != null)
-            {
-                sb.Append('&').Append(parameters);
-            }
-            return sb.ToString();
         }
 
         private static void CheckPath(string path)
@@ -894,8 +837,7 @@ namespace Microsoft.Research.Science.Data
         /// property.
         /// </para>
         /// </remarks>
-        [Obsolete("Use DataSetUri.NormalizeUri(DataSetUri) instead.")]
-        public static void NormalizeFileNames(DataSetUri uri)
+        private static void NormalizeFileNames(DataSetUri uri)
         {
             if (uri == null) throw new ArgumentNullException("uri");
             Type uriType = uri.GetType();
@@ -980,8 +922,7 @@ namespace Microsoft.Research.Science.Data
         /// using value of <see cref="Microsoft.Research.Science.Data.Factory.DataSetFactory.BaseUri"/> property.
         /// </para>
         /// </remarks>
-        [Obsolete("Use DataSetUri.NormalizeUri(DataSetUri) instead.")]
-        public static void NormalizeUris(DataSetUri uri)
+        private static void NormalizeUris(DataSetUri uri)
         {
             if (uri == null)
                 throw new ArgumentNullException("uri");

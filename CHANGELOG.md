@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.5] - 2023-05-14
+## [3.0.0] - 2023-06-01
+
+### Added
+- Tests for `CsvDataset` and for `net4.8` platform.
+
+### Removed
+- Obsolete `CoordinateSystem` class and all related functionality.
+- Obsolete `AddVariableByValue` methods.
+
+### Changed
+- `CsvDataset` now writes floating point values using the `R` format specifier.
+  This ensures that the value doesn't change when it is read back.
+
+## [2.0.4] - 2023-05-14
 
 ### Added
 - Tests for CSV dataset.

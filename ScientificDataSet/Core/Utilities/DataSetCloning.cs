@@ -35,13 +35,13 @@ namespace Microsoft.Research.Science.Data.Utilities
         /// This method splits the original dataser into parts and therefore is able
         /// to clone very large datasets not fitting to memory.
         /// </remarks>
-        public static DataSet Clone(DataSet src, DataSetUri dstUri, ProgressUpdater updater)
+        public static DataSet Clone(DataSet src, DataSetUri dstUri, ProgressUpdater updater = null)
         {
             DataSet dst = null;
             try
             {
                 dst = DataSet.Open(dstUri);
-                return Clone(src, dst, updater);
+                return Clone(src, dst, updater ?? DefaultUpdater);
             }
             catch
             {
@@ -296,7 +296,7 @@ namespace Microsoft.Research.Science.Data.Utilities
             return Clone(src, dstUri, DefaultUpdater);
         }
 
-        public static bool DefaultUpdater(double perc, string message)
+        private static bool DefaultUpdater(double perc, string message)
         {
             for (int i = 0; i < 80; i++)
                 Console.Write("\b");
