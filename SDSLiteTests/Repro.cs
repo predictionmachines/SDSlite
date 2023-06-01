@@ -55,7 +55,7 @@ AAABAAAABHRlc3QAAAACAAAAAQAAAAAAAAAAAAAAAAAAAAIAAAAIAAAAZHZhbHVlICAg";
             var csvPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".csv");
             try
             {
-                using (var sdsout = DataSet.Open("out.csv", ResourceOpenMode.Create))
+                using (var sdsout = DataSet.Open(csvPath, ResourceOpenMode.Create))
                 {
                     sdsout.AddVariable<double>("a", "a");
                 }
