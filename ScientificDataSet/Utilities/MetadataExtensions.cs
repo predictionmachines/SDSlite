@@ -7,6 +7,9 @@ using Microsoft.Research.Science.Data;
 
 namespace Microsoft.Research.Science.Data.Utilities
 {
+    /// <summary>
+    /// Provides extension methods for a metadata dictionary.
+    /// </summary>
     public static class MetadataExtensions
     {
         /// <summary>
@@ -49,9 +52,7 @@ namespace Microsoft.Research.Science.Data.Utilities
         /// Gets the value of the attribute with name "min" if it is presented;
         /// otherwise returns null.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="metadata"></param>
-        /// <param name="default"></param>
         /// <returns></returns>
         public static object GetMin(this Dictionary<string, object> metadata)
         {
@@ -67,9 +68,7 @@ namespace Microsoft.Research.Science.Data.Utilities
         /// Gets the value of the attribute with name "max" if it is presented;
         /// otherwise returns null.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="metadata"></param>
-        /// <param name="default"></param>
         /// <returns></returns>
         public static object GetMax(this Dictionary<string, object> metadata)
         {
@@ -121,9 +120,7 @@ namespace Microsoft.Research.Science.Data.Utilities
         /// Gets the value of the attribute with name "min" if it is presented;
         /// otherwise returns null.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="metadata"></param>
-        /// <param name="default"></param>
         /// <returns></returns>
         public static object GetMin(this MetadataDictionary metadata)
         {
@@ -139,9 +136,7 @@ namespace Microsoft.Research.Science.Data.Utilities
         /// Gets the value of the attribute with name "max" if it is presented;
         /// otherwise returns null.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="metadata"></param>
-        /// <param name="default"></param>
         /// <returns></returns>
         public static object GetMax(this MetadataDictionary metadata)
         {
@@ -153,6 +148,12 @@ namespace Microsoft.Research.Science.Data.Utilities
             return null;
         }
 
+        /// <summary>
+        /// A value to signify an empty slot in variable data.
+        /// </summary>
+        /// <param name="var">The variable.</param>
+        /// <returns><see cref="Variable.MissingValue"/> or a value of "missing_value" attribute.</returns>
+        /// <exception cref="NullReferenceException"></exception>
         public static object GetMissingValue(this Variable var)
         {
             if (var == null) throw new NullReferenceException("var is undefined");
@@ -179,6 +180,12 @@ namespace Microsoft.Research.Science.Data.Utilities
             return String.Empty;
         }
 
+        /// <summary>
+        /// Display name.
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static string GetDisplayNameOnly(this MetadataDictionary metadata)
         {
             if (metadata == null)
@@ -217,6 +224,11 @@ namespace Microsoft.Research.Science.Data.Utilities
             return null;
         }
 
+        /// <summary>
+        /// Display name and units.
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         public static string GetDisplayNameAndUnits(this MetadataDictionary metadata)
         {
             string dn = metadata.GetDisplayName();
@@ -229,39 +241,12 @@ namespace Microsoft.Research.Science.Data.Utilities
             return sb.ToString();
         }
 
-        private static readonly string[] coordinateUnits = new string[]
-			{ "meter", "rad", "mile", "angstrom",
-				"astronomical_unit", "feet", "inch",
-				"cm"
-			};
-
         /// <summary>
-        /// Checks whether the variable is a coordinate axis or not.
+        /// Total number of data elements in the variable.
         /// </summary>
         /// <param name="var"></param>
-        /// <returns></returns>
-        public static bool IsCoordinateAxis(this Variable var)
-        {
-            if (var == null)
-                throw new ArgumentNullException("var");
-
-            if (var.TypeOfData == typeof(DateTime))
-                return true;
-
-            if (GeoConventions.IsLatitude(var) || GeoConventions.IsLongitude(var))
-                return true;
-
-            string units = var.Metadata.GetUnits();
-            if (String.IsNullOrEmpty(units))
-                return false;
-
-            units = units.ToLower();
-            foreach (var cu in coordinateUnits)
-                if (units.Contains(cu)) return true;
-
-            return false;
-        }
-
+        /// <returns>A product of all dimensions.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static long TotalLength(this Variable var)
         {
             if (var == null)

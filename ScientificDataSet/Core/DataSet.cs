@@ -455,8 +455,6 @@ namespace Microsoft.Research.Science.Data
 
         private int maxVarId = 1;
 
-        private ReadOnlyCoordinateSystemCollection csystems;
-
         private bool dimInferring = true;
 
         /// <summary>Represents recent changes in data set.</summary>
@@ -524,7 +522,6 @@ namespace Microsoft.Research.Science.Data
             this.supportsCoordinateSystems = supportsCoordinateSystems;
 
             variables = new ReadOnlyVariableCollection();
-            csystems = new ReadOnlyCoordinateSystemCollection();
 
             StartChanges();
 
@@ -1059,7 +1056,6 @@ namespace Microsoft.Research.Science.Data
         /// </remarks>
         /// <seealso cref="Variable"/>
         /// <seealso cref="ReadOnlyVariableCollection"/>
-        /// <seealso cref="CoordinateSystems"/>
         /// <seealso cref="DataSet.Commit"/>		
         public ReadOnlyVariableCollection Variables
         {
@@ -1103,18 +1099,7 @@ namespace Microsoft.Research.Science.Data
                     Variable v = e.AddedVariable;
                     v.Changing += OnVariableChanging;
                     v.Changed += OnVariableChanged;
-                    v.CoordinateSystemAdded += OnVariableCoordinateSystemAdded;
                 }
-            }
-        }
-
-        private void OnVariableCoordinateSystemAdded(object sender, CoordinateSystemAddedEventArgs e)
-        {
-            Variable var = (Variable)sender;
-            if (var.HasChanges)
-            {
-                StartChanges();
-                FireEventChanged(DataSetChangeAction.UpdateOfVariable, changes, var);
             }
         }
 
@@ -1143,22 +1128,6 @@ namespace Microsoft.Research.Science.Data
             changes.Variables.Clear();
         }
 
-        /// <summary>
-        /// Removes all cs from the collection.
-        /// Starts new change transaction.
-        /// </summary>
-        /// <remarks>
-        /// For example, can be used by the provider on loading from file
-        /// to clear existing collection.
-        /// </remarks>
-        protected void ClearCSCollection()
-        {
-            lock (this)
-            {
-                StartChanges();
-                changes.CoordinateSystems.Clear();
-            }
-        }
 
         #region Adding variable
 
@@ -1383,65 +1352,6 @@ namespace Microsoft.Research.Science.Data
         /// <summary>
         /// Creates new <see cref="Variable"/> and adds it to the <see cref="DataSet"/>.
         /// </summary>
-        /// <typeparam name="DataType">Type of data for the variable.</typeparam>
-        /// <param name="varName">Name of the variable.</param>
-        /// <param name="dims">List of names of the variable's dimensions. If null, names are inferred.</param>
-        /// <param name="cs">Default coordinate system for the variable being added.</param>
-        /// <returns>New variable.</returns>
-        /// <remarks>
-        /// See remarks for the method <see cref="AddVariable(Type, string, Array, string[])"/>.
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public Variable<DataType> AddVariable<DataType>(string varName, CoordinateSystem cs, params string[] dims)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException("DataSet");
-            if (IsReadOnly)
-                throw new ReadOnlyException("DataSet is read only.");
-            if (cs.DataSet != this)
-                throw new ArgumentException("Coordinate system must be attached to the same data set to be added to the variable.");
-
-            if (dims == null || dims.Length == 0)
-            {
-                ReadOnlyDimensionList csDims = cs.GetDimensions();
-                dims = new string[csDims.Count];
-                for (int i = 0; i < csDims.Count; i++)
-                {
-                    dims[i] = csDims[i].Name;
-                }
-            }
-
-            Variable<DataType> var = AddVariable<DataType>(varName, dims);
-            var.AddCoordinateSystem(cs);
-
-            return var;
-        }
-
-        /// <summary>
-        /// Creates new <see cref="Variable"/> and adds it to the <see cref="DataSet"/>.
-        /// </summary>
-        /// <typeparam name="DataType">Type of data for the variable.</typeparam>
-        /// <param name="varName">Name of the variable.</param>
-        /// <param name="array">Initial data for the variable.</param>
-        /// <param name="dims">List of names of the variable's dimensions.</param>
-        /// <param name="cs">Default coordinate system for the variable being added.</param>
-        /// <returns>New variable.</returns>
-        /// <remarks>
-        /// See also remarks for the method <see cref="AddVariable(Type, string, Array, string[])"/>.
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public Variable<DataType> AddVariable<DataType>(string varName, Array array, CoordinateSystem cs, params string[] dims)
-        {
-            Variable<DataType> var = AddVariable<DataType>(varName, array, dims);
-            if (cs != null)
-                var.AddCoordinateSystem(cs);
-
-            return var;
-        }
-
-        /// <summary>
-        /// Creates new <see cref="Variable"/> and adds it to the <see cref="DataSet"/>.
-        /// </summary>
         /// <param name="dataType">Type of data for the variable.</param>
         /// <param name="varName">Name of the variable.</param>
         /// <param name="array">Initial data for the variable.</param>
@@ -1544,35 +1454,6 @@ namespace Microsoft.Research.Science.Data
             MethodInfo addVar = addVarG.MakeGenericMethod(dataType);
 
             Variable var = (Variable)addVar.Invoke(this, new object[] { varName, array, dims });
-            return var;
-        }
-
-        /// <summary>
-        /// Creates new <see cref="Variable"/> and adds it to the <see cref="DataSet"/>.
-        /// </summary>
-        /// <param name="dataType">Type of data for the variable.</param>
-        /// <param name="varName">Name of the variable.</param>
-        /// <param name="array">Initial data for the variable.</param>
-        /// <param name="dims">List of names of the variable's dimensions.</param>
-        /// <param name="cs">Default coordinate system for the variable being added.</param>
-        /// <returns>New variable.</returns>		
-        /// <remarks>
-        /// The method is obsolete. See method
-        /// <see cref="AddVariable(Type, string, Array, string[])"/>
-        /// instead.
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public Variable AddVariable(Type dataType, string varName, Array array, CoordinateSystem cs, params string[] dims)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException("DataSet");
-            if (IsReadOnly)
-                throw new ReadOnlyException("DataSet is read only.");
-
-            MethodInfo addVarG = this.GetType().GetMethod("AddVariable", new Type[] { typeof(string), typeof(Array), typeof(CoordinateSystem), typeof(string[]) });
-            MethodInfo addVar = addVarG.MakeGenericMethod(dataType);
-
-            Variable var = (Variable)addVar.Invoke(this, new object[] { varName, array, cs, dims });
             return var;
         }
 
@@ -1785,21 +1666,6 @@ namespace Microsoft.Research.Science.Data
 
         }
 
-        /// <summary>
-        /// This method handles cases when a cs has been added to the 
-        /// referenced variable, hence we have to add the same cs to our cs collection.
-        /// </summary>
-        private void ReferencedVariableGotNewCoordinateSystem(object sender, CoordinateSystemAddedEventArgs e)
-        {
-            // Disabled for Release 1.0
-
-            //IRefVariable refVar = (IRefVariable)sender;
-            //if (refVar.ReferencedVariable.DataSet == e.CoordinateSystem.DataSet)
-            //{
-            //    AddCoordinateSystemToCollection(e.CoordinateSystem);
-            //}
-        }
-
         private Variable CreateRefVariable(Variable referencedVar, /*string varName,*/ string[] dims)
         {
             Type varType = typeof(Variable<>).MakeGenericType(referencedVar.TypeOfData);
@@ -1829,443 +1695,7 @@ namespace Microsoft.Research.Science.Data
             }
         }
 
-        /// <summary>
-        /// Sets up and adds a <see cref="Variable"/> to the <see cref="DataSet"/> by value, not as a reference.		
-        /// </summary>
-        /// <param name="var">A variable to add.</param>
-        /// <param name="varName">The name of the variable in the <see cref="DataSet"/>.</param>
-        /// <param name="dims">List of names of the variable's dimensions in the <see cref="DataSet"/>.</param>
-        /// <param name="includeCoordinateSystems"></param>
-        /// <returns>Just added variable.</returns>
-        /// <remarks>
-        /// All the data and metadata of the <paramref name="var"/> 
-        /// (and optionally of all related coordinate systems and their axes)
-        /// will be copied to the new just created variable using the data set's data access provider.
-        /// Real copy process is done during committing (at the precommit phase).
-        /// </remarks>
-        [Obsolete]
-        private Variable AddVariableByValue(Variable var, bool includeCoordinateSystems, string varName, params string[] dims)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException("DataSet");
-            if (readOnly)
-                throw new ReadOnlyException("The data set is read only therefore cannot add a variable");
-            if (includeCoordinateSystems)
-                throw new DataSetException("Coordinate systems copying is not implemented in this version");
-            if (var.ID == DataSet.GlobalMetadataVariableID)
-                throw new DataSetException("Cannot add by value a global metadata variable");
-
-            if (varName == null)
-                varName = var.Name;
-            if (dims == null)
-                dims = var.GetDimensions(SchemaVersion.Committed).AsNamesArray();
-
-            StartChanges();
-            Variable var2 = CreateVariable(var.TypeOfData, varName, dims);
-
-            // Copying committed data from var
-            Array committedData = var.GetData();
-            if (committedData != null && committedData.Length != 0)
-            {
-                var2.PutData(committedData);
-            }
-
-            // Copying proposed data from var
-            if (var.HasChanges)
-            {
-                var varChanges = var.GetInnerChanges();
-                if (varChanges.Data != null && varChanges.Data.Count != 0)
-                {
-                    int length = varChanges.Data.Count;
-                    for (int i = 0; i < length; i++)
-                    {
-                        Variable.DataPiece piece = varChanges.Data[i];
-                        var2.PutData(piece.Origin, piece.Data);
-                    }
-                }
-            }
-
-            // Copying metadata
-            var dict = var.Metadata.AsDictionary();
-            foreach (var attr in dict)
-            {
-                var2.Metadata[attr.Key] = attr.Value;
-            }
-
-            AddVariableToCollection(var2);
-            return var2;
-        }
-
-        /// <summary>
-        /// Adds a variable to the data set by value.
-        /// It means that all its data (and optionally of all related coordinate systems and their axes)
-        /// will be copied using the data set's data access provider.
-        /// </summary>
-        /// <param name="var">A variable to add.</param>    
-        /// <param name="includeCoordinateSystems"></param>
-        /// <returns>Just added variable.</returns>
-        [Obsolete]
-        private Variable AddVariableByValue(Variable var, bool includeCoordinateSystems)
-        {
-            return AddVariableByValue(var, includeCoordinateSystems, null, null);
-        }
-
-        /// <summary>
-        /// Sets up and adds a <see cref="Variable"/> to the <see cref="DataSet"/> by value.		
-        /// </summary>
-        /// <param name="var">A variable to add.</param>
-        /// <returns>Created variable.</returns>
-        /// <remarks>
-        /// See remarks for <see cref="DataSet.AddVariableByValue{DataType}(Variable{DataType},string,string[])"/>.
-        /// </remarks>
-        public Variable AddVariableByValue(Variable var)
-        {
-            return AddVariableByValue(var, false, null, null);
-        }
-
-        /// <summary>
-        /// Sets up and adds a <see cref="Variable"/> to the <see cref="DataSet"/> by value.
-        /// </summary>
-        /// <param name="var">A variable to add.</param>
-        /// <param name="name">The name of the created variable in the <see cref="DataSet"/>.</param>
-        /// <param name="dims">The created variable's dimensions.</param>
-        /// <returns>Created variable.</returns>
-        /// <remarks>
-        /// See remarks for <see cref="DataSet.AddVariableByValue{DataType}(Variable{DataType},string,string[])"/>.
-        /// </remarks>
-        public Variable AddVariableByValue(Variable var, string name, string[] dims)
-        {
-            return AddVariableByValue(var, false, name, dims);
-        }
-
-        /// <summary>
-        /// Sets up and adds a <see cref="Variable"/> to the <see cref="DataSet"/> by value.
-        /// </summary>
-        /// <param name="var">A variable to add.</param>
-        /// <returns>Created variable.</returns>
-        /// <remarks>
-        /// See remarks for <see cref="DataSet.AddVariableByValue{DataType}(Variable{DataType},string,string[])"/>.
-        /// </remarks>
-        public Variable<DataType> AddVariableByValue<DataType>(Variable<DataType> var)
-        {
-            return AddVariableByValue<DataType>(var, false, null, null);
-        }
-
-        /// <summary>
-        /// Sets up and adds a <see cref="Variable"/> to the <see cref="DataSet"/> by value.	
-        /// </summary>
-        /// <typeparam name="DataType">Type of data.</typeparam>
-        /// <param name="var">A variable to add.</param>
-        /// <param name="name">The name of the created variable in the <see cref="DataSet"/>.</param>
-        /// <param name="dims">The created variable's dimensions.</param>
-        /// <returns>Created variable.</returns>
-        /// <remarks>
-        /// <para>
-        /// The method creates new <see cref="Variable"/> in the <see cref="DataSet"/> with the same rank and data type as <paramref name="var"/> 
-        /// and copies all the data and metadata from the <paramref name="var"/> 
-        /// to the created <see cref="Variable"/>.
-        /// </para>
-        /// <para>
-        /// Please note, if the <paramref name="var"/> has changes (see <see cref="Variable.HasChanges"></see>),
-        /// proposed data also is copied into the target <see cref="Variable"/>. But all modifications of the <paramref name="var"/>
-        /// done after the method is finished, do not affect the method's resulting <see cref="Variable"/>.
-        /// </para>
-        /// </remarks>
-        /// <example>
-        /// <code>
-        ///	int[] a1 = new int[] { 1, 2, 3 };
-        ///	string[,] a2 = new string[,] { { "a", "b", "c" }, { "d", "e", "f" }, { "g", "h", "i" } };
-        ///
-        ///	using (DataSet src = DataSet.Open("msds:csv?file=test.csv&amp;openMode=create"))
-        ///	using (DataSet dst = DataSet.Open("msds:memory"))		
-        /// {
-        ///		src.IsAutocommitEnabled = false;
-        ///		dst.IsAutocommitEnabled = false;
-        ///		
-        ///		var var1 = src.AddVariable&lt;int&gt;("var1", "x");
-        ///		var var2 = src.AddVariable&lt;string&gt;("var2", "y", "z");
-        ///
-        ///		var1.PutData(a1);
-        ///		var2.PutData(a2);
-        ///		src.Commit();
-        ///
-        ///		var1.Append(new int[] { 4 }); // adding "4" to proposed schema of var1
-        ///		// dvar1 is a deep copy of var1, including proposed schema:
-        ///		var dvar1 = dst.AddVariableByValue&lt;int&gt;(var1); 
-        ///		var dvar2 = dst.AddVariableByValue&lt;string&gt;(var2);
-        ///
-        ///		// Adding "5" to proposed schema of dvar1.
-        ///		// It doesn't affect var1!
-        ///		dvar1.Append(new int[] { 5 });
-        ///
-        ///		// Committing both data sets 
-        ///		dst.Commit();
-        ///		src.Commit();
-        ///
-        ///		Assert.IsFalse(src.HasChanges);
-        ///		Assert.IsFalse(dst.HasChanges);
-        /// 
-        ///		Assert.IsTrue(Compare(new int[] { 1, 2, 3, 4 }, var1.GetData()));
-        ///		Assert.IsTrue(Compare(a2, var2.GetData()));
-        ///		Assert.IsTrue(Compare(a2, dvar2.GetData()));
-        ///		Assert.IsTrue(Compare(new int[] { 1, 2, 3, 4, 5 }, dvar1.GetData()));
-        ///	}
-        /// </code>
-        /// </example>
-        /// <seealso cref="DataSet.Clone(string)">Creates a deep copy of a DataSet.</seealso>
-        public Variable<DataType> AddVariableByValue<DataType>(Variable<DataType> var, string name, params string[] dims)
-        {
-            return AddVariableByValue<DataType>(var, false, name, dims);
-        }
-
-
-        /// <summary>
-        /// Sets up and adds a variable to the data set by value, not as a reference.
-        /// It means that all its data (and optionally of all related coordinate systems and their axes)
-        /// will be copied using the data set's data access provider.
-        /// </summary>
-        /// <param name="var">A variable to add.</param>
-        /// <param name="varName">The name of the variable in the data set.</param>
-        /// <param name="dims">List of names of the variable's dimensions in the data set.</param>
-        /// <param name="includeCoordinateSystems"></param>
-        /// <returns>Just added variable.</returns>
-        private Variable<DataType> AddVariableByValue<DataType>(Variable<DataType> var, bool includeCoordinateSystems, string varName, params string[] dims)
-        {
-            return (Variable<DataType>)AddVariableByValue((Variable)var, includeCoordinateSystems, varName, dims);
-        }
-
-        /// <summary>
-        /// Adds a variable to the data set by value, not as a reference.
-        /// It means that all its data (and optionally of all related coordinate systems and their axes)
-        /// will be copied using the data set's data access provider.
-        /// </summary>
-        /// <param name="var">A variable to add.</param>   
-        /// <param name="includeCoordinateSystems"></param>
-        /// <returns>Just added variable.</returns>
-        private Variable<DataType> AddVariableByValue<DataType>(Variable<DataType> var, bool includeCoordinateSystems)
-        {
-            return (Variable<DataType>)AddVariableByValue((Variable)var, includeCoordinateSystems);
-        }
-
         #endregion
-
-        #endregion
-
-        #region Coordinate systems
-
-        /// <summary>
-        /// Gets the value, indicating whether the data set supports for coordinate systems.
-        /// </summary> 
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        internal bool SupportsCoordinateSystems
-        {
-            get { return supportsCoordinateSystems; }
-        }
-
-        /// <summary>
-        /// Gets the collection of coordinate systems attached to the DataSet.
-        /// </summary>
-        /// <remarks>
-        /// <para>Collection contains all coordinate system of the data set, including 
-        /// committed and proposed coordinate systems, but the simple by name indexer of the 
-        /// <see cref="CoordinateSystemCollectionBase"/> collection looks up among committed coordinate
-        /// systems only. To get a coordinate system from a particular schema version use special indexer 
-        /// <see cref="CoordinateSystemCollectionBase.this[string,SchemaVersion]"/> collection:
-        /// </para>
-        /// <example>
-        /// <code>
-        /// CoordinateSystem cs = dataSet.CoordinateSystems["cs", SchemaVersion.Recent];
-        /// </code>
-        /// </example>
-        /// <para>
-        /// There is a method <see cref="GetCoordinateSystems(SchemaVersion)" />
-        /// that returns a collection of coordinate systems for a given schema version only.
-        /// </para>
-        /// <para>
-        /// The following example iterates through all coordinate systems of a data set 
-        /// being loaded from sample.csv file and prints information about the data set to the console:
-        /// </para>
-        /// <example>
-        /// <code>
-        /// DataSet sds = new CsvDataSet("sample.csv");
-        /// 
-        /// Console.WriteLine ("ScientficDataSet " + sds.Name +
-        /// (HasChanges ? "*" : "") + " contents: ");
-        /// 
-        /// Console.WriteLine (" Coordinate Systems:");
-        /// foreach (CoordinateSystem s in sds.CoordinateSystems)
-        /// {
-        ///		Console.WriteLine (s.ToString());
-        /// }
-        /// </code>
-        /// </example>
-        /// </remarks>
-        /// <seealso cref="CoordinateSystem"/>
-        /// <seealso cref="CoordinateSystemCollectionBase"/>
-        /// <seealso cref="GetCoordinateSystems(SchemaVersion)"/>
-        /// <seealso cref="Variables"/>
-        /// <seealso cref="DataSet.Commit"/>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public ReadOnlyCoordinateSystemCollection CoordinateSystems
-        {
-            get
-            {
-                return GetCoordinateSystems(SchemaVersion.Recent);
-            }
-        }
-
-        /// <summary>
-        /// Gets the specified version of read-only collection of coordinate systems.
-        /// </summary>
-        /// <param name="version">The version of schema to take CoordinateSystems from.</param>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        protected internal ReadOnlyCoordinateSystemCollection GetCoordinateSystems(SchemaVersion version)
-        {
-            if (version == SchemaVersion.Committed)
-                return csystems;
-
-            if (version == SchemaVersion.Proposed)
-            {
-                if (!HasChanges)
-                    throw new DataSetException("Request for a proposed version meanwhile the variable has no changes.");
-
-                // Build and return the list of proposed cs
-                if (changes.CoordinateSystems == null)
-                    return new ReadOnlyCoordinateSystemCollection();
-
-                List<CoordinateSystem> proposedCs = new List<CoordinateSystem>();
-                foreach (var cs in changes.CoordinateSystems)
-                {
-                    if (cs.HasChanges)
-                        proposedCs.Add(cs);
-                }
-                return new ReadOnlyCoordinateSystemCollection(proposedCs);
-            }
-
-            // Recent
-            if (changes == null || changes.CoordinateSystems == null)
-                return csystems;
-            return changes.CoordinateSystems.GetReadOnlyCollection();
-        }
-
-        /// <summary>
-        /// Adds the coordinate system to the internal collection of coordinate systems 
-        /// and fires appropriate events.
-        /// </summary>
-        protected void AddCoordinateSystemToCollection(CoordinateSystem cs)
-        {
-            if (!FireEventChanging(DataSetChangeAction.NewCoordinateSystem, cs))
-                throw new CannotPerformActionException("Coordinate system add procedure is canceled.");
-
-            StartChanges();
-
-            changes.CoordinateSystems.Add(cs);
-
-            FireEventChanged(DataSetChangeAction.NewCoordinateSystem, changes, cs);
-        }
-
-        /// <summary>
-        /// Adds the coordinate system to the internal collection of coordinate systems 
-        /// and fires appropriate events.
-        /// </summary>
-        protected void AddCoordinateSystemToCollection(CoordinateSystem cs, Changes proposedChanges)
-        {
-            if (!FireEventChanging(DataSetChangeAction.NewCoordinateSystem, cs))
-                throw new CannotPerformActionException("Coordinate system add procedure is cancelled.");
-
-            Debug.Assert(proposedChanges.CoordinateSystems != null);
-            proposedChanges.CoordinateSystems.Add(cs);
-        }
-
-        /// <summary>
-        /// Creates a coordinate system with specified name and attaches it to the data set.
-        /// </summary>
-        /// <param name="name">Name of the coordinate system.</param>
-        /// <param name="axes">Axes contained by the coordinate system.</param>
-        /// <returns>The <see cref="CoordinateSystem"/> instance.</returns>
-        /// <remarks>
-        /// <para>
-        /// <see cref="DataSet"/> prohibits different coordinate systems with the same name.
-        /// An attempt to add a coordinate system with existing name leads to an exception.
-        /// </para>
-        /// <para>
-        /// After a coordinate system is added, it should be filled with axes
-        /// using <see cref="CoordinateSystem.AddAxis(Variable)"/> methods. After a coordinate system
-        /// is committed, it cannot be modified.
-        /// </para>
-        /// <para>
-        /// A coordinate system can be added to a variable, it means that the variable
-        /// is defined in that coordinate system. And there are constraints on this type
-        /// of relations. See details in remarks for <see cref="DataSet.Commit"/> method.
-        /// </para>
-        /// <example>
-        /// The following example creates a variable "time" to store time moments;
-        /// a coordinate system "Time" with one axis "time";
-        /// and a variable "airTemp" defined in that coordinate system.
-        /// Note that "time" and "airTemp" depend on the same dimension.
-        /// <code>
-        /// using (DataSet ds = CreateDataSet())
-        /// {
-        ///		ds1.IsAutocommitEnabled = false;
-        ///		
-        ///		Variable time = ds.AddVariable&lt;int&gt;("time", "t");
-        ///		CoordinateSystem cs = ds.CreateCoordinateSystem("Time", time);
-        ///		// cs has one axis "time"
-        ///		
-        ///		Variable var = ds.AddVariable&lt;int&gt;("airTemp", "time");
-        ///		var.AddCoordinateSystem(cs);
-        ///		ds.Commit();
-        /// }
-        /// </code>
-        /// </example>
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public CoordinateSystem CreateCoordinateSystem(string name, params Variable[] axes)
-        {
-            if (axes == null)
-                throw new ArgumentNullException("axes");
-            if (axes.Length == 0)
-                throw new ArgumentException("Coordinate system must contain at least one axis");
-
-            if (IsDisposed)
-                throw new ObjectDisposedException("DataSet");
-            if (IsReadOnly)
-                throw new NotSupportedException("DataSet is read only.");
-
-            if (!SupportsCoordinateSystems)
-                throw new NotSupportedException("Coordinate systems are not supported by the data set.");
-
-            CoordinateSystem cs = new CoordinateSystem(name, this);
-            foreach (var axis in axes)
-                cs.AddAxis(axis);
-
-            AddCoordinateSystemToCollection(cs);
-
-            return cs;
-        }
-
-        /// <summary>
-        /// Creates a coordinate system with specified name and places it in the given changeset.
-        /// </summary>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        protected CoordinateSystem CreateCoordinateSystem(string name, Variable[] axes, Changes changes)
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException("DataSet");
-            if (IsReadOnly)
-                throw new NotSupportedException("DataSet is read only.");
-
-            if (!SupportsCoordinateSystems)
-                throw new NotSupportedException("Coordinate systems are not supported by the data set.");
-
-            CoordinateSystem cs = new CoordinateSystem(name, this);
-            foreach (var axis in axes)
-                cs.AddAxis(axis);
-
-            AddCoordinateSystemToCollection(cs, changes);
-
-            return cs;
-        }
 
         #endregion
 
@@ -2365,16 +1795,11 @@ namespace Microsoft.Research.Science.Data
                     (IEnumerable<Variable>)variables.All :
                     (IEnumerable<Variable>)changes.Variables;
 
-                ICollection<CoordinateSystem> coords = changes.CoordinateSystems == null ?
-                    (ICollection<CoordinateSystem>)csystems :
-                    (ICollection<CoordinateSystem>)changes.CoordinateSystems;
-
                 return new DataSetSchema(
                    guid,
                    URI,
                    changeSetId,
-                   vars.Select(v => v.GetSchema(SchemaVersion.Recent)).ToArray(),
-                   coords.Select(cs => cs.GetSchema()).ToArray());
+                   vars.Select(v => v.GetSchema(SchemaVersion.Recent)).ToArray());
             }
         }
 
@@ -2400,8 +1825,7 @@ namespace Microsoft.Research.Science.Data
                 guid,
                 URI,
                 changeSetId,
-                committed.ToArray(),
-                csystems.Select(cs => cs.GetSchema()).ToArray());
+                committed.ToArray());
         }
 
         private DataSetSchema GetCommittedSchema(bool doRebuild)
@@ -2648,7 +2072,6 @@ namespace Microsoft.Research.Science.Data
                             if (!variables.Contains(var)) // this variable was added as a part of this changeset
                             {
                                 var.Changed -= OnVariableChanged;
-                                var.CoordinateSystemAdded -= OnVariableCoordinateSystemAdded;
                                 try
                                 {
                                     var.Rollback();
@@ -2940,13 +2363,6 @@ namespace Microsoft.Research.Science.Data
             /* Checking constraints on variables */
             var updatedDimensions = CheckComplementarityConstraints(proposedChanges);
 
-            /* Checking constraints on coordinate systems */
-            ICollection<CoordinateSystem> coordinates = proposedChanges.CoordinateSystems == null ?
-                (ICollection<CoordinateSystem>)csystems : proposedChanges.CoordinateSystems;
-            foreach (CoordinateSystem cs in coordinates)
-            {
-                cs.CheckConstraints(proposedChanges);
-            }
             return updatedDimensions;
         }
 
@@ -2984,25 +2400,11 @@ namespace Microsoft.Research.Science.Data
                 }
             }
 
-            /* Commits structure of SDS */
-            ICollection<CoordinateSystem> cs = proposedChanges.CoordinateSystems == null ?
-                (ICollection<CoordinateSystem>)csystems :
-                (ICollection<CoordinateSystem>)proposedChanges.CoordinateSystems;
-            foreach (CoordinateSystem s in cs)
-            {
-                if (s.HasChanges)
-                    s.Commit();
-            }
-
             // Committing inner SDS structures
             if (proposedChanges.Variables != null)
             {
                 proposedChanges.Variables.CollectionChanged -= OnVariableCollectionChanged;
                 this.variables = new ReadOnlyVariableCollection(proposedChanges.Variables);
-            }
-            if (proposedChanges.CoordinateSystems != null)
-            {
-                this.csystems = proposedChanges.CoordinateSystems.GetReadOnlyCollection();
             }
         }
 
@@ -3061,7 +2463,6 @@ namespace Microsoft.Research.Science.Data
                         initialSchema.Version + 1,
                         initialSchema,
                         new VariableCollection(variables.All),
-                        new CoordinateSystemCollection(csystems),
                         ChangesetSource.Local);
                     changes.Variables.CollectionChanged += OnVariableCollectionChanged;
                 }
@@ -3817,8 +3218,6 @@ namespace Microsoft.Research.Science.Data
         /// </para>
         /// <para>
         /// The variable <paramref name="raw"/> must belong to the same DataSet.
-        /// Otherwise, consider first add a reference to the variable 
-        /// (see <see cref="DataSet.AddVariableByValue(Variable,string,string[])"/>).
         /// </para>
         /// <para>Both source and targe variable share the metadata collection.
         /// See <see cref="TransformVariable{DataType,RawType}(Variable{RawType},Func{RawType,DataType},Func{DataType,RawType},IList{string},IList{string},string)"/>
@@ -3900,8 +3299,6 @@ namespace Microsoft.Research.Science.Data
         /// </para>
         /// <para>
         /// The variable <paramref name="raw"/> must belong to the same DataSet.
-        /// Otherwise, consider first add a reference to the variable 
-        /// (see <see cref="DataSet.AddVariableByValue(Variable,string,string[])"/>).
         /// </para>
         /// <para>Both source and targe variable share the metadata collection.
         /// See <see cref="TransformVariable{DataType,RawType}(Variable{RawType},Func{RawType,DataType},Func{DataType,RawType},IList{string},IList{string},string)"/>
@@ -4324,7 +3721,6 @@ namespace Microsoft.Research.Science.Data
             private int version;
             private DataSetSchema initialSchema;
             private VariableCollection variables;
-            private CoordinateSystemCollection coords;
             private ChangesetSource source;
 
             /// <summary>Maps variable ID to Variable.Changes.</summary>
@@ -4337,16 +3733,14 @@ namespace Microsoft.Research.Science.Data
             /// <param name="version"></param>
             /// <param name="initialSchema"></param>
             /// <param name="variables"></param>
-            /// <param name="coordinateSystems"></param>
             /// <param name="source"></param>
-            public Changes(DataSet dataSet, int version, DataSetSchema initialSchema, VariableCollection variables, CoordinateSystemCollection coordinateSystems, ChangesetSource source)
+            /// 
+            public Changes(DataSet dataSet, int version, DataSetSchema initialSchema, VariableCollection variables, ChangesetSource source)
             {
                 if (initialSchema == null)
                     throw new ArgumentNullException("initialSchema");
                 if (variables == null)
                     throw new ArgumentNullException("variables");
-                if (coordinateSystems == null)
-                    throw new ArgumentNullException("coordinateSystems");
                 if (dataSet == null)
                     throw new ArgumentNullException("dataSet");
                 if (version <= initialSchema.Version)
@@ -4354,7 +3748,6 @@ namespace Microsoft.Research.Science.Data
 
                 this.initialSchema = initialSchema;
                 this.variables = variables;
-                this.coords = coordinateSystems;
                 this.version = version;
                 this.source = source;
                 this.dataSet = dataSet;
@@ -4384,12 +3777,6 @@ namespace Microsoft.Research.Science.Data
             /// Gets the updated collection of variables including unmodified, updated and added variables.
             /// </summary>
             public VariableCollection Variables { get { return variables; } }
-
-            /// <summary>
-            /// Gets the updated collection of coordinate systems including unmodified and updated coordinate systems.
-            /// </summary>
-            public CoordinateSystemCollection CoordinateSystems { get { return coords; } }
-
 
             /// <summary>
             /// Gets the source of the changeset: it can be either local or remote or both.
@@ -4431,7 +3818,7 @@ namespace Microsoft.Research.Science.Data
             /// <returns></returns>
             public DataSet.Changes Clone()
             {
-                DataSet.Changes ch = new Changes(dataSet, version, initialSchema, variables, this.coords, source);
+                DataSet.Changes ch = new Changes(dataSet, version, initialSchema, variables, source);
                 ch.varChanges = this.varChanges == null ? null : new Dictionary<int, Variable.Changes>(this.varChanges);
                 return ch;
             }
@@ -4519,15 +3906,6 @@ namespace Microsoft.Research.Science.Data
                     sb.AppendLine(v.ToString());
                 }
             }
-            if (CoordinateSystems.Count > 0)
-            {
-                sb.AppendLine(" Coordinate Systems");
-                foreach (CoordinateSystem s in CoordinateSystems)
-                {
-                    sb.Append("  ");
-                    sb.AppendLine(s.ToString());
-                }
-            }
             return sb.ToString();
         }
 
@@ -4605,8 +3983,7 @@ namespace Microsoft.Research.Science.Data
         /// <remarks>
         /// <para>
         /// Opens the <see cref="DataSet"/> using given <paramref name="targetUri"/> and copies the current <see cref="DataSet"/> content
-        /// into the output <see cref="DataSet"/>, restoring the structure and adding variables by value (see
-        /// <see cref="AddVariableByValue(Variable)"/>) to the target <see cref="DataSet"/>.
+        /// into the output <see cref="DataSet"/>, restoring the structure and adding variables by value to the target <see cref="DataSet"/>.
         /// The resulting <see cref="DataSet"/> is committed. Note: it is required to dispose the returned DataSet;
         /// if you don't need the instance, you should dispose it immediately:
         /// <code>ds.Clone("copy.csv").Dispose();</code>.

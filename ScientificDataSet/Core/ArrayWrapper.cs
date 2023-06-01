@@ -9,7 +9,6 @@ namespace Microsoft.Research.Science.Data
 	/// <summary>
 	/// Keeps array, its rank and type. Empty and zero-rank arrays are supported.
 	/// </summary>
-    [Obsolete("This class is obsolete and will be removed in the next version.")]
 	public class ArrayWrapper
 	{
         /// <summary>Array of holding actual data. Can be null if there is no data</summary>

@@ -26,7 +26,8 @@ jobs:
       shell: pwsh
       run: |
         Invoke-WebRequest $env:URL_NETCDF_WIN -OutFile ${{ runner.temp }}\netcdf.exe
-        7z x ${{ runner.temp }}\netcdf.exe bin/* -o${{ runner.temp }} -y
+        7z x ${{ runner.temp }}\netcdf.exe bin/*.dll -o${{ runner.temp }} -y
+        Get-ChildItem ${{ runner.temp }}\bin
     - name: Test
       run: dotnet test --no-build --verbosity normal
       env:
@@ -34,7 +35,7 @@ jobs:
 
   build-test-linux:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -49,7 +50,7 @@ jobs:
     - name: Download NetCDF
       run: sudo apt-get install libnetcdf-dev
     - name: Test
-      run: dotnet test --verbosity normal SDSLiteTests
+      run: dotnet test -f net6.0 --verbosity normal SDSLiteTests
 
   build-test-macos:
 
@@ -70,4 +71,4 @@ jobs:
         HOMEBREW_NO_INSTALL_CLEANUP: 1
       run: brew install netcdf
     - name: Test
-      run: dotnet test --verbosity normal SDSLiteTests
+      run: dotnet test -f 6.0 --verbosity normal SDSLiteTests

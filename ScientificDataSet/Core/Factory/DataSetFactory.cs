@@ -600,7 +600,7 @@ namespace Microsoft.Research.Science.Data.Factory
         }
 
         /// <summary>
-        /// Registers the <paramref name="providerName"/> and associates it with the provider <paramref name="dataSet"/>.
+        /// Registers the <paramref name="providerName"/> and associates it with the provider a <see cref="DataSet"/> implementation./>.
         /// </summary>
         /// <param name="providerName">Provider name.</param>
         /// <param name="providerTypeName">The provider type name to associate with the provider name. This type should be
@@ -1185,7 +1185,7 @@ namespace Microsoft.Research.Science.Data.Factory
         /// Formats exception message based on uri, traces it and returns the exception.
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="innerException"></param>
+        /// <param name="message"></param>
         internal static ProviderNotRegisteredException BuildProviderNotRegisteredException(string uri, string message)
         {
             ProviderNotRegisteredException exc = new ProviderNotRegisteredException(uri, message);

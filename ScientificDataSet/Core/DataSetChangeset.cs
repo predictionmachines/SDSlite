@@ -18,8 +18,6 @@ namespace Microsoft.Research.Science.Data
 		private Variable.Changes[] varUpdated;
         private Variable.Changes[] varAffected;
 
-		private CoordinateSystem[] csAdded;
-
 		private bool initialized = false;
 		private DataSet.Changes changes;
 		private DataSet dataSet;
@@ -119,26 +117,6 @@ namespace Microsoft.Research.Science.Data
 			varUpdated = updated.ToArray();
 
 
-			/* Coordinate systems */
-			if (changes.CoordinateSystems == null)
-			{
-				csAdded = new CoordinateSystem[0];
-			}
-			else
-			{
-				var initialCs = (changes.InitialSchema != null && changes.InitialSchema.CoordinateSystems != null && changes.InitialSchema.CoordinateSystems.Length > 0) ?
-					changes.InitialSchema.CoordinateSystems : null;
-
-				List<CoordinateSystem> listAdded = new List<CoordinateSystem>(changes.CoordinateSystems.Count);
-				for (int i = 0; i < changes.CoordinateSystems.Count; i++)
-				{
-					if (changes.CoordinateSystems[i].HasChanges ||
-						initialCs == null || !Array.Exists(initialCs, c => c.Name == changes.CoordinateSystems[i].Name))
-						listAdded.Add(changes.CoordinateSystems[i]);
-				}
-				csAdded = listAdded.ToArray();
-			}
-
 			initialized = true;
 		}
 
@@ -197,26 +175,13 @@ namespace Microsoft.Research.Science.Data
 		}
 
 		/// <summary>
-		/// Gets an array of new coordinate systems.
-		/// </summary>
-		[Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-		public CoordinateSystem[] AddedCoordinateSystems
-		{
-			get
-			{
-				Initialize();
-				return csAdded;
-			}
-		}
-
-		/// <summary>
 		/// Returns brief desrcription of the changeset.
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return String.Format("Changes: variables: {0} added, {1} updated; cs: {3} added",
-				AddedVariables.Length, UpdatedVariables.Length, AddedCoordinateSystems.Length);
+			return String.Format("Changes: variables: {0} added, {1} updated",
+				AddedVariables.Length, UpdatedVariables.Length);
 		}
 	}
 

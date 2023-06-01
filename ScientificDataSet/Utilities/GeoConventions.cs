@@ -1,8 +1,6 @@
 // Copyright © Microsoft Corporation, All Rights Reserved.
+#pragma warning disable 1591
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Microsoft.Research.Science.Data.Utilities
 {

@@ -72,9 +72,6 @@ namespace Microsoft.Research.Science.Data
     /// just refer the <see cref="Variable.Metadata"/> collection. 
     /// </para>
     /// <para>
-    /// List of coordinate systems, attached to a variable, is available through the <see cref="Variable.CoordinateSystems"/> collection.
-    /// </para>
-    /// <para>
     /// How to . . .
     /// <list type="table">
     /// <listheader>
@@ -91,8 +88,7 @@ namespace Microsoft.Research.Science.Data
     /// For example, <see cref="Microsoft.Research.Science.Data.DataSet.AddVariable{DataType}(string, string[])"/>.	
     /// </para>
     /// <para>
-    /// See also <see cref="Microsoft.Research.Science.Data.DataSet.AddVariableByReference(Variable, string[])"/>,
-    /// <see cref="Microsoft.Research.Science.Data.DataSet.AddVariableByValue(Variable,string,string[])"/>.
+    /// See also <see cref="Microsoft.Research.Science.Data.DataSet.AddVariableByReference(Variable, string[])"/>.
     /// </para>
     /// </description>
     /// </item>
@@ -227,7 +223,6 @@ namespace Microsoft.Research.Science.Data
         protected internal string[] dimensions;
 
         /// <summary>Collection of coordinate systems of the variable.</summary>
-        private CoordinateSystemCollection csystems;
 
         private DataSet dataSet;
 
@@ -328,40 +323,6 @@ namespace Microsoft.Research.Science.Data
         public abstract MetadataDictionary Metadata { get; }
 
         /// <summary>
-        /// Gets the read-only collection of coordinate systems attached to the variable.
-        /// </summary>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public ReadOnlyCoordinateSystemCollection CoordinateSystems
-        {
-            get
-            {
-                return GetCoordinateSystems(SchemaVersion.Recent);
-            }
-        }
-
-        /// <summary>
-        /// Gets the specified version of read-only collection of coordinate systems attached to the variable.
-        /// </summary>
-        /// <param name="version">The version of schema to take CoordinateSystems from.</param>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        protected internal ReadOnlyCoordinateSystemCollection GetCoordinateSystems(SchemaVersion version)
-        {
-            if (version == SchemaVersion.Committed)
-                return csystems.GetReadOnlyCollection();
-
-            if (version == SchemaVersion.Proposed && !HasChanges)
-                throw new DataSetException("Request for proposed version meanwhile the variable has no changes.");
-
-            lock (DataSet)
-            {
-                if (!HasChanges || changes.CoordinateSystems == null)
-                    return csystems.GetReadOnlyCollection();
-                return ReadOnlyCoordinateSystemCollection.Combine(
-                    csystems, changes.CoordinateSystems);
-            }
-        }
-
-        /// <summary>
         /// Gets the ID of the variable.
         /// </summary>
         /// <remarks>
@@ -399,24 +360,6 @@ namespace Microsoft.Research.Science.Data
             get { return IsReadOnly; }
         }
 
-        /// <summary>
-        /// Gets the value indicating whether this variable belongs to some coordinate system or not.
-        /// </summary>
-        protected bool IsAxis(SchemaVersion version)
-        {
-            bool isAxis = false;
-            foreach (CoordinateSystem cs in DataSet.GetCoordinateSystems(version))
-            {
-                if (cs.Axes.Contains(this))
-                {
-                    isAxis = true;
-                    break;
-                }
-            }
-            return isAxis;
-        }
-
-
         #endregion
 
         #region Constructors
@@ -430,7 +373,6 @@ namespace Microsoft.Research.Science.Data
                 throw new ArgumentNullException("dataSet");
 
             //this.initializing = true;
-            this.csystems = new CoordinateSystemCollection();
             this.dataSet = dataSet;
 
             if (assignID)
@@ -474,21 +416,6 @@ namespace Microsoft.Research.Science.Data
         #endregion
 
         #region Events
-
-        /// <summary>
-        /// Occurs when a coordinate system has been added to the variable.
-        /// </summary>
-        protected internal event CoordinateSystemAddedEventHandler CoordinateSystemAdded;
-
-        /// <summary>
-        /// Fires the CoordinateSystemAdded event.
-        /// </summary>
-        /// <param name="cs"></param>
-        protected void FireEventCoordinateSystemAdded(CoordinateSystem cs)
-        {
-            if (CoordinateSystemAdded != null)
-                CoordinateSystemAdded(this, new CoordinateSystemAddedEventArgs(cs));
-        }
 
         /// <summary>
         /// Occurs when the variable is rolled back.
@@ -653,81 +580,13 @@ namespace Microsoft.Research.Science.Data
                     vm[e.Key] = e.ProposedValue;
                     var metadataChanges = vm.Clone(SchemaVersion.Proposed, true);
 
-                    Changes changes = new Changes(Version, GetSchema(SchemaVersion.Committed), metadataChanges, null, null, new Rectangle());
+                    Changes changes = new Changes(Version, GetSchema(SchemaVersion.Committed), metadataChanges, null, new Rectangle());
                     // Firing the event
                     e.Cancel = !FireEventVariableChanging(VariableChangeAction.UpdateMetadata, changes);
                 }
             }
         }
 
-
-        #endregion
-
-        #region Reversing
-
-        /// <summary>Returns the value in specified point in the coordinate system.</summary>
-        /// <remarks>
-        /// Returns the value in specified point in the coordinate system.
-        /// First coordinate system is used as default. 
-        /// Index selection mode is Exact.
-        /// </remarks>
-        protected object GetUntypedValue(params object[] coords)
-        {
-            if (CoordinateSystems.Count == 0)
-                throw new Exception("No coordinate systems.");
-            return GetUntypedValue(ReverseIndexSelection.Exact, CoordinateSystems[0], coords);
-        }
-
-
-        /// <summary>Returns the value in specified point in the coordinate system.</summary>
-        /// <param name="coords"></param>
-        /// <param name="mode"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Returns the value in specified point in the coordinate system.
-        /// First coordinate system is used as default. 
-        /// </remarks>
-        protected object GetUntypedValue(ReverseIndexSelection mode, params object[] coords)
-        {
-            if (CoordinateSystems.Count == 0)
-                throw new Exception("No coordinate systems.");
-            return GetUntypedValue(mode, CoordinateSystems[0], coords);
-        }
-
-        /// <summary>
-        /// Returns the value in specified point in the coordinate system.
-        /// </summary>
-        /// <param name="cs"></param>
-        /// <param name="coords"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// Returns the value in specified point in the coordinate system.
-        /// Index selection mode is Exact.</remarks>
-        protected object GetUntypedValue(CoordinateSystem cs, params object[] coords)
-        {
-            return GetUntypedValue(ReverseIndexSelection.Exact, cs, coords);
-        }
-
-        /// <summary>
-        /// Returns the value for the specified point in the coordinate system.
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <param name="cs"></param>
-        /// <param name="coords"></param>
-        /// <returns></returns>
-        protected object GetUntypedValue(ReverseIndexSelection mode, CoordinateSystem cs, params object[] coords)
-        {
-            return InnerGetUntypedValue(mode, cs, coords);
-        }
-
-        /// <summary>
-        /// This method is a bridge to the typed implementation of the method in the <see cref="Variable{DataType}"/> class.
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <param name="cs"></param>
-        /// <param name="coords"></param>
-        /// <returns></returns>
-        internal protected abstract object InnerGetUntypedValue(ReverseIndexSelection mode, CoordinateSystem cs, object[] coords);
 
         #endregion
 
@@ -789,7 +648,7 @@ namespace Microsoft.Research.Science.Data
         /// except when the <paramref name="count"/> is null. In this case,
         /// the real shape of the stridden array is "as much as possible" depending on the shape of the 
         /// variable (<see cref="GetShape()"/>).
-        /// If <paramref name="start"/> is null, an integer array with all zeros is inferred.
+        /// If <paramref name="origin"/> is null, an integer array with all zeros is inferred.
         /// The <paramref name="stride"/> contains a step to stride values of the variable.
         /// For 1d variables, value of a stridden variable with the index <c>i</c> corresponds
         /// to the value with index <c>start[0] + i*stride[0]</c> of the variable.
@@ -1114,8 +973,8 @@ namespace Microsoft.Research.Science.Data
                     DataSet.ExtendAffectedRectangle(propAR, cshape);
                 }
 
-                Changes proposedChanges = new Changes(Version, GetSchema(SchemaVersion.Committed), null, null,
-                    propShape, propAR);
+                Changes proposedChanges = new Changes(Version, GetSchema(SchemaVersion.Committed), null, propShape,
+                    propAR);
 
                 /***********************************************************************/
                 // Firing an event
@@ -1341,8 +1200,8 @@ namespace Microsoft.Research.Science.Data
                     }
                 }
                 DataSet.ExtendAffectedRectangle(propAR, cshape);
-                Changes proposedChanges = new Changes(Version, GetSchema(SchemaVersion.Committed), null, null,
-                    propShape, propAR);
+                Changes proposedChanges = new Changes(Version, GetSchema(SchemaVersion.Committed), null, propShape,
+                    propAR);
 
                 /***********************************************************************/
                 // Firing an event
@@ -1407,64 +1266,7 @@ namespace Microsoft.Research.Science.Data
 
         #endregion
 
-        #region Coordinate Systems and Dimensions
-
-        /// <summary>
-        /// This methods is called when the coordinate system is to be added to the variable.
-        /// </summary>
-        /// <remarks>
-        /// It is possible to override this method to filter out coordinate systems, and
-        /// it is enough to throw an exception to reject the coordinate system.
-        /// Default implementation prohibits add of non-native coordinate systems.
-        /// </remarks>
-        protected internal virtual void CheckOnAddCoordinateSystem(CoordinateSystem cs)
-        {
-            if (Rank == 0)
-                throw new NotSupportedException("Scalar vairables cannot be defined in coordinate systems");
-            if (cs.DataSet != DataSet)
-                throw new ArgumentException("Coordinate system must not be attached to the different data set to be added to the variable.");
-        }
-
-        /// <summary>
-        /// Adds the coordinate system to the list of coordinate systems corresponded with the variable.		
-        /// </summary>
-        /// <param name="cs">A coordinate system of the same DataSet.</param>
-        /// <remarks>
-        /// <para>
-        /// Coordinate system must be attached to the same data set as the variable does.
-        /// </para>
-        /// <para>
-        /// Adding of a coordinate system to a variable
-        /// means that the variable is defined in that coordinate system. 
-        /// See also remarks for 
-        /// <see cref="Microsoft.Research.Science.Data.DataSet.CreateCoordinateSystem(string, Variable[])"/>.
-        /// </para>
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public void AddCoordinateSystem(CoordinateSystem cs)
-        {
-            if (readOnly)
-                throw new Exception("Variable is read only.");
-            if (Rank == 0)
-                throw new NotSupportedException("Scalar vairables cannot be defined in coordinate systems");
-
-            lock (DataSet)
-            {
-                if (changes != null && changes.CoordinateSystems != null && changes.CoordinateSystems.Contains(cs))
-                    return;
-
-                CheckOnAddCoordinateSystem(cs);
-
-                StartChanges();
-
-                if (changes.CoordinateSystems == null)
-                    changes.CoordinateSystems = new CoordinateSystemCollection();
-
-                changes.CoordinateSystems.Add(cs);
-            }
-
-            FireEventCoordinateSystemAdded(cs);
-        }
+        #region Dimensions
 
         /// <summary>
         /// Returns the actual shape of the variable.
@@ -1624,7 +1426,6 @@ namespace Microsoft.Research.Science.Data
                     this.Changed = null;
                     this.Committing = null;
                     this.Committed = null;
-                    this.CoordinateSystemAdded = null;
                     this.RolledBack = null;
                 }
             }
@@ -1658,23 +1459,6 @@ namespace Microsoft.Research.Science.Data
             if (proposedChanges == null)
                 return; // no changes to check
             ReadOnlyDimensionList dlist = proposedChanges.GetDimensionList();
-
-            foreach (CoordinateSystem cs in csystems)
-            {
-                if (dlist != cs.GetDimensions(dataSetChangeset))
-                    throw new ConstraintsFailedException("Set of dimensions for each coordinate system must be equal to the set of dimensions for the variable; the constraint failed for variable "
-                        + this.Name + "[" + ID + "] and coordinate system " + cs.Name);
-            }
-
-            if (proposedChanges.CoordinateSystems != null)
-            {
-                foreach (CoordinateSystem cs in proposedChanges.CoordinateSystems)
-                {
-                    if (dlist != cs.GetDimensions(dataSetChangeset))
-                        throw new ConstraintsFailedException("Set of dimensions for each coordinate system must be equal to the set of dimensions for the variable; the constraint failed for variable "
-                            + this.Name + "[" + ID + "] and coordinate system " + cs.Name);
-                }
-            }
         }
 
         /// <summary>
@@ -1812,12 +1596,7 @@ namespace Microsoft.Research.Science.Data
 
             try
             {
-                /* Committing changes in structure */
-                if (proposedChanges.CoordinateSystems != null)
-                    this.csystems.AddRange(proposedChanges.CoordinateSystems);
-
                 Metadata.ApplyChanges(proposedChanges.MetadataChanges);
-
                 OnCommit(proposedChanges);
             }
             catch (Exception ex)
@@ -1876,7 +1655,6 @@ namespace Microsoft.Research.Science.Data
                     DataChanges changes = new DataChanges(changeSetId + 1,
                         initialSchema,
                         Metadata.StartChanges(),
-                        null,
                         shape,
                         new Rectangle());
                     changes.Data = new List<DataPiece>();
@@ -1948,25 +1726,12 @@ namespace Microsoft.Research.Science.Data
                     ReadOnlyDimensionList roDims = GetDimensions(version);
                     MetadataDictionary metadata = Metadata.Clone(version, true);
 
-                    // Coordinate systems
-                    int count = version == SchemaVersion.Proposed ? csystems.Count : 0;
-                    if (changes.CoordinateSystems != null)
-                        count += changes.CoordinateSystems.Count;
-                    string[] csSchemas = new string[count];
-                    int index = 0;
-                    if (version == SchemaVersion.Proposed)
-                        for (; index < csystems.Count; index++)
-                            csSchemas[index] = csystems[index].Name;
-                    for (int i = 0; index < count; index++, i++)
-                        csSchemas[index] = changes.CoordinateSystems[i].Name;
-
                     // Schema
                     VariableSchema schema = new VariableSchema(
                         changeSetId,
                         id,
                         TypeOfData,
                         roDims,
-                        csSchemas,
                         metadata);
                     return schema;
                 }
@@ -1990,10 +1755,6 @@ namespace Microsoft.Research.Science.Data
 
         private VariableSchema BuildCommittedSchema()
         {
-            string[] csSchemas = new string[csystems.Count];
-            for (int i = 0; i < csSchemas.Length; i++)
-                csSchemas[i] = csystems[i].Name;
-
             int[] shape = ReadShape();
             if (shape == null) shape = new int[Rank]; // initialization: shape is empty
             Dimension[] dimensions = new Dimension[shape.Length];
@@ -2005,7 +1766,6 @@ namespace Microsoft.Research.Science.Data
                 id,
                 TypeOfData,
                 new ReadOnlyDimensionList(dimensions),
-                csSchemas,
                 Metadata.Clone(SchemaVersion.Committed, true));
         }
 
@@ -2091,11 +1851,6 @@ namespace Microsoft.Research.Science.Data
             /// </summary>
             protected MetadataDictionary metadataChanges;
             /// <summary>
-            /// Proposed coordinate systems list.
-            /// </summary>
-            [Obsolete]
-            protected CoordinateSystemCollection coordinateSystems;
-            /// <summary>
             /// Proposed shape of the variable.
             /// </summary>
             protected int[] shape;
@@ -2114,11 +1869,11 @@ namespace Microsoft.Research.Science.Data
             /// <param name="version"></param>
             /// <param name="initialSchema"></param>
             /// <param name="metadataChanges"></param>
-            /// <param name="css"></param>
             /// <param name="shape"></param>
             /// <param name="affectedRect"></param>
+            /// 
             public Changes(int version, VariableSchema initialSchema, MetadataDictionary metadataChanges,
-                CoordinateSystemCollection css, int[] shape, Rectangle affectedRect)
+                int[] shape, Rectangle affectedRect)
             {
                 if (initialSchema == null) throw new ArgumentNullException("initialSchema");
 
@@ -2126,7 +1881,6 @@ namespace Microsoft.Research.Science.Data
                 this.initialSchema = initialSchema;
                 this.id = initialSchema.ID;
                 this.metadataChanges = metadataChanges;
-                this.coordinateSystems = css;
                 this.shape = shape;
                 this.affectedRectangle = affectedRect;
             }
@@ -2158,15 +1912,6 @@ namespace Microsoft.Research.Science.Data
             {
                 get { return metadataChanges; }
                 internal set { metadataChanges = value; }
-            }
-            /// <summary>Gets collection of added coordinate systems.</summary>
-            /// <remarks>This collection may contain added coordinate systems only,
-            /// because a coordinate system is immutable after it is committed.</remarks>
-            [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-            public CoordinateSystemCollection CoordinateSystems
-            {
-                get { return coordinateSystems; }
-                internal set { coordinateSystems = value; }
             }
             /// <summary>
             /// Gets the new shape of the variable.
@@ -2248,7 +1993,7 @@ namespace Microsoft.Research.Science.Data
             public virtual Changes Clone()
             {
                 Changes clone = new Changes(
-                    changeSet, initialSchema, metadataChanges, coordinateSystems, shape, affectedRectangle);
+                    changeSet, initialSchema, metadataChanges, shape, affectedRectangle);
                 return clone;
             }
 
@@ -2269,12 +2014,12 @@ namespace Microsoft.Research.Science.Data
             /// <param name="version"></param>
             /// <param name="initialSchema"></param>
             /// <param name="metadataChanges"></param>
-            /// <param name="css"></param>
             /// <param name="shape"></param>
             /// <param name="affectedRect"></param>
+            /// 
             public DataChanges(int version, VariableSchema initialSchema, MetadataDictionary metadataChanges,
-                CoordinateSystemCollection css, int[] shape, Rectangle affectedRect) :
-                base(version, initialSchema, metadataChanges, css, shape, affectedRect)
+                int[] shape, Rectangle affectedRect) :
+                base(version, initialSchema, metadataChanges, shape, affectedRect)
             {
             }
             /// <summary>
@@ -2283,13 +2028,13 @@ namespace Microsoft.Research.Science.Data
             /// <param name="version"></param>
             /// <param name="initialSchema"></param>
             /// <param name="metadataChanges"></param>
-            /// <param name="css"></param>
             /// <param name="shape"></param>
             /// <param name="affectedRect"></param>
             /// <param name="data"></param>
+            /// 
             public DataChanges(int version, VariableSchema initialSchema, MetadataDictionary metadataChanges,
-                CoordinateSystemCollection css, int[] shape, Rectangle affectedRect, List<DataPiece> data) :
-                this(version, initialSchema, metadataChanges, css, shape, affectedRect)
+                int[] shape, Rectangle affectedRect, List<DataPiece> data) :
+                this(version, initialSchema, metadataChanges, shape, affectedRect)
             {
                 dataPieces = data;
             }
@@ -2325,7 +2070,7 @@ namespace Microsoft.Research.Science.Data
             public override Changes Clone()
             {
                 DataChanges clone = new DataChanges(changeSet,
-                    initialSchema, metadataChanges, coordinateSystems, shape, affectedRectangle);
+                    initialSchema, metadataChanges, shape, affectedRectangle);
                 if (dataPieces != null)
                     clone.dataPieces = new List<DataPiece>(dataPieces);
 
@@ -2688,339 +2433,6 @@ namespace Microsoft.Research.Science.Data
                     "Variables of type {0} are not supported in DataSet 1.0", dataType.Name));
         }
 
-        /// <summary>
-        /// Initializes the schema of the variable.
-        /// </summary>
-        /// <remarks>
-        /// This method shall be called by derived class AT THE END of their constructors.
-        /// It initializes the schema of the variable.
-        /// Start changes of the variable.
-        /// </remarks>
-        protected override void Initialize()
-        {
-            //if (MissingValue == null && typeof(DataType).IsValueType)
-            //    MissingValue = TypeUtils.GetDefaultMissingValue(TypeOfData);
-            this.Changed += new VariableChangedEventHandler(OnVariableChanged);
-
-            base.Initialize();
-        }
-
-        #endregion
-
-        #region Get Data
-
-        /// <summary>
-        /// This method is a bridge to the typed implementation of the method in the Variable{DataType} class.
-        /// </summary>
-        protected internal override object InnerGetUntypedValue(ReverseIndexSelection mode, CoordinateSystem cs, object[] coords)
-        {
-            return GetValue(mode, cs, coords);
-        }
-
-        /// <summary>
-        /// Returns the typed value in specified point in the coordinate system.
-        /// </summary>
-        /// <remarks>
-        /// First coordinate system is used as default. 
-        /// Index selection mode is Exact.
-        /// </remarks>
-        protected DataType GetValue(params object[] coords)
-        {
-            if (CoordinateSystems.Count == 0)
-                throw new Exception("No coordinate systems.");
-            return GetValue(ReverseIndexSelection.Exact, CoordinateSystems[0], coords);
-        }
-
-        /// <summary>
-        /// Returns the typed value in specified point in the coordinate system.
-        /// </summary>
-        /// <remarks>
-        /// First coordinate system is used as default. 
-        /// </remarks>
-        protected DataType GetValue(ReverseIndexSelection mode, params object[] coords)
-        {
-            object value = GetUntypedValue(mode, coords);
-            return (DataType)value;
-        }
-
-        /// <summary>
-        /// Returns the typed value in specified point in the coordinate system.
-        /// </summary>
-        /// <remarks>
-        /// First coordinate system is used as default. 
-        /// Index selection mode is Exact.
-        /// </remarks>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        protected DataType GetValue(CoordinateSystem cs, params object[] coords)
-        {
-            return GetValue(ReverseIndexSelection.Exact, cs, coords);
-        }
-
-        /// <summary>
-        /// Returns the typed value in specified point in the coordinate system.
-        /// </summary>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        protected DataType GetValue(ReverseIndexSelection mode, CoordinateSystem cs, params object[] coords)
-        {
-            if (coords.Length != cs.AxesCount)
-                throw new ArgumentException("Wrong coordinate vector.");
-
-            foreach (var axis in cs.Axes)
-            {
-                if (axis.Rank != 1)
-                    throw new NotSupportedException("Current release of the ScientificDataSet supports GetValue operation for coordinate systems with 1d axes only");
-            }
-
-            if (cs.AxesCount == 1)
-            {
-                Variable axis = cs.AxesArray[0];
-                return GetValue1d(mode, axis, coords[0]);
-            }
-            else
-            {
-                GetValueIndex[] indices = new GetValueIndex[coords.Length];
-                bool interpolation = false;
-
-                // Each axis gives an index (or a pair of nearest indices) for its coordinate value
-                for (int a = 0; a < cs.AxesCount; a++)
-                {
-                    Variable axis = cs.AxesArray[a];
-                    int i = Array.IndexOf(dimensions, axis.dimensions[0]);
-                    object coordValue = coords[a];
-
-                    indices[i] = GetIndex1d(mode, axis, coordValue);
-                    interpolation = interpolation || indices[i].Interpolated;
-                }
-
-                // Either exact or nearest indices found (no interpolation, just get and return)
-                if (!interpolation)
-                {
-                    int[] getIndex = new int[Rank];
-                    int[] shape = new int[Rank];
-                    for (int i = 0; i < shape.Length; i++)
-                    {
-                        shape[i] = 1;
-                        getIndex[i] = indices[i].IndexLeft;
-                    }
-
-                    return (DataType)this.GetData(getIndex, shape).GetValue(new int[shape.Length]);
-                }
-                else // Making interpolation
-                {
-                    int m = indices.Length;
-                    int n = 1 << m;
-                    bool[] flags = new bool[m]; // initialized with false
-
-                    // Building a "hypercube" of data to be interpolated
-                    int[] getIndex = new int[Rank];
-                    int[] shape = new int[Rank];
-                    for (int i = 0; i < shape.Length; i++)
-                    {
-                        getIndex[i] = indices[i].IndexLeft;
-                        shape[i] = indices[i].Interpolated ? 2 : 1; // the dimension might not require the interpolation
-                    }
-                    int[] zero = new int[shape.Length];
-
-                    // Getting the data that we need to proceed
-                    Array hyperCube = GetData(getIndex, shape);
-
-                    // Going through all points and computing value at each point with specified 
-                    // interpolation coefficient and accumulating a sum.
-                    double total = 0.0;
-                    for (int i = 0; i < n; i++)
-                    {
-                        // Computing an interpolation coefficient for the current point
-                        double coeff = 1.0;
-                        for (int j = 0; j < m; j++)
-                        {
-                            coeff *= (flags[j]) ? (1.0 - indices[j].Alpha) : indices[j].Alpha;
-                            if (coeff == 0) break;
-                        }
-
-                        // If coeff == 0 this point is not important for us and it may be skipped
-                        if (coeff != 0)
-                        {
-                            for (int j = 0; j < m; j++)
-                                getIndex[j] = flags[j] ? 1 : 0;
-                            double val = coeff * Convert.ToDouble(hyperCube.GetValue(getIndex));
-                            total += val;
-                        }
-
-                        // Next point
-                        if (i < n - 1)
-                            for (int k = 0; k < m; k++)
-                            {
-                                if (flags[k])
-                                {
-                                    flags[k] = false;
-                                }
-                                else
-                                {
-                                    flags[k] = true;
-                                    break;
-                                }
-                            }
-                    }
-                    return (DataType)Convert.ChangeType(total, typeof(DataType));
-                }
-            }
-
-            throw new NotSupportedException("Operation is not supported for this particular kind of coordinate system.");
-        }
-
-        /// <summary>
-        /// Stores a pair of indices and interpolation coefficient.
-        /// </summary>
-        private struct GetValueIndex
-        {
-            public int IndexLeft;
-            public int IndexRight;
-            public double Alpha;
-
-            public GetValueIndex(int left, int right, double alpha)
-            {
-                this.IndexLeft = left;
-                this.IndexRight = right;
-                this.Alpha = alpha;
-            }
-
-            public GetValueIndex(int index)
-                : this(index, index + 1, 1.0)
-            {
-            }
-
-            public bool Interpolated { get { return Alpha != 1.0; } }
-        }
-
-        /// <summary>
-        /// Returns index (or two nearest indices) in the given axis for specified coordinate value.
-        /// </summary>
-        private GetValueIndex GetIndex1d(ReverseIndexSelection mode, Variable axis, object coordValue)
-        {
-            int index = axis.IndicesOf(coordValue)[0];
-
-            if (index >= 0)
-                return new GetValueIndex(index);
-
-            if (mode == ReverseIndexSelection.Exact)
-                throw new ValueNotFoundException();
-
-            Type dataType = TypeOfData;
-            Type axisDataType = axis.TypeOfData;
-
-            if (mode == ReverseIndexSelection.Interpolation && TypeUtils.IsRealNumber(dataType) && TypeUtils.IsRealNumber(axisDataType))
-            {
-                index = ~index;
-                int size = axis.GetShape()[0];
-                if (index > 0 && index < size)
-                {
-                    // Performing interpolation
-                    Array grid = axis.GetData(new int[1] { index - 1 }, new int[1] { 2 });
-                    double alpha = (Convert.ToDouble(grid.GetValue(1)) - Convert.ToDouble(coordValue)) / (Convert.ToDouble(grid.GetValue(1)) - Convert.ToDouble(grid.GetValue(0)));
-                    return new GetValueIndex(index - 1, index, alpha);
-                }
-            }
-            else if (mode == ReverseIndexSelection.Nearest &&
-                (TypeUtils.IsNumeric(axisDataType) || TypeUtils.IsDateTime(axisDataType)))
-            {
-                index = ~index;
-                int size = axis.GetShape()[0];
-                if (index >= size)
-                {
-                    index = size - 1;
-                }
-                else if (index > 0)
-                {
-                    // TODO: Find a better way to find out nearest point.
-                    Array grid = axis.GetData(new int[1] { index - 1 }, new int[1] { 2 });
-
-                    if (TypeUtils.IsNumeric(axisDataType))
-                    {
-                        double d1 = Convert.ToDouble(grid.GetValue(0)) - Convert.ToDouble(coordValue);
-                        double d2 = Convert.ToDouble(coordValue) - Convert.ToDouble(grid.GetValue(1));
-
-                        if (Math.Abs((double)d1) < Math.Abs((double)d2))
-                            index--;
-                    }
-                    else
-                    {
-                        TimeSpan d1 = ((DateTime)grid.GetValue(0)).Subtract((DateTime)coordValue);
-                        TimeSpan d2 = ((DateTime)coordValue).Subtract((DateTime)grid.GetValue(1));
-
-                        if (Math.Abs(d1.Ticks) < Math.Abs(d2.Ticks))
-                            index--;
-                    }
-                }
-                return new GetValueIndex(index);
-            }
-            throw new ValueNotFoundException("Selection mode is not supported for particular data types.");
-        }
-
-        /// <summary>
-        /// Returns value in the given axis for specified coordinate value.
-        /// </summary>
-        private DataType GetValue1d(ReverseIndexSelection mode, Variable axis, object coordValue)
-        {
-            int index = axis.IndicesOf(coordValue)[0];
-
-            if (index >= 0)
-                return (DataType)GetData(new int[1] { index }, new int[1] { 1 }).GetValue(0);
-
-            if (mode == ReverseIndexSelection.Exact)
-                throw new ValueNotFoundException();
-
-            Type dataType = TypeOfData;
-            Type axisDataType = axis.TypeOfData;
-
-            if (mode == ReverseIndexSelection.Interpolation && TypeUtils.IsRealNumber(dataType) && TypeUtils.IsRealNumber(axisDataType))
-            {
-                index = ~index;
-                int size = axis.GetShape()[0];
-                if (index > 0 && index < size)
-                {
-                    // Performing interpolation
-                    DataType[] data = (DataType[])GetData(new int[1] { index - 1 }, new int[1] { 2 });
-                    Array grid = axis.GetData(new int[1] { index - 1 }, new int[1] { 2 });
-                    return (DataType)Convert.ChangeType(Interpolation.Interpolate(coordValue, grid.GetValue(0), grid.GetValue(1), data[0], data[1]),
-                        typeof(DataType));
-                }
-            }
-            else if (mode == ReverseIndexSelection.Nearest &&
-                (TypeUtils.IsNumeric(axisDataType) || TypeUtils.IsDateTime(axisDataType)))
-            {
-                index = ~index;
-                int size = axis.GetShape()[0];
-                if (index >= size)
-                {
-                    index = size - 1;
-                }
-                else if (index > 0)
-                {
-                    // TODO: Find a better way to find out nearest point.
-                    Array grid = axis.GetData(new int[1] { index - 1 }, new int[1] { 2 });
-
-                    if (TypeUtils.IsNumeric(axisDataType))
-                    {
-                        double d1 = Convert.ToDouble(grid.GetValue(0)) - Convert.ToDouble(coordValue);
-                        double d2 = Convert.ToDouble(coordValue) - Convert.ToDouble(grid.GetValue(1));
-
-                        if (Math.Abs((double)d1) < Math.Abs((double)d2))
-                            index--;
-                    }
-                    else
-                    {
-                        TimeSpan d1 = ((DateTime)grid.GetValue(0)).Subtract((DateTime)coordValue);
-                        TimeSpan d2 = ((DateTime)coordValue).Subtract((DateTime)grid.GetValue(1));
-
-                        if (Math.Abs(d1.Ticks) < Math.Abs(d2.Ticks))
-                            index--;
-                    }
-                }
-                return ((DataType[])GetData(new int[1] { index }, new int[1] { 1 }))[0];
-            }
-            throw new ValueNotFoundException("Selection mode is not supported for particular data types.");
-        }
-
         #endregion
 
         #region Put Data
@@ -3042,41 +2454,6 @@ namespace Microsoft.Research.Science.Data
     }
 
     #region Events Type Definitions
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-    public delegate void CoordinateSystemAddedEventHandler(object sender, CoordinateSystemAddedEventArgs e);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-    public class CoordinateSystemAddedEventArgs : EventArgs
-    {
-        private CoordinateSystem cs;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cs"></param>
-        public CoordinateSystemAddedEventArgs(CoordinateSystem cs)
-        {
-            this.cs = cs;
-        }
-
-        /// <summary>
-        /// Gets the coordinate system that has been added.
-        /// </summary>
-        [Obsolete("Coordinate systems will be removed from the future release. Use metadata attributes instead.")]
-        public CoordinateSystem CoordinateSystem
-        {
-            get { return cs; }
-        }
-    }
 
     /// <summary>
     /// Kind of changes in a variable.

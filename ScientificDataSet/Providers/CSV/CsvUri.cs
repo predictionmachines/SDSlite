@@ -75,7 +75,7 @@ namespace Microsoft.Research.Science.Data.CSV
         /// </code>
         /// </example>
         /// </remarks>
-        /// <seealso cref="GetOpenModeOrDefault"/>
+        /// <seealso cref="DataSetUri.GetOpenModeOrDefault"/>
         [Description("Specifies how the data set should open a file,\ndata base or whatever resource it uses to store the data.")]
         public new ResourceOpenMode OpenMode
         {
@@ -308,6 +308,9 @@ namespace Microsoft.Research.Science.Data.CSV
             }
         }
 
+        /// <summary>
+        /// Idetifies whether the URI defines separator value or not.
+        /// </summary>
         public bool HasSeparator
         {
             get
@@ -316,6 +319,9 @@ namespace Microsoft.Research.Science.Data.CSV
             }
         }
 
+        /// <summary>
+        /// A char that separates values in the file.
+        /// </summary>
         [Description("Determines a char that separates values in the file.\nAllowed delimiters are \",\" \";\" \" \" \"\\t\".")]
         public Delimiter Separator
         {
@@ -359,15 +365,6 @@ namespace Microsoft.Research.Science.Data.CSV
             {
                 return GetParameterOccurences("file") > 0;
             }
-        }
-
-        internal static CsvUri FromFileName(string file)
-        {
-            string uri = DataSetUri.CreateFromPath(file,
-                Microsoft.Research.Science.Data.Factory.DataSetFactory.GetProviderNameByType(typeof(CsvDataSet)) ??
-                   ((DataSetProviderNameAttribute)typeof(CsvDataSet).GetCustomAttributes(typeof(DataSetProviderNameAttribute), false)[0]).Name,
-                "file");
-            return new CsvUri(uri);
         }
     }
 

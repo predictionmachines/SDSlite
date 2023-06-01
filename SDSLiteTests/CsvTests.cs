@@ -1,18 +1,21 @@
 ﻿using Microsoft.Research.Science.Data;
 using Microsoft.Research.Science.Data.CSV;
-using Microsoft.Research.Science.Data.Utilities;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+using SDSLiteTests;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SdsLiteTests
 {
-    public class CsvTests
+    public class CsvTests : GenericFileTests
     {
+        protected override DataSetUri dsUri(string fileName, params object[] attributes)
+        {
+            var dsUri = new CsvUri()
+            {
+                FileName = fileName,
+            };
+            return dsUri;
+        }
         [Test]
         public void NoMissingValueAttribute()
         {

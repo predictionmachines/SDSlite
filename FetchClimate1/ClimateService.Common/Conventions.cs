@@ -719,13 +719,10 @@ namespace Microsoft.Research.Science.Data
             {
                 case PrecipitationRateUnits.GramPerSquereMeterPerHour:
                     return unifiedUncertainty;
-                    break;
                 case PrecipitationRateUnits.KilogramPerSquereMeterPerSecond:
                     return unifiedUncertainty / 36000000;
-                    break;
                 case PrecipitationRateUnits.MmPerMonth:
                     return unifiedUncertainty / 13.888888888888888888888889;
-                    break;
                 default:
                     throw new NotImplementedException();
             }
