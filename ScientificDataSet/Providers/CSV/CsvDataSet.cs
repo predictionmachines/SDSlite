@@ -681,6 +681,20 @@ namespace Microsoft.Research.Science.Data.CSV
         /// <summary>
         /// Makes the string proper to write in a CSV file.
         /// </summary>
+        private string SafeString(object value)
+        {
+            string s =
+                value is null ? null :
+                value is string str ? str :
+                value is float f ? f.ToString("R") :
+                value is double d ? d.ToString("R") :
+                value.ToString();
+            return SafeString(s);
+        }
+
+        /// <summary>
+        /// Makes the string proper to write in a CSV file.
+        /// </summary>
         private string SafeStringWithInnerSeparator(string s)
         {
             if (String.IsNullOrEmpty(s))
@@ -861,16 +875,7 @@ namespace Microsoft.Research.Science.Data.CSV
                             {
                                 if (line < dataCol.Length)
                                 {
-                                    object o = dataCol.GetValue(line);
-                                    if (o != null)
-                                    {
-                                        string s = o.ToString();
-                                        sw.Write(SafeString(s));
-                                    }
-                                    else
-                                    {
-                                        sw.Write("\"\"");
-                                    }
+                                    sw.Write(SafeString(dataCol.GetValue(line)));
                                 }
                             }
 
@@ -1029,7 +1034,7 @@ namespace Microsoft.Research.Science.Data.CSV
             sw.Write(separator);
 
             // Name
-            sw.Write(SafeString(metadata[metadata.KeyForName, SchemaVersion.Recent].ToString()));
+            sw.Write(SafeString(metadata[metadata.KeyForName, SchemaVersion.Recent]));
             sw.Write(separator);
 
             // Type
@@ -1071,13 +1076,13 @@ namespace Microsoft.Research.Science.Data.CSV
                 foreach (object item in (System.Collections.IEnumerable)o)
                 {
                     if (!first) sb.Append(this.separator);
-                    sb.Append(SafeString(item.ToString()));
+                    sb.Append(SafeString(item));
                     first = false;
                 }
                 return sb.ToString();
             }
             else
-                return SafeString(o.ToString());
+                return SafeString(o);
         }
 
         #endregion
@@ -1299,7 +1304,7 @@ namespace Microsoft.Research.Science.Data.CSV
             if (String.IsNullOrEmpty(s)) return new string[] { };
 
             List<string> items = new List<string>();
-     
+
             if (splitStringBuilder == null) splitStringBuilder = new StringBuilder();
             StringBuilder current = splitStringBuilder;
             bool quoted = false;
@@ -2254,7 +2259,7 @@ namespace Microsoft.Research.Science.Data.CSV
         {
             string[] items = splitLine;
             int itemsLength = items.Length;
-            for (; --itemsLength >= columns.Count; )
+            for (; --itemsLength >= columns.Count;)
             {
                 if (splitLine[itemsLength] != null)
                     break;
@@ -2628,7 +2633,7 @@ namespace Microsoft.Research.Science.Data.CSV
         private string TrimEnd(string str)
         {
             int i;
-            for (i = str.Length; --i >= 0; )
+            for (i = str.Length; --i >= 0;)
             {
                 if (!(char.IsWhiteSpace(str[i]) || str[i] == separator))
                     break;
@@ -2645,7 +2650,7 @@ namespace Microsoft.Research.Science.Data.CSV
         {
             if (items.Length == 0) return items;
             int i;
-            for (i = items.Length; --i >= 0; )
+            for (i = items.Length; --i >= 0;)
             {
                 if (!String.IsNullOrEmpty(items[i])) break;
             }
@@ -2732,8 +2737,8 @@ namespace Microsoft.Research.Science.Data.CSV
             return res.ToString();
         }
 
-        private static char[] letters = { 
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
+        private static char[] letters = {
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
         private static int Eval(char a)
