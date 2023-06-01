@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] - 2023-06-01
 
 ### Added
-- Tests for `CsvDataset` and for `net4.8` platform.
+- Tests for `.NETFramework,Version=v4.8`.
 
 ### Removed
 - Obsolete `CoordinateSystem` class and all related functionality.
