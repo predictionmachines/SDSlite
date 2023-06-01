@@ -214,7 +214,7 @@ namespace Microsoft.Research.Science.Data
                     if (!ar.IsEmpty)
                     {
                         var shape = TransformIndexRectangle(new Rectangle(new int[sourceVariable.Rank], e.ProposedChanges.Shape)).Shape;
-                        Changes c = new Changes(Version, GetSchema(), null, null, shape, ar);
+                        Changes c = new Changes(Version, GetSchema(), null, shape, ar);
 
                         e.Cancel = !FireEventVariableChanging(VariableChangeAction.PutData, c);
                     }
@@ -302,7 +302,7 @@ namespace Microsoft.Research.Science.Data
                 if (shape == null)
                     shape = GetShape(); // and affectedRect is not empty
 
-                myChanges = new Changes(Version + 1, GetSchema(SchemaVersion.Committed), metadataChanges, null,
+                myChanges = new Changes(Version + 1, GetSchema(SchemaVersion.Committed), metadataChanges,
                     shape, affectedRectangle);
                 changes.UpdateChanges(myChanges);
             }
@@ -681,7 +681,7 @@ namespace Microsoft.Research.Science.Data
                 var shape = proposedShape;
 
                 myChanges = new Changes(Version + 1, GetSchema(SchemaVersion.Committed), new MetadataDictionary(),
-                    null, shape, ar);
+                    shape, ar);
 
                 changes.UpdateChanges(myChanges);
             }

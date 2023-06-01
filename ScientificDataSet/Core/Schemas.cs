@@ -14,11 +14,10 @@ namespace Microsoft.Research.Science.Data
 		private int changeSetId;
 		private Type dataType;
 		private ReadOnlyDimensionList dimensions;
-		private string[] cs;
 		private MetadataDictionary metadata;
 
-		internal VariableSchema(int changeSetId, int id, Type dataType, ReadOnlyDimensionList dimensions, string[] cs, MetadataDictionary metadata)
-		{
+		internal VariableSchema(int changeSetId, int id, Type dataType, ReadOnlyDimensionList dimensions, MetadataDictionary metadata)
+        {
 			if (dimensions == null)
 				throw new ArgumentNullException("dimensions");
 			if (metadata == null)
@@ -26,7 +25,6 @@ namespace Microsoft.Research.Science.Data
 			this.changeSetId = changeSetId;
 			this.id = id;
 			this.dimensions = dimensions;
-			this.cs = cs;
 			this.metadata = metadata;
 			this.dataType = dataType;
 		}
@@ -67,13 +65,6 @@ namespace Microsoft.Research.Science.Data
 			get { return dimensions; }
 		}
 		/// <summary>
-		/// Gets the coordinate systems the variable is defined in.
-		/// </summary>
-		public string[] CoordinateSystems
-		{
-			get { return cs; }
-		}
-		/// <summary>
 		/// Gets the metadata collection.
 		/// </summary>
 		public MetadataDictionary Metadata
@@ -102,76 +93,7 @@ namespace Microsoft.Research.Science.Data
 				sb.Append(dimensions[i]);
 			}
 
-			if (cs != null && cs.Length > 0)
-			{
-				sb.Append("| CS:");
-				for (int i = 0; i < cs.Length; i++)
-				{
-					sb.Append(' ');
-					sb.Append(cs[i]);
-				}
-			}
-
 			sb.Append('>');
-			return sb.ToString();
-		}
-	}
-
-	/// <summary>Provides structure information for a coordinate system.</summary>
-	/// <remarks>This class is immutable.</remarks>
-	public class CoordinateSystemSchema
-	{
-		private readonly string name;
-		private readonly int[] axesIds;
-
-		/// <summary>Creates an instance of the CoordinateSystemSchema</summary>
-		/// <param name="name">Name of the coordinate system.</param>
-		/// <param name="axes">IDs of variables those are axes for the coordinate system.</param>
-		public CoordinateSystemSchema(string name, int[] axes)
-		{
-			if (axes == null)
-				throw new ArgumentNullException("axes");
-
-			this.name = name;
-			this.axesIds = axes;
-		}
-
-		/// <summary>Gets the name of the coordinate system.</summary>
-		public string Name { get { return name; } }
-
-		/// <summary>Gets an array of the IDs of the variables those are axes for the coordinate system.</summary>
-		public int[] AxesID { get { return axesIds; } }
-
-		/// <summary>Gets the number of axes in the coordinate system.</summary>
-		public int AxesCount { get { return axesIds.Length; } }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat("({0}", name);
-
-			if (axesIds.Length == 0) sb.Append(" with no axes");
-			else
-			{
-				sb.Append(" with ids of axes <");
-				bool first = true;
-				for (int i = 0; i < axesIds.Length; i++)
-				{
-					if (!first)
-					{
-						sb.Append(' ');
-					}
-					sb.AppendFormat("{0}", axesIds[i]);
-					first = false;
-				}
-				sb.Append(">");
-			}
-			sb.Append(')');
-
 			return sb.ToString();
 		}
 	}
@@ -183,14 +105,12 @@ namespace Microsoft.Research.Science.Data
 		private readonly Guid guid;
 		private readonly int version;
 		private readonly VariableSchema[] vars;
-		private readonly CoordinateSystemSchema[] cs;
 		private readonly string uri;
 
-		internal DataSetSchema(Guid guid, string uri, int version, VariableSchema[] vars, CoordinateSystemSchema[] cs)
-		{
+		internal DataSetSchema(Guid guid, string uri, int version, VariableSchema[] vars)
+        {
 			this.guid = guid;
 			this.vars = vars;
-			this.cs = cs;
 			this.version = version;
 			this.uri = uri;
 		}
@@ -239,15 +159,6 @@ namespace Microsoft.Research.Science.Data
 		public VariableSchema[] Variables
 		{
 			get { return vars; }
-		}
-
-		/// <summary>
-		/// Gets an array of the coordinate systems contained in the DataSet.
-		/// </summary>
-		[Obsolete("Coordinate systems will be removed from the future release.")]
-		public CoordinateSystemSchema[] CoordinateSystems
-		{
-			get { return cs; }
 		}
 
 		/// <summary>

@@ -297,7 +297,7 @@ namespace Microsoft.Research.Science.Data.CSV
         /// <remarks>
         /// <para>
         /// If the open mode is not specified in the <paramref name="uri"/>, the default value 
-        /// <paramref name="ResourceOpenMode.OpenOrCreate"/> is used.
+        /// <see cref="ResourceOpenMode.OpenOrCreate"/> is used.
         /// </para>
         /// </remarks>
         public CsvDataSet(string uri)
@@ -536,7 +536,8 @@ namespace Microsoft.Research.Science.Data.CSV
                         varChanges = new Variable.Changes(v.Version + 1,
                             initialSchema,
                             StartChangesFor(Metadata),
-                            null, shape, new Rectangle());
+                            shape,
+                            new Rectangle());
                         changes.UpdateChanges(varChanges);
                     }
                     else if (varChanges.MetadataChanges == null)
@@ -544,7 +545,6 @@ namespace Microsoft.Research.Science.Data.CSV
                         varChanges = new Variable.Changes(varChanges.ChangeSet,
                             varChanges.InitialSchema,
                             StartChangesFor(Metadata),
-                            varChanges.CoordinateSystems,
                             varChanges.Shape,
                             varChanges.AffectedRectangle);
                         changes.UpdateChanges(varChanges);
@@ -903,61 +903,7 @@ namespace Microsoft.Research.Science.Data.CSV
                         {
                             SaveMetadataForVariable(sw, idToColumn, v);
                         }
-
-                        /* CS */
                         sw.WriteLine();
-
-                        var recCS = GetCoordinateSystems(SchemaVersion.Recent);
-                        CoordinateSystem[] coordinateSystems = null;
-                        if (recCS.Count > 0)
-                            coordinateSystems = recCS.Where(
-                                cs => cs.AxesArray.All(a => a is ICsvVariable)).ToArray();
-                        if (coordinateSystems != null && coordinateSystems.Length > 0)
-                        {
-                            if (separator == ',')
-                                sw.WriteLine("Coordinate System,Axes,Variables");
-                            else if (separator == ' ')
-                                sw.WriteLine("\"Coordinate System\" Axes Variables");
-                            else
-                                sw.WriteLine("Coordinate System{0}Axes{0}Variables", separator);
-
-                            // Lines for variables
-                            i = 0; n = 0;
-                            foreach (CoordinateSystem cs in coordinateSystems)
-                            {
-                                if (Array.Exists(cs.AxesArray, a => !(a is ICsvVariable)))
-                                    continue; // saving cs with csv variables only
-
-                                // CS Name
-                                sw.Write(SafeString(cs.Name));
-                                sw.Write(separator);
-
-                                // Axes
-                                n = cs.AxesCount;
-                                i = 0;
-                                foreach (var axis in cs.Axes)
-                                {
-                                    if (i++ > 0) sw.Write(innerSeparator);
-                                    sw.Write(axis.ID);
-                                }
-                                sw.Write(separator);
-
-                                // Variables
-                                i = 0;
-                                foreach (Variable v in Variables)
-                                {
-                                    if (v.CoordinateSystems.Contains(cs.Name, SchemaVersion.Recent))
-                                    {
-                                        if (i > 0) sw.Write(innerSeparator);
-                                        sw.Write(v.ID);
-                                        i++;
-                                    }
-                                }
-                                sw.WriteLine();
-                            }
-                            sw.WriteLine();
-                        }
-
                         /* Metadata attributes */
                         bool header = false;
                         header = SaveMetadataEntries(sw, header, Variables.GetByID(DataSet.GlobalMetadataVariableID));
@@ -1232,35 +1178,6 @@ namespace Microsoft.Research.Science.Data.CSV
                 foreach (var item in vm)
                 {
                     globalMetadata[item.Key] = item.Value;
-                }
-            }
-
-            /* CS */
-            if (!isRollback)
-            {
-                ClearCSCollection();
-                if (csList.Count > 0)
-                {
-                    // csname, axes, var1 var2 ...
-                    foreach (string csDesc in csList)
-                    {
-                        string[] items = CsvSplit(csDesc, separator);
-                        string name = items[0];
-                        int[] axisIds = CsvSplitNumbers(items[1], innerSeparator); // Like this: "12 14"
-                        int[] vars = CsvSplitNumbers(items[2], innerSeparator);
-
-                        Variable[] axes = new Variable[axisIds.Length];
-                        for (int i = 0; i < axisIds.Length; i++)
-                            axes[i] = Variables.GetByID(axisIds[i]);
-
-                        CoordinateSystem cs = CreateCoordinateSystem(name, axes);
-
-                        foreach (int vid in vars)
-                        {
-                            Variable v = Variables.GetByID(vid);
-                            v.AddCoordinateSystem(cs);
-                        }
-                    }
                 }
             }
 

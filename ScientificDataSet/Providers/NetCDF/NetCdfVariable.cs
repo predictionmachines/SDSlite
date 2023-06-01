@@ -317,9 +317,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 if (shape == null) shape = new int[dims.Length];
                 Rectangle ar = new Rectangle(new int[dims.Length], shape);
                 DataChanges oldch = var.changes;
-                DataChanges newch = new DataChanges(oldch.ChangeSet, oldch.InitialSchema, oldch.MetadataChanges,
-                    oldch.CoordinateSystems,
-                    shape, ar, oldch.Data);
+                DataChanges newch = new DataChanges(oldch.ChangeSet, oldch.InitialSchema, oldch.MetadataChanges, shape, ar, oldch.Data);
                 var.changes = newch;
             }
             return var;
@@ -377,39 +375,6 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
             atm.Store();
 
-            /* Saving attached coordinate systems as "coordinates" attributes.
-             * Common netCDF model supports for only one such attribute,
-             * so all others CS except first are not compatible with that model.
-             * Their attribute names are "coordinates2","coordinates3" etc.
-             * Names of coordinate systems are provided with corresponed 
-             * attributes "coordinatesName","coordinates2Name",...
-             */
-            if (proposedChanges.CoordinateSystems != null)
-            {
-                int n = proposedChanges.InitialSchema.CoordinateSystems.Length;
-
-                foreach (var cs in proposedChanges.CoordinateSystems)
-                {
-                    if (Array.Exists(proposedChanges.InitialSchema.CoordinateSystems, css => css == cs.Name))
-                        continue;
-
-                    // This CS has been added.
-                    string name = "coordinates";
-                    if (n > 0) name += n.ToString();
-                    n++;
-
-                    StringBuilder sb = new StringBuilder();
-                    bool first = true;
-                    foreach (Variable axis in cs.Axes)
-                    {
-                        if (!first) sb.Append(' ');
-                        else first = false;
-                        sb.Append(axis.Name);
-                    }
-                    dataSet.WriteNetCdfAttribute(varid, name, sb.ToString(), null);
-                    dataSet.WriteNetCdfAttribute(varid, name + "Name", cs.Name, null);
-                }
-            }
         }
 
         #endregion

@@ -183,7 +183,7 @@ namespace Microsoft.Research.Science.Data.Utilities
             {
                 if (targetVariables.ContainsKey(sv.ID))
                     continue; // the variable is already added
-                Variable tv = targetDataSet.AddVariable(sv.TypeOfData, sv.Name, null, null, sv.Dimensions.Select(d => d.Name).ToArray());
+                Variable tv = targetDataSet.AddVariable(sv.TypeOfData, sv.Name, null, sv.Dimensions.Select(d => d.Name).ToArray());
                 targetVariables.Add(sv.ID, tv.ID);
                 foreach (var mr in sv.Metadata)
                     tv.Metadata[mr.Key] = mr.Value;

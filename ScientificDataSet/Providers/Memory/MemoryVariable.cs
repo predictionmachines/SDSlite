@@ -220,14 +220,6 @@ namespace Microsoft.Research.Science.Data.Memory
 
 		private void WriteAttributes(XmlWriter w)
 		{
-			ReadOnlyCoordinateSystemCollection css = CoordinateSystems;
-			if (css.Count > 0)
-			{
-				foreach (CoordinateSystem cs in css)
-				{
-					WriteAttribute(w, "coordinateSystem", cs.Name);
-				}
-			}
 
 			foreach (var item in Metadata)
 			{

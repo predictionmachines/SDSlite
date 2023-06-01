@@ -11,7 +11,7 @@ namespace Microsoft.Research.Science.Data
     /// The computational variable that represents a result of striding of another variable.
     /// </summary>
     /// <typeparam name="DataType">Type of a data element.</typeparam>
-    internal class StriddenVariable<DataType> : TransformationVariable<DataType, DataType>, IPrivateStriddenVariable, IStriddenVariable
+    internal class StriddenVariable<DataType> : TransformationVariable<DataType, DataType>, IStriddenVariable
     {
         private int[] origin;
         private int[] stride;
@@ -119,13 +119,6 @@ namespace Microsoft.Research.Science.Data
                 }
                 return newHidden;
             }
-        }
-
-        void IPrivateStriddenVariable.AddCoordinateSystem(CoordinateSystem cs)
-        {
-            IsReadOnly = false;
-            base.AddCoordinateSystem(cs);
-            IsReadOnly = true;
         }
 
         void IStriddenVariable.SetIndexSpaceOrigin(int[] origin)
@@ -535,9 +528,5 @@ namespace Microsoft.Research.Science.Data
         void SetIndexSpaceOrigin(int[] origin);
     }
 
-    internal interface IPrivateStriddenVariable
-    {
-        void AddCoordinateSystem(CoordinateSystem cs);
-    }
 }
 

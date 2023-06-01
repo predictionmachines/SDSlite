@@ -57,22 +57,6 @@ namespace Microsoft.Research.Science.Data
 			get { return refVariable.Metadata; }
 		}
 
-		protected internal override void CheckOnAddCoordinateSystem(CoordinateSystem cs)
-		{
-			// Disabled for Release 1.0
-			// It is allowed to add coordinate systems from the data set of referenced variable.
-			//if (cs.DataSet == refVariable.DataSet)
-			//    return;
-
-			base.CheckOnAddCoordinateSystem(cs);
-		}
-
-		private void RefVariableCoordinateSystemAdded(object sender, CoordinateSystemAddedEventArgs e)
-		{
-			// Disabled for Release 1.0
-			//AddCoordinateSystem(e.CoordinateSystem);
-		}
-
 		private void RefVariableRolledBack(object sender, VariableRolledBackEventArgs e)
 		{
 			Rollback();

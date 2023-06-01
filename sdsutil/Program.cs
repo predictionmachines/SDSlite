@@ -26,12 +26,6 @@ namespace sdsutil
             foreach (var item in ds.Variables)
                 PrintVariable(item);
 
-            if (ds.CoordinateSystems.Count != 0)
-            {
-                Console.WriteLine();
-                foreach (var item in ds.CoordinateSystems)
-                    PrintCS(item);
-            }
         }
 
         static void DoMeta(string uri, params string[] args)
@@ -665,14 +659,6 @@ namespace sdsutil
             var savedColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(v);
-            Console.ForegroundColor = savedColor;
-        }
-
-        static void PrintCS(CoordinateSystem cs)
-        {
-            var savedColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(cs);
             Console.ForegroundColor = savedColor;
         }
 
