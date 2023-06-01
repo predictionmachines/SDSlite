@@ -50,7 +50,7 @@ jobs:
     - name: Download NetCDF
       run: sudo apt-get install libnetcdf-dev
     - name: Test
-      run: dotnet test --verbosity normal SDSLiteTests
+      run: dotnet test -f net6.0 --verbosity normal SDSLiteTests
 
   build-test-macos:
 
@@ -71,4 +71,4 @@ jobs:
         HOMEBREW_NO_INSTALL_CLEANUP: 1
       run: brew install netcdf
     - name: Test
-      run: dotnet test --verbosity normal SDSLiteTests
+      run: dotnet test -f 6.0 --verbosity normal SDSLiteTests
