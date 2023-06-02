@@ -530,6 +530,11 @@ namespace NetCDFInterop
                 return r;
             }
         }
+        /// <summary>
+        /// Get netCDF library version.
+        /// </summary>
+        /// <returns>A version string, e.g. "4.9.2 of Mar 14 2023 15:42:34 $".</returns>
+        public static string nc_inq_libvers() => Marshal.PtrToStringAnsi(NetCDFNative.nc_inq_libvers());
     }
     static class NetCDFNative
     {
@@ -701,6 +706,7 @@ namespace NetCDFInterop
         [DllImport("netcdf", CallingConvention=CallingConvention.Cdecl)] public static extern int nc_get_vars_double(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, double[] data);
         [DllImport("netcdf", CallingConvention=CallingConvention.Cdecl)] public static extern int nc_get_vars_string(int ncid, int varid, IntPtr[] start, IntPtr[] count, IntPtr[] stride, IntPtr[] data);
         [DllImport("netcdf", CallingConvention=CallingConvention.Cdecl)] public static extern int nc_free_string(IntPtr len, IntPtr[] data);
+        [DllImport("netcdf", CallingConvention=CallingConvention.Cdecl)] public static extern IntPtr nc_inq_libvers();
     }
 }
 

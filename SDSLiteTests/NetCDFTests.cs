@@ -30,5 +30,13 @@ namespace SDSLiteTests
             var len_compressed = Empty_AddVariable(data, DeflateLevel.Best);
             Assert.IsTrue(len_compressed < len_uncompressed);
         }
+
+        [Test]
+        public void Test_inq_libvers()
+        {
+            var ver = NetCDFInterop.NetCDF.nc_inq_libvers();
+            Assert.IsNotNull(ver);
+            Assert.IsTrue(ver.StartsWith("4."));
+        }
     }
 }
