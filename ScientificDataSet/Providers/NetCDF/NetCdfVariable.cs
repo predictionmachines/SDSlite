@@ -1,11 +1,9 @@
 // Copyright © Microsoft Corporation, All Rights Reserved.
+using NetCDFInterop;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
-using NetCDFInterop;
 
 namespace Microsoft.Research.Science.Data.NetCDF4
 {
@@ -124,13 +122,18 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
             /* Getting exsting dims and creating new */
             int[] dimids = new int[dims.Length];
+            int[] dimlen = new int[dims.Length];
             for (int i = 0; i < dims.Length; i++)
             {
                 int id;
                 res = NetCDF.nc_inq_dimid(dataSet.NcId, dims[i], out id);
                 if (res == (int)ResultCode.NC_NOERR)
                 {
+                    IntPtr lenp;
+                    res = NetCDF.nc_inq_dimlen(dataSet.NcId, id, out lenp);
+                    NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = lenp.ToInt32();
                 }
                 else if (res == (int)ResultCode.NC_EBADDIM)
                 {
@@ -138,6 +141,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     res = NetCDF.nc_def_dim(dataSet.NcId, dims[i], new IntPtr(NcConst.NC_UNLIMITED), out id);
                     NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = NcConst.NC_UNLIMITED;
                 }
                 else
                 {
@@ -153,7 +157,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                 Debug.WriteLineIf(NetCDFDataSet.TraceNetCDFDataSet.TraceVerbose, "NetCDF: name has illegal chars; internal variable name is " + nc_name);
 
             res = NetCDF.nc_def_var(dataSet.NcId, nc_name, NetCDF.GetNcType(typeof(DataType)), dimids, out varid);
-            for (int count = 1; res == (int)ResultCode.NC_ENAMEINUSE; )
+            for (int count = 1; res == (int)ResultCode.NC_ENAMEINUSE;)
             {
                 // Keep trying to create variable with different names
                 res = NetCDF.nc_def_var(dataSet.NcId, String.Format("{0}_{1}", nc_name, count++), NetCDF.GetNcType(typeof(DataType)), dimids, out varid);
@@ -197,7 +201,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                     for (int i = 0; i < dims.Length; i++)
                     {
-                        chunksizes[i] = new IntPtr(chunk);
+                        if (dimlen[i] == NcConst.NC_UNLIMITED)
+                        {
+                            chunksizes[i] = new IntPtr(chunk);
+                        }
+                        else
+                        {
+                            chunksizes[i] = new IntPtr(dimlen[i]);
+                        }
                     }
                 }
 
@@ -232,7 +243,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             char[] chars = name.ToCharArray(0, Math.Min(100, name.Length));
 
             int n = chars.Length;
-            for (; --n >= 0; )
+            for (; --n >= 0;)
             {
                 if (!char.IsWhiteSpace(chars[n])) break; // removing trailing spaces
             }
@@ -264,7 +275,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         private static int Pow10(int p)
         {
             int val = 1;
-            for (; --p >= 0; )
+            for (; --p >= 0;)
                 val *= 10;
             return val;
         }
@@ -416,7 +427,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 result[i] = (string)array.GetValue(index);
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < array.GetLength(j))
@@ -444,7 +455,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 result[i] = (bool)array.GetValue(index) ? (byte)1 : (byte)0;
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < array.GetLength(j))
@@ -479,7 +490,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 result[i] = (double)((DateTime)array.GetValue(index)).Ticks;
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < array.GetLength(j))
@@ -521,7 +532,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 array.SetValue(ncArray[i], index);
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < shape[j])
@@ -547,7 +558,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 array.SetValue(ncArray[i] > 0, index);
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < shape[j])
@@ -590,7 +601,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             {
                 array.SetValue(new DateTime((long)ncArray[i]), index);
 
-                for (int j = index.Length; --j >= 0; )
+                for (int j = index.Length; --j >= 0;)
                 {
                     index[j]++;
                     if (index[j] < shape[j])
