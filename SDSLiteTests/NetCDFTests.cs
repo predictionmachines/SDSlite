@@ -42,7 +42,7 @@ namespace SDSLiteTests
         [Test]
         public void TestCreateFixedDimensionNC()
         {
-            // Gets dataset from file.
+            // create temporary file.
             string file = System.IO.Path.GetRandomFileName() + ".nc";
             var dataset = (NetCDFDataSet)DataSet.Open(file);
 
