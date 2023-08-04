@@ -124,13 +124,18 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
             /* Getting exsting dims and creating new */
             int[] dimids = new int[dims.Length];
+            int[] dimlen = new int[dims.Length];
             for (int i = 0; i < dims.Length; i++)
             {
                 int id;
                 res = NetCDF.nc_inq_dimid(dataSet.NcId, dims[i], out id);
                 if (res == (int)ResultCode.NC_NOERR)
                 {
+                    IntPtr lenp;
+                    res = NetCDF.nc_inq_dimlen(dataSet.NcId, id, out lenp);
+                    NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = lenp.ToInt32();
                 }
                 else if (res == (int)ResultCode.NC_EBADDIM)
                 {
@@ -138,6 +143,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
                     res = NetCDF.nc_def_dim(dataSet.NcId, dims[i], new IntPtr(NcConst.NC_UNLIMITED), out id);
                     NetCDFDataSet.HandleResult(res);
                     dimids[i] = id;
+                    dimlen[i] = NcConst.NC_UNLIMITED;
                 }
                 else
                 {
@@ -197,7 +203,14 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
                     for (int i = 0; i < dims.Length; i++)
                     {
-                        chunksizes[i] = new IntPtr(chunk);
+                        if (dimlen[i] == NcConst.NC_UNLIMITED)
+                        {
+                            chunksizes[i] = new IntPtr(chunk);
+                        }
+                        else
+                        {
+                            chunksizes[i] = new IntPtr(dimlen[i]);
+                        }
                     }
                 }
 
