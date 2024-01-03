@@ -456,6 +456,32 @@ namespace Microsoft.Research.Science.Data.NetCDF4
 
         #endregion
 
+        public Variable<byte> AddCharVariable(string varName, Array array, params string[] dims)
+        {
+            if (IsDisposed)
+                throw new ObjectDisposedException("DataSet");
+            if (IsReadOnly)
+                throw new ReadOnlyException("DataSet is read only.");
+            if (varName == null)
+                varName = "";
+            if (dims != null && HasDuplicates(dims))
+                throw new DataSetException("Duplicate dimensions for a variable are not allowed.");
+
+            Variable<byte> var = CreateCharVariable(varName, dims);
+
+            if (array != null && array.Length > 0)
+                var.PutData(array);
+
+            return var;
+        }
+
+        private Variable<byte> CreateCharVariable(string varName, string[] dims)
+        {
+            StartChanges();
+
+            return (Variable<byte>)CreateNetCdfVariable(varName, dims, typeof(byte), true);
+        }
+
         #region Overriden Methods
 
         /// <summary>
@@ -469,7 +495,7 @@ namespace Microsoft.Research.Science.Data.NetCDF4
         {
             StartChanges();
 
-            return (Variable<DataType>)CreateNetCdfVariable(varName, dims, typeof(DataType));
+            return (Variable<DataType>)CreateNetCdfVariable(varName, dims, typeof(DataType), false);
         }
 
         /// <summary>
@@ -661,9 +687,17 @@ namespace Microsoft.Research.Science.Data.NetCDF4
             return v;
         }
 
-        private Variable CreateNetCdfVariable(string name, string[] dims, Type dataType)
+        private Variable CreateNetCdfVariable(string name, string[] dims, Type dataType, bool isChar)
         {
             Variable v = (Variable)typeof(NetCdfVariable<>).MakeGenericType(dataType).
+                GetMethod("Create", BindingFlags.NonPublic | BindingFlags.Static).
+                Invoke(null, new object[] { this, name, dims, isChar });
+            return v;
+        }
+
+        private Variable CreateNetCdfCharVariable(string name, string[] dims)
+        {
+            Variable v = (Variable)typeof(NetCdfVariable<>).MakeGenericType(typeof(byte)).
                 GetMethod("Create", BindingFlags.NonPublic | BindingFlags.Static).
                 Invoke(null, new object[] { this, name, dims });
             return v;
